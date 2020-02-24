@@ -15,10 +15,17 @@ function n(var)
     return if var[1]=='n' var[2:end] else string('n',var) end
 end
 function ap(te,v)
-    return (te[1],te[2](v[2]),te[3](v[3]))
+    return (te[1],te[2](v[2]))
 end
 function nap(te,v)
-    return (n(te[1]),te[2](v[2]),te[3](v[3]))
+    return (n(te[1]),te[2](v[2]))
+end
+function literal(v,i,sy)
+    s = v
+    for k in 1:size(i,1)-1
+        s = s*i[k] 
+    end
+    return s*sy*i[end]
 end
 function find(v,prec,dec)#;printe(true)
     for i in 1:size(dec,1)
@@ -36,9 +43,9 @@ function rule1(v,i,dec,j)
     elseif v[1]==n(eq[1][1])
         find(nap(eq[2],v),i,dec)
     elseif v[1]==eq[end][1]
-        push!(e,string(eq[1][1],v[2],'=',v[3]))
+        push!(e,literal(eq[1][1],v[2],'='))
     else
-        push!(e,string(eq[1][1],v[2],'≠',v[3]))
+        push!(e,literal(eq[1][1],v[2],'≠'))
     end
 end
 function rule2(v,i,dec,j)
@@ -48,9 +55,9 @@ function rule2(v,i,dec,j)
     elseif v[1]==n(eq[1][1])
         find(nap(eq[2],v),i,dec)
     elseif v[1]==eq[end][1]
-        push!(e,string(eq[1][1],v[2],'≥',v[3]))
+        push!(e,literal(eq[1][1],v[2],'≥'))
     else
-        push!(e,string(eq[1][1],v[2],'<',v[3]))
+        push!(e,literal(eq[1][1],v[2],'<'))
     end
 end
 function rule3(v,i,dec,j)
@@ -154,20 +161,20 @@ function rule7(v,i,dec,j)
     if v[1]==n(eq[1][1])
         find(ap(eq[1],v),i,dec)
         if eq[end][1]!="true"
-            find(nap(eq[end],v),i,dec)
+            find(ap(eq[end],v),i,dec)
         else
             push!(e,'T')
         end
     end
     if v[1]==eq[1][1]
-        find(ap(eq[1],v),i,dec)
+        find(nap(eq[1],v),i,dec)
         if eq[end][1]!="true"
-            find(nap(eq[end],v),i,dec)
+            find(ap(eq[end],v),i,dec)
         else
             push!(e,'T')
         end
     end
-    if v[1]==eq[end][1] || v[1]==n(eq[end][1])
+    if v[1]==eq[end][1] #|| v[1]==n(eq[end][1])
         find(ap(eq[1],v),i,dec)
         find(nap(eq[1],v),i,dec)
     end
@@ -180,35 +187,48 @@ function mou(v,i,dec)
 end
 
 # Décompositions
-alldiff = [(rule1,[("X",id,id),("b",id,id)]), 
-(rule4,[("nb",i->i*'\'',id),("nb",i->i*'\'',id),("true",id,id)])]
+alldiff = [(rule1,[("X",id),("b",id)]), 
+(rule4,[("nb",i->[i[1]*'\'',i[2]]),("nb",i->[i[1]*'\'',i[2]]),("true",id)])]
 
-alleq   = [(rule2,[("X",id,id),("b",id,id)]), 
-(rule4,[("nb",i->i*'\'',id),("b",i->i*'\'',id),("true",id,id)])]
+alleq   = [(rule2,[("X",id),("b",id)]), 
+(rule4,[("nb",i->[i[1]*'\'',i[2]]),("b",i->[i[1]*'\'',i[2]]),("true",id)])]
 
-incr    = [(rule2,[("X",id,id),("b",id,id)]), 
-(rule4,[("b",i->i*"+1",id),("nb",i->i*"-1",id),("true",id,id)])]
+incr    = [(rule2,[("X",id),("b",id)]), 
+(rule4,[("b",i->[i[1]*"+1",i[2]]),("nb",i->[i[1]*"-1",i[2]]),("true",id)])]
 
-atmost  = [(rule1,[("X",id,id),("b",id,id)]), 
-(rule5,[("b",i->i*'\'',id),("true",id,id)])]
+atmost  = [(rule1,[("X",id),("b",id)]), 
+(rule5,[("b",i->[i[1]*'\'',i[2]]),("true",id)])]
 
-nvalue  = [(rule1,[("X",id,id),("b",id,id)]), 
-(rule4,[("b",i->i*'\'',id),("b",i->i*'\'',id),("b2",id,id)]),
-(rule7,[("b2",id,t->t*'\''),("true",id,id)])]
+nvalue  = [(rule1,[("X",id),("b",id)]), 
+(rule4,[("b",i->[i[1]*'\'',i[2]]),("b",i->[i[1]*'\'',i[2]]),("b2",id)]),
+(rule7,[("b2",i->[i[1],i[2]*'\'']),("true",id)])]
 
-cumu    = [(rule2,[("X",id,id),("b",id,id)]), 
-(rule3,[("b",id,t->t*"-di"),("nb",id,t->t*"+di"),("b2",id,id)]),
-(rule5,[("b2",i->i*'\'',id),("true",id,id)])]
+cumu    = [(rule2,[("X",id),("b",id)]), 
+(rule3,[("b",i->[i[1],i[2]*"-d"*i[1]]),("nb",i->[i[1],i[2]*"+d"*i[1]]),("b2",id)]),
+(rule5,[("b2",i->[i[1]*'\'',i[2]]),("true",id)])]
 
-allbc   = [(rule2,[("X",id,id),("b",id,id)]), 
-#(rule3,[("b",id,t->t*"'"),("nb",id,t->t*"'"),("b2",id,t->"t,t'")]),
-#(rule7,[("b2",i->i*'\'',id),("b3",id,id)]),
-(rule4,[("b",i->i*'?',t->t*"1"),("nb",i->i*'?',t->t*"2"),("nb3",i->i*'\'',id),("true",id,id)])]
+allbc   = [(rule2,[("X",id),("b",id)]), 
+#(rule3,[("b",i->[i[1],i[2]]),("nb",i->[i[1],i[2]*'\'']),("b2",i->[i[1],i[2]])]),
+#(rule7,[("b2",i->[i[1]*'\'',i[2]]),("b3",id)]),
+(rule4,[("nb3",i->[i[1],i[2]]),("b2",i->[i[1],i[2]]),("b",i->[i[1],i[2]*"2"]),("nb",i->[i[1],i[2]*"1"]),("true",id)])]
+
+element = [(rule1,[("X",id),("b",id)]),(rule1,[("I",id),("bi",id)]),(rule1,[("V",id),("bv",id)]),
+#(rule4,[("b",i->["i","t"]),("nbv",i->["t"]),("nbi",i->["i"]),("true",id)]),
+(rule4,[("nb",i->["i","t"]),("bv",i->["t"]),("nbi",i->["i"]),("true",id)])
+
+# équivaut a : 
+#(rule3,[("b",i->["i","t"]),("bv",i->["t"]),("b1",i->["i"])]),
+#(rule3,[("nb",i->["i","t"]),("nbv",i->["t"]),("b2",i->["i"])]),
+#(rule4,[("b1",i->["i","t"]),("b2",i->["t"]),("nbi",i->["i"]),("true",id)])
+]
+
+gcc     = [(rule1,[("X",id),("b",id)]),
+(rule7,[("b",i->[i[1]*"'",i[2]]),("true",id)])]
 
 # Tests
 global e = []
-piv = ("b","i","t")
-npiv=("nb","i","t")
+piv = ("b",["i","t"])
+npiv=("nb",["i","t"])
 
 println("\n --AllDifferent--")
 mou( piv,1,alldiff)
@@ -228,9 +248,19 @@ mou(npiv,1,nvalue)
 println("\n --Cumulative--")
 mou( piv,1,cumu)
 mou(npiv,1,cumu)
+println("\n --Gcc--")
+mou( piv,1,gcc)
+mou(npiv,1,gcc)
 println("\n --AllDiffBC--")
 mou( piv,1,allbc)
-#mou(npiv,1,allbc)
+mou(npiv,1,allbc)
+println("\n --Element--")
+mou( piv,1,element)
+mou(npiv,1,element)
+mou(("bi",["i"]),2,element)
+mou(("nbi",["i"]),2,element)
+mou(("bv",["t"]),3,element)
+mou(("nbv",["t"]),3,element)
 
 # Sortie
 # julia> include("moulinette 2.jl")
