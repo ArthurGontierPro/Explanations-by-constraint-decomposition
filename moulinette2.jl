@@ -12,6 +12,7 @@ function printe(verbose=false)
     print(" ",e[1][2]," <- ")
     tab=[]
     im = feuille(tab)
+    ou = ""
     while im>0
         c=[]
         for i in 2:size(e,1)
@@ -24,6 +25,7 @@ function printe(verbose=false)
         end
         im = feuille(tab)
         if !('?' in c)&&!('F' in c)
+            print(ou)
             for v in c
                 if verbose || !(v[1] in ['T','F','?'])
                     if v[1] in ['∀','∃']
@@ -34,7 +36,7 @@ function printe(verbose=false)
                 end
             end
             if im !=0
-                print(" ∨    ")
+                ou = "\n       ∨ "
             end
         end
     end
@@ -85,14 +87,16 @@ function im(eqv,v)
 end
 function find(v,prec,dec,c)#;printe(true)
     f = 1
-    if !((n(v[1]),id(v[2])) in c)&&!(v in c)
+    if !((n(v[1]),id(v[2])) in map(v->(v[1],v[2]),c))&&!(v in map(v->(v[1],v[2]),c))
         for i in 1:size(dec,1)
             if i!=prec
-                for j in 1:size(dec[i][2],1)
-                    if v[1]==dec[i][2][j][1] || n(v[1])==dec[i][2][j][1]
-                        cc=push!(copy(c),v)
-                        cc[1]=(cc[1][1]*string(f),[]);f=f+1
-                        dec[i][1](v,i,dec,j,cc)
+                if !((v[1],i) in map(v->(v[1],v[3]),c))&&!((n(v[1]),i) in map(v->(v[1],v[3]),c))
+                    for j in 1:size(dec[i][2],1)
+                        if v[1]==dec[i][2][j][1] || n(v[1])==dec[i][2][j][1]
+                            cc=push!(copy(c),(v[1],v[2],i))
+                            cc[1]=(cc[1][1]*string(f),[],1);f=f+1
+                            dec[i][1](v,i,dec,j,cc)
+                        end
                     end
                 end
             end
@@ -227,9 +231,9 @@ function rule6(v,i,dec,j,c)
     eq = dec[i][2]
     if v[1]==eq[1][1]
         push!(e,(c[1][1],string("∀",im(eq[1],v))))
-        find(nap(eq[1],v),i,dec,c)
+        find(nap(eq[1],v,c),i,dec,c)
         if eq[end][1]!="true"
-            find(ap(eq[end],v),i,dec,c)
+            find(ap(eq[end],v,c),i,dec,c)
         else
             push!(e,(c[1][1],'T'))
         end
@@ -266,8 +270,8 @@ end
 function mou(v,i,dec)
     global e = []
     global nbc = 1
-    dec[i][1](v,i,dec,1,[("1",[])])
-    find(v,i,dec,[("1",[])])
+    dec[i][1](v,i,dec,1,[("1",[],i)])
+    find(v,i,dec,[("1",[],i)])
     printe()
 end
 
@@ -277,6 +281,11 @@ alldiff = [(rule1,[("X",id),("b",id)]),
 
 alleq   = [(rule2,[("X",id),("b",id)]),
 (rule4,[("b",i->[i[1]*"'",i[end],"∃"*i[1]*"'"]),("nb",i->[i[1]*"'",i[end],"∃"*i[1]*"'"]),("true",id)])]
+
+alleq2  = [(rule2,[("X",id),("b",id)]),
+(rule3,[("b",i->[i[1]*"'",i[end]]),("b1",id)]),
+(rule3,[("nb",i->[i[1]*"'",i[end]]),("b2",id)]),
+(rule4,[("b1",id),("b2",id),("true",id)])]
 
 incr    = [(rule2,[("X",id),("b",id)]), 
 (rule4,[("b",i->[i[1]*"+1",i[2]]),("nb",i->[i[1]*"-1",i[2]]),("true",id)])]
@@ -292,10 +301,13 @@ cumu    = [(rule2,[("X",id),("b",id)]),
 (rule3,[("b",i->[i[1],i[2]*"-d"*i[1]]),("nb",i->[i[1],i[2]*"+d"*i[1]]),("b2",id)]),
 (rule5,[("b2",i->[i[1]*'\'',i[2]]),("true",id)])]
 
+gcc     = [(rule1,[("X",id),("b",id)]),
+(rule7,[("b",i->[i[1]*"'",i[2]]),("true",id)])]
+
 allbc   = [(rule2,[("X",id),("b",id)]),
-(rule3,[("b",i->[i[1],i[2]]),("nb",i->[i[1],i[2]*'\'']),("b2",i->[i[1],i[2]])]),
+(rule3,[("b",i->[i[1],i[2]*'2']),("nb",i->[i[1],i[2]*'2']),("b2",i->[i[1],i[2]])]),
 (rule7,[("b2",i->[i[1]*'\'',i[2]]),("b3",id)]),
-#(rule4,[("nb3",i->[i[1],i[2]]),("b2",i->[i[1],i[2]]),("b",i->[i[1],i[2]*"2"]),("nb",i->[i[1],i[2]*"1"]),("true",id)])
+(rule4,[("nb3",i->[i[1],i[2]]),("b2",i->[i[1],i[2]]),("b",i->[i[1],i[2]*"2"]),("nb",i->[i[1],i[2]*"1"]),("true",id)])
 ]
 
 element = [(rule1,[("X",id),("b",id)]),(rule1,[("I",id),("bi",id)]),(rule1,[("V",id),("bv",id)]),
@@ -303,8 +315,16 @@ element = [(rule1,[("X",id),("b",id)]),(rule1,[("I",id),("bi",id)]),(rule1,[("V"
 (rule4,[("nb",i->["i","t"]),("bv",i->["t"]),("nbi",i->["i"]),("true",id)])
 ]
 
-gcc     = [(rule1,[("X",id),("b",id)]),
-(rule7,[("b",i->[i[1]*"'",i[2]]),("true",id)])]
+range   = [(rule1,[("X",id),("b",id)]),
+(rule7,[("b",i->[i[1],i[2]*'\'']),("b1",id)]),
+(rule6,[("b",i->[i[1]*'\'',i[2]]),("b2",id)]),
+(rule4,[("b1",id),("b2",id),("true",id)])
+]
+
+roots   = [(rule1,[("X",id),("b",id)]),
+#(rule7,[("b",i->[i[1],i[2]*'\'']),("true",id)]),
+(rule7,[("b",i->[i[1],i[2]*'\'']),("true",id)])]
+
 
 # Tests
 global e = []
@@ -317,6 +337,9 @@ mou(npiv,1,alldiff)
 println("\n --AllEqual--")
 mou( piv,1,alleq)
 mou(npiv,1,alleq)
+println("\n --AllEqual2--")
+mou( piv,1,alleq2)
+mou(npiv,1,alleq2)
 println("\n --Increasing--")
 mou( piv,1,incr)
 mou(npiv,1,incr)
@@ -332,8 +355,8 @@ mou(npiv,1,cumu)
 println("\n --Gcc--")
 mou( piv,1,gcc)
 mou(npiv,1,gcc)
-println("\n --AllDiffBC--")
-mou( piv,1,allbc)
+println("\n --AllDiffBC?--")
+#mou( piv,1,allbc)
 mou(npiv,1,allbc)
 println("\n --Element--")
 mou( piv,1,element)
@@ -342,35 +365,12 @@ mou(("bi",["i"]),2,element)
 mou(("nbi",["i"]),2,element)
 mou(("bv",["t"]),3,element)
 mou(("nbv",["t"]),3,element)
-
-# Sortie
-# julia> include("moulinette 2.jl")
-# --AllDifferent--
-# Xi=t <- 
-# Xi≠t <- Xi'=t   
-
-# --AllEqual--
-# Xi≥t <- Xi'≥t   
-# Xi<t <- Xi'<t   
-
-# --Increasing--
-# Xi≥t <- Xi-1≥t   
-# Xi<t <- Xi+1<t   
-
-# --AtMost--
-# Xi=t <- 
-# Xi≠t <- Xi'=t   
-
-# --NValue--
-# Xi=t <- Xi'≠t   Xi'=t'   
-# Xi≠t <- Xi'=t'   
-
-# --Cumulative--
-# Xi≥t <- Xi'≥t-di   Xi'<t+di   Xi≥t-di   
-# Xi<t <- Xi'≥t-di   Xi'<t+di   Xi<t+di   
-
-# --AllDiffBC--
-# Xi≥t <- Xi?≥t2
+println("\n --Range--")
+mou( piv,1,range)
+mou(npiv,1,range)
+println("\n --Roots--")
+mou( piv,1,roots)
+mou(npiv,1,roots)
 
 # symboles
 # ∈ ∉ ≤ ≥ ∧ ∨ ≠ ∀ ∃ || []
