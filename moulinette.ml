@@ -1,6 +1,6 @@
 open List
 type name = X | B | B2 | N | T | V 
-type ind  = I | J | K | L | T | D
+type ind  = I | J | K | L | T | D |TPDI|TMDI
 type var = { s:bool; n:name;i:ind}
 type car = {cs:bool;cn:name;fid:ind->ind;fau:ind->ind}
 type lit = Var of var | T | F | IM | R | FE
@@ -139,6 +139,8 @@ let rec an a =
 
 let ij i = J
 let ji j = J
+let ic i = TPDI
+let ci i = TMDI
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
@@ -146,7 +148,7 @@ let alleq  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
 let alldif = [ctr 1 rule1 [car true B  id id;car true  X  id id];
               ctr 2 rule4 [car true T  id id;car false B  ij id; car true B ij id]]
 let cumul  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
-              ctr 2 rule3 [car true B2 id id;car false B  ij id; car true B ij id];
+              ctr 2 rule3 [car true B2 id id;car false B  id id; car true B ci ic];
               ctr 3 rule5 [car true T  id id;car false B2 ij id]]
 
 (*Tests*)
@@ -166,3 +168,17 @@ let a3 = an z3
 let a4 = an z4 
 let a5 = an z5 
 let a6 = an z6 
+
+type set = D
+type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
+type cst = C
+type iop = | Set of ind*sym*set
+           | Rel of ind*sym*ind
+           | Addint of ind*sym*int
+           | Addcst of ind*sym*cst*ind*iop list
+           | EXFORALL of ind
+           | EXEXISTS of ind
+
+let x = (J,[EXFORALL (J);Set (J,IN,D);Rel (I,NEQ,J);Set (I,IN,D)])
+let xx = (I,[Addint (I,PLUS,1)])
+let xxx = (T,[Addcst (T,PLUS,C,I,[])])
