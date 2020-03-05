@@ -8,6 +8,31 @@ function feuille(tab)
     end
     return im
 end
+function coherent(c)
+    co = true
+    for v in c
+        if !(v[1] in ['T','F','?','∀','∃'])
+            #println(v)
+            i = findfirst('=',v)
+            if i!=nothing
+                co = co&&!(v[1:i-1]*'≠'*v[i+1:end] in c)
+            end
+            i = findfirst('≠',v)
+            if i!=nothing
+                co = co&&!(v[1:i-1]*'='*v[i+3:end] in c)
+            end
+            i = findfirst('≥',v)
+            if i!=nothing
+                co = co&&!(v[1:i-1]*'<'*v[i+3:end] in c)
+            end
+            i = findfirst('<',v)
+            if i!=nothing
+                co = co&&!(v[1:i-1]*'≥'*v[i+1:end] in c)
+            end
+        end
+    end
+    return !('?' in c)&&!('F' in c)&&co
+end
 function printe(verbose=false)
     print(" ",e[1][2]," <- ")
     tab=[]
@@ -24,7 +49,7 @@ function printe(verbose=false)
             end
         end
         im = feuille(tab)
-        if !('?' in c)&&!('F' in c)
+        if coherent(c)
             print(ou)
             for v in c
                 if verbose || !(v[1] in ['T','F','?'])
@@ -36,7 +61,7 @@ function printe(verbose=false)
                 end
             end
             if im !=0
-                ou = "\n       ∨ "
+                ou = string("\n ",e[1][2]," <- ")
             end
         end
     end
@@ -263,8 +288,11 @@ function rule7(v,i,dec,j,c)
     end
     if v[1]==eq[end][1] #|| v[1]==n(eq[end][1])
         push!(e,(c[1][1],string("∀",im(eq[1],v))))
-        find(ap(eq[1],v,c),i,dec,c)
+        find(ap(eq[1],v,c),i,dec,c)#gérer ici les cas contradictoires
         find(nap(eq[1],v,c),i,dec,c)
+    end
+    if v[1]==n(eq[end][1])
+        push!(e,(c[1][1],'?'))
     end
 end
 function mou(v,i,dec)
@@ -277,7 +305,7 @@ end
 
 # Décompositions
 alldiff = [(rule1,[("X",id),("b",id)]), 
-(rule4,[("nb",i->[i[1]*'\'',i[2]]),("true",id)])]
+(rule5,[("b",i->[i[1]*'\'',i[2]]),("true",id)])]
 
 alleq   = [(rule2,[("X",id),("b",id)]),
 (rule4,[("b",i->[i[1]*"'",i[end],"∃"*i[1]*"'"]),("nb",i->[i[1]*"'",i[end],"∃"*i[1]*"'"]),("true",id)])]
@@ -297,29 +325,33 @@ nvalue  = [(rule1,[("X",id),("b",id)]),
 (rule4,[("b",i->[i[1]*'\'',i[2]]),("b2",id)]),
 (rule7,[("b2",i->[i[1],i[2]*'\'']),("true",id)])]
 
+nvalue2  = [(rule1,[("X",id),("b",id)]),(rule1,[("N",id),("b3",id)]),
+(rule4,[("b",i->["i'",i[end]]),("b2",i->[i[end]])]),
+(rule7,[("b2",i->["t'"]),("b3",i->["t2"])])]
+
+occ     = [(rule1,[("X",id),("b",id)]),(rule1,[("N",id),("b2",id)]), 
+(rule7,[("b",i->["i"*"'","d"]),("b2",i->["t"])])]
+
 cumu    = [(rule2,[("X",id),("b",id)]), 
 (rule3,[("b",i->[i[1],i[2]*"-d"*i[1]]),("nb",i->[i[1],i[2]*"+d"*i[1]]),("b2",id)]),
 (rule5,[("b2",i->[i[1]*'\'',i[2]]),("true",id)])]
 
-gcc     = [(rule1,[("X",id),("b",id)]),
-(rule7,[("b",i->[i[1]*"'",i[2]]),("true",id)])]
+gcc     = [(rule1,[("X",id),("b",id)]),(rule1,[("O",id),("b2",id)]), 
+(rule7,[("b",i->[i[1]*"'",i[2]]),("b2",i->[i[end],"t2"])])]
 
 allbc   = [(rule2,[("X",id),("b",id)]),
-(rule3,[("b",i->[i[1],i[2]*'2']),("nb",i->[i[1],i[2]*'2']),("b2",i->[i[1],i[2]])]),
-(rule7,[("b2",i->[i[1]*'\'',i[2]]),("b3",id)]),
-(rule4,[("nb3",i->[i[1],i[2]]),("b2",i->[i[1],i[2]]),("b",i->[i[1],i[2]*"2"]),("nb",i->[i[1],i[2]*"1"]),("true",id)])
-]
+(rule3,[("b",i->[i[1],'a']),("nb",i->[i[1],'b']),("b2",i->[i[1],'a','b'])]),
+(rule7,[("b2",i->[i[1]*'\'',i[2],i[3]]),("b3",id)]),
+(rule4,[("nb3",i->[i[1],'a','b']),("b2",i->[i[1],'a','b']),("b",i->[i[1],i[2]]),("nb",i->[i[1],i[end]]),("true",id)])]
 
 element = [(rule1,[("X",id),("b",id)]),(rule1,[("I",id),("bi",id)]),(rule1,[("V",id),("bv",id)]),
 (rule4,[("b",i->["i","t"]),("nbv",i->["t"]),("nbi",i->["i"]),("true",id)]),
-(rule4,[("nb",i->["i","t"]),("bv",i->["t"]),("nbi",i->["i"]),("true",id)])
-]
+(rule4,[("nb",i->["i","t"]),("bv",i->["t"]),("nbi",i->["i"]),("true",id)])]
 
 range   = [(rule1,[("X",id),("b",id)]),
 (rule7,[("b",i->[i[1],i[2]*'\'']),("b1",id)]),
 (rule6,[("b",i->[i[1]*'\'',i[2]]),("b2",id)]),
-(rule4,[("b1",id),("b2",id),("true",id)])
-]
+(rule4,[("b1",id),("b2",id),("true",id)])]
 
 roots   = [(rule1,[("X",id),("b",id)]),
 #(rule7,[("b",i->[i[1],i[2]*'\'']),("true",id)]),
@@ -349,14 +381,26 @@ mou(npiv,1,atmost)
 println("\n --NValue--")
 mou( piv,1,nvalue)
 mou(npiv,1,nvalue)
+println("\n --NValue2--")
+mou( piv,1,nvalue2)
+mou(npiv,1,nvalue2)
+mou(("b3",["t2"]),2,nvalue2)
+mou(("nb3",["t2"]),2,nvalue2)
+println("\n --Occurence--")
+mou(("b",["i","d"]),1,occ)
+mou(("nb",["i","d"]),1,occ)
+mou(("b2",["t"]),2,occ)
+mou(("nb2",["t"]),2,occ)
 println("\n --Cumulative--")
 mou( piv,1,cumu)
 mou(npiv,1,cumu)
 println("\n --Gcc--")
 mou( piv,1,gcc)
 mou(npiv,1,gcc)
+mou(("b2",["t","t2"]),2,gcc)
+mou(("nb2",["t","t2"]),2,gcc)
 println("\n --AllDiffBC?--")
-#mou( piv,1,allbc)
+mou( piv,1,allbc)
 mou(npiv,1,allbc)
 println("\n --Element--")
 mou( piv,1,element)
