@@ -7,7 +7,9 @@ Institut Mines-Télécom - Master 2 ORO - Année 2020.
     - Charles PRUDHOMME
     
 * Lien vers le suivit/rapport [overleaf](https://fr.overleaf.com/4384554372hfpvtcwvvvtc)  
+
 [FR]
+
 Le but de ce stage est, lors de la résolution d'un problème de contrainte globale, 
 de générer l'explication d'un évenement automatiquement à partir d'une décomposition de la contrainte globale.
 
@@ -16,6 +18,7 @@ Les fichiers moulinette.jl et moulinette2.jl sont des prototypes julia qui respe
 Le fichier moulinette.ml est ce qui sera la vertion définitive du générateur d'explication.
 
 [EN]
+
 The goal of this internship is, when solving a global constraint problem,
 to generate the explanation of an event automatically from a decomposition of the global constraint.
 
