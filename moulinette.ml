@@ -7,20 +7,22 @@ type cst = C
 type iop = | Set of ind*sym*set
            | Rel of ind*sym*ind
            | Addint of ind*sym*int
-           | Addcst of ind*sym*cst*ind*iop list
+           | Addcst of ind*sym*cst*ind
            | EXFORALL of ind
            | EXEXISTS of ind
-type var = { s:bool; n:name;i:ind}
-type car = {cs:bool;cn:name;fid:ind->ind;fau:ind->ind}
+type lou = {ind:ind;opl:iop list}
+type var = { s:bool; n:name;i:lou list}
+type car = {cs:bool;cn:name;fid:lou list->lou list;fau:lou list->lou list}
 type lit = Var of var | T | F | IM | R | FE
 type arb = | Lit of lit
-           | EXOR of arb list 
-           | EXAND of var * arb list
+           | EXOR of var*arb list 
+           | EXAND of var*arb list
 type ctr = {id:int;r:var->car->ctr->ctr list->var list->arb;cvl:car list}
 
 let var b n il = {s=b;n=n;i=il}
 let car b n f fa = {cs=b;cn=n;fid=f;fau=fa}
 let ctr id r cvl = {id=id;r=r;cvl=cvl}
+let ind i opl = {ind=i;opl=opl}
 
 let id  x = x
 let n   x = if x.s then var false x.n x.i else var true x.n x.i
@@ -44,7 +46,7 @@ let rec find v dec prec ch =
   if inl v ch || inl (n v) ch then Lit (R) else
   let cl = ctrs v dec in
   let cl = subc prec cl in
-  EXOR (flatten (map (fun c-> map (fun cv -> c.r v cv c dec ch) (vars v c.cvl)) cl))
+  EXOR (v,flatten (map (fun c-> map (fun cv -> c.r v cv c dec ch) (vars v c.cvl)) cl))
 
 and fvr vr v cv dec c ch = 
   if vr.cn = T then Lit (T) else EXAND (v,[find (ap v vr cv) dec c (ch@[v])])
@@ -95,7 +97,7 @@ and rule4 v cv c dec ch =
 and rule5 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
-    if cv.cs = vr.cs 
+    if cv.cs = vr.cs
     then EXAND (v,fnvl (tl c.cvl) v cv dec c ch)(*forall*)
     else Lit (IM)
   else 
@@ -127,15 +129,12 @@ and rule7 v cv c dec ch =
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
     then Lit (IM)
-    else EXAND (v,(fvl (tl c.cvl) v cv dec c ch)@(fvl (tl c.cvl) v cv dec c ch))(*incohérent?*)
+    else EXAND (v,(fvl (tl c.cvl) v cv dec c ch)@(fnvl (tl c.cvl) v cv dec c ch))(*incohérent?*)
   else 
     let cvl =subl cv (tl c.cvl) in
     if not (cvl=[]) then
       failwith "sommes multiples pas encore implémentés"
-    else 
-      if v.s = cv.cs
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
-      else EXAND (v,[fvr vr v cv dec c ch]@( fvl (tl c.cvl) v cv dec c ch))(*forall*)
+    else EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
 
 let rec coherent l = 
   match l with [] -> true | v::tl -> if v=F then false else coherent tl
@@ -143,13 +142,17 @@ let rec coherent l =
 let rec an a = 
   match a with
     | Lit x -> [[x]]
-    | EXOR (l) -> map (fun x->flatten (an x)) l 
+    | EXOR (x,l) -> map (fun x->flatten (an x)) l
     | EXAND (x,l) -> map (fun x->flatten (an x)) l
 
-let ij i = J
-let ji j = J
-let ic i = TPDI
-let ci i = TMDI
+let ij il = [ind J [];ind T []]
+let ji jl = [ind J [];ind T []]
+let ci il = let i = hd il in let t = hd(tl il) in
+  [i]@[ind t.ind ([Addcst (t.ind,MINUS,C,i.ind)]@t.opl)]
+let ic il = let i = hd il in let t = hd(tl il) in
+  [i]@[ind t.ind ([Addcst (t.ind,PLUS,C,i.ind)]@t.opl)]
+let cs il = 
+  [ind J ([EXFORALL (J);Set (J,IN,D);Rel (J,NEQ,(hd il).ind);Set ((hd il).ind,IN,D)]@(hd il).opl)]@(tl il)
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
@@ -158,11 +161,11 @@ let alldif = [ctr 1 rule1 [car true B  id id;car true  X  id id];
               ctr 2 rule4 [car true T  id id;car false B  ij id; car true B ij id]]
 let cumul  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
               ctr 2 rule3 [car true B2 id id;car false B  id id; car true B ci ic];
-              ctr 3 rule5 [car true T  id id;car false B2 ij id]]
+              ctr 3 rule5 [car true T  id id;car true  B2 cs id]]
 
 (*Tests*)
-let x = var true B I
-let nx = var false B I
+let x = var true B [ind I [];ind T []]
+let nx = var false B [ind I [];ind T []]
 
 let z1 = find x alleq (hd alleq) []
 let z2 = find nx alleq (hd alleq) []
@@ -178,6 +181,4 @@ let a4 = an z4
 let a5 = an z5 
 let a6 = an z6 
 
-let x = (J,[EXFORALL (J);Set (J,IN,D);Rel (I,NEQ,J);Set (I,IN,D)])
-let xx = (I,[Addint (I,PLUS,1)])
-let xxx = (T,[Addcst (T,PLUS,C,I,[])])
+
