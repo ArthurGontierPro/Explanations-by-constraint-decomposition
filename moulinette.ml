@@ -39,6 +39,7 @@ let ap  v cv cvp = var cv.cs cv.cn (cv.fid (cvp.fau v.i))
 (*apply indices functions with negation*)
 let nap v cv cvp = var (not cv.cs) cv.cn (cv.fid (cvp.fau v.i))
 
+(*Utilitary functions*)
 let rec invars v cvl = (* var v in car list? *)
   match cvl with [] -> false | cv::tl -> if cv.cn=v.n then true else invars v tl
 let rec vars v cvl = (* vars list with the same name as v*)
@@ -54,15 +55,15 @@ let rec inl v l = (* v in l? *)
 
 (*find and call rules that explain varriable v*)
 let rec find v dec prec ch = 
-  if inl v ch || inl (n v) ch then Lit (R) else
+  if inl v ch || inl (n v) ch then Lit R else
   let cl = ctrs v dec in
   let cl = subc prec cl in
   EXOR (v,flatten (map (fun c-> map (fun cv -> c.r v cv c dec ch) (vars v c.cvl)) cl))
 
 and fvr vr v cv dec c ch = (*explication par la variable réifiée*)
-  if vr.cn = T then Lit (T) else EXAND (v,[find (ap v vr cv) dec c (ch@[v])])
+  if vr.cn = T then Lit T else EXAND (v,[find (ap v vr cv) dec c (ch@[v])])
 and fnvr vr v cv dec c ch = (*explication par la négations de la variable réifiée*)
-  if vr.cn = T then Lit (F) else EXAND (v,[find (nap v vr cv) dec c (ch@[v])])
+  if vr.cn = T then Lit F else EXAND (v,[find (nap v vr cv) dec c (ch@[v])])
 and fvl vl v cv dec c ch = (*explication par la liste de littéraux positifs*)
   map (fun cv2-> find (ap v cv2 cv) dec c (ch@[v])) vl
 and fnvl vl v cv dec c ch = (*explication par la liste de littéraux négatifs*)
@@ -76,7 +77,7 @@ and rule1 v cv c dec ch =
   then if v.s = cv.cs
     then EXAND (v,[Lit (Var ( ap v x b))])
     else EXAND (v,[Lit (Var (nap v x b))])
-  else Lit (FE)
+  else Lit FE
 
 and rule3 v cv c dec ch =
   let vr = hd c.cvl in
@@ -111,14 +112,14 @@ and rule5 v cv c dec ch =
   if cv.cn=vr.cn then
     if cv.cs = vr.cs
     then EXAND (v,fnvl (tl c.cvl) v cv dec c ch)(*forall*)
-    else Lit (IM)
+    else Lit IM
   else 
     let cvl =subl cv (tl c.cvl) in
     if not (cvl=[]) then
       failwith "sommes multiples pas encore implémentés"
     else 
       if v.s = cv.cs
-      then Lit (IM)
+      then Lit IM
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))(*forall*)
 
 and rule6 v cv c dec ch =
@@ -126,7 +127,7 @@ and rule6 v cv c dec ch =
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
     then EXAND (v,fvl (tl c.cvl) v cv dec c ch)(*forall*)
-    else Lit (IM)
+    else Lit IM
   else 
     let cvl =subl cv (tl c.cvl) in
     if not (cvl=[]) then
@@ -134,13 +135,13 @@ and rule6 v cv c dec ch =
     else 
       if v.s = cv.cs
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
-      else Lit (IM)
+      else Lit IM
 
 and rule7 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
-    then Lit (IM)
+    then Lit IM
     else EXAND (v,(fvl (tl c.cvl) v cv dec c ch)@(fnvl (tl c.cvl) v cv dec c ch))(*incohérent?*)
   else 
     let cvl =subl cv (tl c.cvl) in
@@ -159,14 +160,14 @@ let rec an a = (*Extraction des explications de l'arbre*)
     | EXAND (x,l) -> concat (map an l)
 
 (*Fonctions des modifications d'indices*)
-let ij il = [ind (I(2)) [];ind (I(9)) []]
-let ji jl = [ind (I(2)) [];ind (I(9)) []]
+let ij il = [ind (I 2) [];ind (I 0) []]
+let ji jl = [ind (I 2) [];ind (I 0) []]
 let ci il = let i = hd il in let t = hd(tl il) in
-  [i]@[ind t.ind ([Addcst (t.ind,MINUS,C(1),i.ind)]@t.opl)]
+  [i]@[ind t.ind ([Addcst (t.ind,MINUS,C 1,i.ind)]@t.opl)]
 let ic il = let i = hd il in let t = hd(tl il) in
-  [i]@[ind t.ind ([Addcst (t.ind,PLUS,C(1),i.ind)]@t.opl)]
+  [i]@[ind t.ind ([Addcst (t.ind,PLUS,C 1,i.ind)]@t.opl)]
 let cs il = 
-  [ind (I(2)) ([EXFORALL (I(2));Set (I(2),IN,D(1));Rel (I(2),NEQ,(hd il).ind);Set ((hd il).ind,IN,D(1))]@(hd il).opl)]@(tl il)
+  [ind (I 2) ([EXFORALL (I 2);Set (I 2,IN,D 1);Rel (I 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]@(tl il)
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
@@ -178,8 +179,8 @@ let cumul  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
               ctr 3 rule5 [car true T  id id;car true  B2 cs id]]
 
 (*Tests*)
-let x = var true B [ind (I(1)) [];ind (I(9)) []]
-let nx = var false B [ind (I(1)) [];ind (I(9)) []]
+let x = var true B [ind (I 1) [];ind (I 0) []]
+let nx = var false B [ind (I 1) [];ind (I 0) []]
 
 let z1 = find x alleq (hd alleq) []
 let z2 = find nx alleq (hd alleq) []
