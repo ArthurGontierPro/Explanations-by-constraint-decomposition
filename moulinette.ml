@@ -1,6 +1,6 @@
 open List
 type name = X | B | B2 | N | T | V 
-type ind  = I | J | K | L | T | D |TPDI|TMDI
+type ind  = I | J | K | L | T | D
 type set = D
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
 type cst = C
@@ -139,11 +139,14 @@ and rule7 v cv c dec ch =
 let rec coherent l = 
   match l with [] -> true | v::tl -> if v=F then false else coherent tl
 
+let rec concat l = 
+  match l with l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
+
 let rec an a = 
   match a with
     | Lit x -> [[x]]
     | EXOR (x,l) -> map (fun x->flatten (an x)) l
-    | EXAND (x,l) -> map (fun x->flatten (an x)) l
+    | EXAND (x,l) -> concat (map an l)
 
 let ij il = [ind J [];ind T []]
 let ji jl = [ind J [];ind T []]
@@ -181,4 +184,33 @@ let a4 = an z4
 let a5 = an z5 
 let a6 = an z6 
 
+(*Tests concat*)
+let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
+let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
 
+
+(*Sortie : 
+
+val a5 : lit List.t List.t =
+  List.(::)
+   (List.(::)
+     (Var
+       {s = true; n = X;
+        i = [{ind = I; opl = []}; {ind = T; opl = [Addcst (T, MINUS, C, I)]}]},
+     [Var
+       {s = true; n = X;
+        i =
+         [{ind = J;
+           opl =
+            [EXFORALL J; Set (J, IN, D); Rel (J, NEQ, I); Set (I, IN, D)]};
+          {ind = T; opl = [Addcst (T, MINUS, C, J)]}]};
+      Var
+       {s = false; n = X;
+        i =
+         [{ind = J;
+           opl =
+            [EXFORALL J; Set (J, IN, D); Rel (J, NEQ, I); Set (I, IN, D)]};
+          {ind = T; opl = []}]};
+      T]),
+   [List.(::) (IM, [])])
+*)
