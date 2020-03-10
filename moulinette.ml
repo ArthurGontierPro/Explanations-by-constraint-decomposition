@@ -1,8 +1,8 @@
 (*Moulinette by Arthur GONTIER 2020 (explenation genarator from constraint decomposition)*)
 open List
-type name = X | B of int | I | T | V 
+type name = X | B of int | T | I | V 
 (*indice options*)
-type ind  = I of int
+type ind  = I of int | T of int
 type set = D of int
 type cst = C of int
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
@@ -162,17 +162,29 @@ let rec an a = (*Extraction des explications de l'arbre*)
     | EXAND (x,l) -> concat (map an l)
 
 (*Fonctions des modifications d'indices*)
-let ij il = [ind (I 2) [];ind (I 0) []]
-let ji jl = [ind (I 2) [];ind (I 0) []]
-let ci il = let i = hd il in let t = hd(tl il) in
+let ij il = [ind (I 2) [];ind (T 1) []]
+let ji jl = [ind (I 2) [];ind (T 1) []]
+
+let ci il = (*cumul*)
+  let i = hd il in 
+  let t = hd(tl il) in
   [i]@[ind t.ind ([Addcst (t.ind,MINUS,C 1,i.ind)]@t.opl)]
-let ic il = let i = hd il in let t = hd(tl il) in
+let ic il = 
+  let i = hd il in 
+  let t = hd(tl il) in
   [i]@[ind t.ind ([Addcst (t.ind,PLUS,C 1,i.ind)]@t.opl)]
-let cs il = 
+
+let cs il = (*sums*)
   [ind (I 2) ([EXFORALL (I 2);Set (I 2,IN,D 1);Rel (I 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]@(tl il)
-let ii il = [hd il]
+
+let ii il = [hd il](*elem*)
 let vv il = [hd (tl il)]
-let iv il = [ind (I 1) [];ind (I 0) []](*on peut faire ça mieux*)
+let iv il = [ind (I 1) [];ind (T 1) []](*on peut faire ça mieux*)
+
+let ir il = (*roots*)
+[hd il]@[ind (T 2) ([EXFORALL (T 2);Set (T 2,IN,D 1);Rel (T 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]
+let ri il = 
+[hd il]@[ind (T 2) ([EXFORALL (T 2);Set (T 2,IN,D 2);Rel (T 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 2)]@(hd il).opl)]
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
@@ -191,10 +203,16 @@ let elem   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
                            car false (B 3) vv iv;car false (B 2) ii iv; car true (B 1) id id];
               ctr 4 rule4 [car true   T    id id;
                            car true  (B 3) vv iv;car false (B 2) ii iv; car false (B 1) id id]]
+let roots  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id];
+              ctr 2 rule7 [car true   T    id id;car true  (B 1) ri id]]
+let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule6 [car true   T    id id;car true  (B 1) cs id];
+              ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id]]
 
 (*Tests*)
-let x  = var true  (B 1) [ind (I 1) [];ind (I 0) []]
-let nx = var false (B 1) [ind (I 1) [];ind (I 0) []]
+let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
+let nx = var false (B 1) [ind (I 1) [];ind (T 1) []]
 
 let z1 = find x alleq (hd alleq) []
 let z2 = find nx alleq (hd alleq) []
@@ -204,13 +222,16 @@ let z5 = find x cumul (hd cumul) []
 let z6 = find nx cumul (hd cumul) []
 let z7 = find x gcc (hd gcc) []
 let z8 = find nx gcc (hd gcc) []
-let z9 = find (x) elem (hd elem) []
-let z10 = find (nx) elem (hd elem) []
+let z9 = find x elem (hd elem) []
+let z10 = find nx elem (hd elem) []
 let z11 = find (var true  (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
 let z12 = find (var false (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
-let z13 = find (var true  (B 3) [ind (I 0) []]) elem (hd (tl (tl elem))) []
-let z14 = find (var false (B 3) [ind (I 0) []]) elem (hd (tl (tl elem))) []
-
+let z13 = find (var true  (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []
+let z14 = find (var false (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []
+let z15 = find x roots (hd roots) []
+let z16 = find nx roots (hd roots) []
+let z17 = find x range (hd range) []
+let z18 = find nx range (hd range) []
 let alleqx   = an z1 
 let alleqnx  = an z2 
 let alldifxb = an z3 
@@ -225,6 +246,10 @@ let elemi    = an z11
 let elemni   = an z12
 let elemv    = an z13
 let elemnv   = an z14
+let rootsx   = an z15
+let rootsnx  = an z16
+let rangex   = an z17
+let rangenx  = an z18
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
