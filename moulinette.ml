@@ -170,6 +170,9 @@ let ic il = let i = hd il in let t = hd(tl il) in
   [i]@[ind t.ind ([Addcst (t.ind,PLUS,C 1,i.ind)]@t.opl)]
 let cs il = 
   [ind (I 2) ([EXFORALL (I 2);Set (I 2,IN,D 1);Rel (I 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]@(tl il)
+let ii il = [hd il]
+let vv il = [hd (tl il)]
+let iv il = [ind (I 1) [];ind (I 0) []](*on peut faire ça mieux*)
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
@@ -184,10 +187,10 @@ let gcc    = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
 let elem   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule1 [car true  (B 2) id id;car true   I    id id];
               ctr 3 rule1 [car true  (B 3) id id;car true   V    id id];
-              ctr 4 rule4 [car true   T    id id; 
-                           car false (B 3) id id;car false (B 2) id id; car true (B 1) id id];
               ctr 4 rule4 [car true   T    id id;
-                           car true  (B 3) id id;car false (B 2) id id; car false (B 1) id id]]
+                           car false (B 3) vv iv;car false (B 2) ii iv; car true (B 1) id id];
+              ctr 4 rule4 [car true   T    id id;
+                           car true  (B 3) vv iv;car false (B 2) ii iv; car false (B 1) id id]]
 
 (*Tests*)
 let x  = var true  (B 1) [ind (I 1) [];ind (I 0) []]
