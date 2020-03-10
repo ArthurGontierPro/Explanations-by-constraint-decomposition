@@ -83,35 +83,31 @@ and rule3 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if v.s = cv.cs
-    then EXAND (v,fvl (tl c.cvl) v cv dec c ch)(*forall*)
-    else EXAND (v,fnvl (tl c.cvl) v cv dec c ch)(*exists*)
+    then EXAND (v,fvl (tl c.cvl) v cv dec c ch)
+    else EXOR (v,fnvl (tl c.cvl) v cv dec c ch)
   else 
-    let cvl =subl cv (tl c.cvl) in
-    if not (cvl=[]) then
-      if v.s = cv.cs
-      then fvr vr v cv dec c ch
-      else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch))(*forall*)
-    else failwith "bigwedge pas encore implémentés"
+    let cvl = if not ((tl c.cvl)=[]) then subl cv (tl c.cvl) else c.cvl in
+    if v.s = cv.cs
+    then fvr vr v cv dec c ch
+    else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch))
 
 and rule4 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if v.s = cv.cs
-    then EXAND (v,fvl (tl c.cvl) v cv dec c ch)(*exists*)
-    else EXAND (v,fnvl (tl c.cvl) v cv dec c ch)(*forall*)
+    then EXOR (v,fvl (tl c.cvl) v cv dec c ch)
+    else EXAND (v,fnvl (tl c.cvl) v cv dec c ch)
   else 
-    let cvl =subl cv (tl c.cvl) in
-    if not (cvl=[]) then
-      if v.s = cv.cs
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch))(*forall*)
-      else fnvr vr v cv dec c ch
-    else failwith "bigvee pas encore implémentés"
+    let cvl = if not ((tl c.cvl)=[]) then subl cv (tl c.cvl) else c.cvl in
+    if v.s = cv.cs
+    then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch))
+    else fnvr vr v cv dec c ch
 
 and rule5 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs
-    then EXAND (v,fnvl (tl c.cvl) v cv dec c ch)(*forall*)
+    then EXAND (v,fnvl (tl c.cvl) v cv dec c ch)
     else Lit IM
   else 
     let cvl =subl cv (tl c.cvl) in
@@ -120,13 +116,13 @@ and rule5 v cv c dec ch =
     else 
       if v.s = cv.cs
       then Lit IM
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))(*forall*)
+      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))
 
 and rule6 v cv c dec ch =
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
-    then EXAND (v,fvl (tl c.cvl) v cv dec c ch)(*forall*)
+    then EXAND (v,fvl (tl c.cvl) v cv dec c ch)
     else Lit IM
   else 
     let cvl =subl cv (tl c.cvl) in
@@ -134,7 +130,7 @@ and rule6 v cv c dec ch =
       failwith "sommes multiples pas encore implémentés"
     else 
       if v.s = cv.cs
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))
       else Lit IM
 
 and rule7 v cv c dec ch =
@@ -149,8 +145,8 @@ and rule7 v cv c dec ch =
       failwith "sommes multiples pas encore implémentés"
     else 
       if v.s = cv.cs
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))(*forall*)
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))
+      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))
 
 let rec concat l = (*Concaténation d'un EXAND de EXOR*)
   match l with l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
@@ -200,9 +196,9 @@ let elem   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule1 [car true  (B 2) id id;car true   I    id id];
               ctr 3 rule1 [car true  (B 3) id id;car true   V    id id];
               ctr 4 rule4 [car true   T    id id;
-                           car false (B 3) vv iv;car false (B 2) ii iv; car true (B 1) id id];
+                           car false (B 3) vv iv;car false (B 2) ii iv;car true  (B 1) id id];
               ctr 4 rule4 [car true   T    id id;
-                           car true  (B 3) vv iv;car false (B 2) ii iv; car false (B 1) id id]]
+                           car true  (B 3) vv iv;car false (B 2) ii iv;car false (B 1) id id]]
 let roots  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ri id]]
@@ -232,6 +228,7 @@ let rootsx   = an (find x  roots (hd roots) [])
 let rootsnx  = an (find nx roots (hd roots) [])
 let rangex   = an (find x  range (hd range) [])
 let rangenx  = an (find nx range (hd range) [])
+
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
