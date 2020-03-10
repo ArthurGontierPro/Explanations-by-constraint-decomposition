@@ -214,69 +214,65 @@ let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
 let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
 let nx = var false (B 1) [ind (I 1) [];ind (T 1) []]
 
-let z1 = find x alleq (hd alleq) []
-let z2 = find nx alleq (hd alleq) []
-let z3 = find x alldif (hd alleq) []
-let z4 = find nx alldif (hd alleq) []
-let z5 = find x cumul (hd cumul) []
-let z6 = find nx cumul (hd cumul) []
-let z7 = find x gcc (hd gcc) []
-let z8 = find nx gcc (hd gcc) []
-let z9 = find x elem (hd elem) []
-let z10 = find nx elem (hd elem) []
-let z11 = find (var true  (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
-let z12 = find (var false (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
-let z13 = find (var true  (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []
-let z14 = find (var false (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []
-let z15 = find x roots (hd roots) []
-let z16 = find nx roots (hd roots) []
-let z17 = find x range (hd range) []
-let z18 = find nx range (hd range) []
-let alleqx   = an z1 
-let alleqnx  = an z2 
-let alldifxb = an z3 
-let alldifnx = an z4 
-let cumulx   = an z5 
-let cumulnx  = an z6 
-let gccx     = an z7 
-let gccnx    = an z8
-let elemx    = an z9
-let elemnx   = an z10
-let elemi    = an z11
-let elemni   = an z12
-let elemv    = an z13
-let elemnv   = an z14
-let rootsx   = an z15
-let rootsnx  = an z16
-let rangex   = an z17
-let rangenx  = an z18
+let alleqx   = an (find x  alleq (hd alleq) [])
+let alleqnx  = an (find nx alleq (hd alleq) [])
+let alldifx  = an (find x  alldif (hd alleq) [])
+let alldifnx = an (find nx alldif (hd alleq) [])
+let cumulx   = an (find x  cumul (hd cumul) [])
+let cumulnx  = an (find nx cumul (hd cumul) [])
+let gccx     = an (find x  gcc (hd gcc) [])
+let gccnx    = an (find nx gcc (hd gcc) [])
+let elemx    = an (find x  elem (hd elem) [])
+let elemnx   = an (find nx elem (hd elem) [])
+let elemi    = an (find (var true  (B 2) [ind (I 1) []]) elem (hd (tl elem)) [])
+let elemni   = an (find (var false (B 2) [ind (I 1) []]) elem (hd (tl elem)) [])
+let elemv    = an (find (var true  (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) [])
+let elemnv   = an (find (var false (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) [])
+let rootsx   = an (find x  roots (hd roots) [])
+let rootsnx  = an (find nx roots (hd roots) [])
+let rangex   = an (find x  range (hd range) [])
+let rangenx  = an (find nx range (hd range) [])
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
 
 
 (*Sortie : 
-
-val a5 : lit List.t List.t =
+val cumulx : lit List.t List.t =
   List.(::)
    (List.(::)
      (Var
        {s = true; n = X;
-        i = [{ind = I; opl = []}; {ind = T; opl = [Addcst (T, MINUS, C, I)]}]},
+        i =
+         [{ind = I 1; opl = []};
+          {ind = T 1; opl = [Addcst (T 1, MINUS, C 1, I 1)]}]},
      [Var
        {s = true; n = X;
         i =
-         [{ind = J;
+         [{ind = I 2;
            opl =
-            [EXFORALL J; Set (J, IN, D); Rel (J, NEQ, I); Set (I, IN, D)]};
-          {ind = T; opl = [Addcst (T, MINUS, C, J)]}]};
+            [EXFORALL (I 2); Set (I 2, IN, D 1); Rel (I 2, NEQ, I 1);
+             Set (I 1, IN, D 1)]};
+          {ind = T 1; opl = [Addcst (T 1, MINUS, C 1, I 2)]}]};
       Var
        {s = false; n = X;
         i =
-         [{ind = J;
+         [{ind = I 2;
            opl =
-            [EXFORALL J; Set (J, IN, D); Rel (J, NEQ, I); Set (I, IN, D)]};
-          {ind = T; opl = []}]};
+            [EXFORALL (I 2); Set (I 2, IN, D 1); Rel (I 2, NEQ, I 1);
+             Set (I 1, IN, D 1)]};
+          {ind = T 1; opl = []}]};
       T]),
    [List.(::) (IM, [])])
+
+val elemni : lit List.t List.t =
+  List.(::)
+   (List.(::)
+     (Var
+       {s = false; n = X; i = [{ind = I 1; opl = []}; {ind = T 1; opl = []}]},
+     [Var {s = true; n = V; i = [{ind = T 1; opl = []}]}; T]),
+   [List.(::)
+     (Var
+       {s = true; n = X; i = [{ind = I 1; opl = []}; {ind = T 1; opl = []}]},
+     [Var {s = false; n = V; i = [{ind = T 1; opl = []}]}; T])])
 *)
