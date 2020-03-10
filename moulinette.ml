@@ -147,8 +147,10 @@ and rule7 v cv c dec ch =
     let cvl =subl cv (tl c.cvl) in
     if not (cvl=[]) then
       failwith "sommes multiples pas encore implémentés"
-    else EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
-
+    else 
+      if v.s = cv.cs
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))(*forall*)
+      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))(*forall*)
 
 let rec concat l = (*Concaténation d'un EXAND de EXOR*)
   match l with l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
@@ -177,6 +179,8 @@ let alldif = [ctr 1 rule1 [car true B  id id;car true  X  id id];
 let cumul  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
               ctr 2 rule3 [car true B2 id id;car false B  id id; car true B ci ic];
               ctr 3 rule5 [car true T  id id;car true  B2 cs id]]
+let gcc    = [ctr 1 rule1 [car true B  id id;car true  X  id id];
+              ctr 3 rule7 [car true T  id id;car true  B  cs id]]
 
 (*Tests*)
 let x = var true B [ind (I 1) [];ind (I 0) []]
@@ -188,6 +192,8 @@ let z3 = find x alldif (hd alleq) []
 let z4 = find nx alldif (hd alleq) []
 let z5 = find x cumul (hd cumul) []
 let z6 = find nx cumul (hd cumul) []
+let z7 = find x gcc (hd gcc) []
+let z8 = find nx gcc (hd gcc) []
 
 let a1 = an z1 
 let a2 = an z2 
@@ -195,6 +201,8 @@ let a3 = an z3
 let a4 = an z4 
 let a5 = an z5 
 let a6 = an z6 
+let a7 = an z7 
+let a8 = an z8 
 
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
