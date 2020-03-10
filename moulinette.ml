@@ -1,6 +1,6 @@
 (*Moulinette by Arthur GONTIER 2020 (explenation genarator from constraint decomposition)*)
 open List
-type name = X | B | B2 | N | T | V 
+type name = X | B of int | I | T | V 
 (*indice options*)
 type ind  = I of int
 type set = D of int
@@ -103,7 +103,7 @@ and rule4 v cv c dec ch =
     let cvl =subl cv (tl c.cvl) in
     if not (cvl=[]) then
       if v.s = cv.cs
-      then EXAND (v,[fvr vr v cv dec c ch]@(fvl cvl v cv dec c ch))(*forall*)
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch))(*forall*)
       else fnvr vr v cv dec c ch
     else failwith "bigvee pas encore implémentés"
 
@@ -172,19 +172,26 @@ let cs il =
   [ind (I 2) ([EXFORALL (I 2);Set (I 2,IN,D 1);Rel (I 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]@(tl il)
 
 (*Décompositions*)
-let alleq  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
-              ctr 2 rule3 [car true T  id id;car false B  ij id; car true B ij id]]
-let alldif = [ctr 1 rule1 [car true B  id id;car true  X  id id];
-              ctr 2 rule4 [car true T  id id;car false B  ij id; car true B ij id]]
-let cumul  = [ctr 1 rule1 [car true B  id id;car true  X  id id];
-              ctr 2 rule3 [car true B2 id id;car false B  id id; car true B ci ic];
-              ctr 3 rule5 [car true T  id id;car true  B2 cs id]]
-let gcc    = [ctr 1 rule1 [car true B  id id;car true  X  id id];
-              ctr 3 rule7 [car true T  id id;car true  B  cs id]]
+let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule3 [car true   T    id id;car false (B 1) ij id;car true (B 1) ij id]]
+let alldif = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule4 [car true   T    id id;car false (B 1) ij id;car true (B 1) ij id]]
+let cumul  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule3 [car true  (B 2) id id;car false (B 1) id id;car true (B 1) ci ic];
+              ctr 3 rule5 [car true   T    id id;car true  (B 2) cs id]]
+let gcc    = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule7 [car true   T    id id;car true  (B 1) cs id]]
+let elem   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule1 [car true  (B 2) id id;car true   I    id id];
+              ctr 3 rule1 [car true  (B 3) id id;car true   V    id id];
+              ctr 4 rule4 [car true   T    id id; 
+                           car false (B 3) id id;car false (B 2) id id; car true (B 1) id id];
+              ctr 4 rule4 [car true   T    id id;
+                           car true  (B 3) id id;car false (B 2) id id; car false (B 1) id id]]
 
 (*Tests*)
-let x = var true B [ind (I 1) [];ind (I 0) []]
-let nx = var false B [ind (I 1) [];ind (I 0) []]
+let x  = var true  (B 1) [ind (I 1) [];ind (I 0) []]
+let nx = var false (B 1) [ind (I 1) [];ind (I 0) []]
 
 let z1 = find x alleq (hd alleq) []
 let z2 = find nx alleq (hd alleq) []
@@ -194,16 +201,27 @@ let z5 = find x cumul (hd cumul) []
 let z6 = find nx cumul (hd cumul) []
 let z7 = find x gcc (hd gcc) []
 let z8 = find nx gcc (hd gcc) []
+let z9 = find (x) elem (hd elem) []
+let z10 = find (nx) elem (hd elem) []
+let z11 = find (var true  (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
+let z12 = find (var false (B 2) [ind (I 1) []]) elem (hd (tl elem)) []
+let z13 = find (var true  (B 3) [ind (I 0) []]) elem (hd (tl (tl elem))) []
+let z14 = find (var false (B 3) [ind (I 0) []]) elem (hd (tl (tl elem))) []
 
-let a1 = an z1 
-let a2 = an z2 
-let a3 = an z3 
-let a4 = an z4 
-let a5 = an z5 
-let a6 = an z6 
-let a7 = an z7 
-let a8 = an z8 
-
+let alleqx   = an z1 
+let alleqnx  = an z2 
+let alldifxb = an z3 
+let alldifnx = an z4 
+let cumulx   = an z5 
+let cumulnx  = an z6 
+let gccx     = an z7 
+let gccnx    = an z8
+let elemx    = an z9
+let elemnx   = an z10
+let elemi    = an z11
+let elemni   = an z12
+let elemv    = an z13
+let elemnv   = an z14
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
