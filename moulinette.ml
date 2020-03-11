@@ -42,49 +42,51 @@ let printsym s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<
 let printiop op= match op with
       | Set (ind,sym,set) ->printind ind^printsym sym^printset set
       | Rel (ind,sym,ind2) ->printind ind^printsym sym^printind ind2
-      | Addint (ind,sym,int) ->printind ind^printsym sym^string_of_int int
-      | Addcst (ind,sym,cst,ind2) ->printind ind^printsym sym^printcst cst^printind ind2
+      | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsym sym^string_of_int int
+      | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsym sym^printcst cst^printind ind2
       | EXFORALL ind ->"∀"^printind ind
       | EXEXISTS ind -> "∃"^printind ind
 let rec printiopl il = match il with []->""|i::tl->printiop i^","^printiopl tl
 let printi i = printind i.ind^" "^printiopl i.opl
 let printcons c v = match c with AC -> if v.s then "=" else "≠" | BC -> if v.s then "≥" else "<"
+let printvar cons v = match v.n with
+  | X -> "X"^printind (hd v.i).ind^(printcons cons v)^(match v.i with a::b::_ -> printind b.ind^" "^printiopl b.opl^printiopl a.opl | _ ->failwith "what?")
+  | B i -> "ERROR B "
+  | T -> "ERROR T "
+  | I -> "I "^printcons cons v^printi (hd v.i)
+  | V -> "V "^printcons cons v^printi (hd v.i)
 let rec printe el cons=
   match el with
       []->""
     | e::tl -> match e with 
         |F|IM|FE|R -> "? "^printe tl cons
         | T -> printe tl cons
-        | Var v -> match v.n with
-            | X -> "X"^printind (hd v.i).ind^(printcons cons v)^(match v.i with a::b::_ -> printind b.ind^" "^printiopl a.opl^printiopl b.opl | _ ->failwith "what?")^"  "^printe tl cons
-            | B i -> "ERROR B "^printe tl cons
-            | T -> "ERROR T "^printe tl cons
-            | I -> "I "^printcons cons v^printi (hd v.i)^" "^printe tl cons
-            | V -> "V "^printcons cons v^printi (hd v.i)^" "^printe tl cons
+        | Var v -> printvar cons v^printe tl cons
 (*Affichage en code LaTex*)
-let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \in "|NEQ->" \neq "|LEQ->" \leq "|GEQ->" \geq "|EQ->"="
+let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq "|LEQ->" \\leq "|GEQ->" \\geq "|EQ->"="
 let printioptex op= match op with
       | Set (ind,sym,set) ->printind ind^printsymtex sym^printset set
       | Rel (ind,sym,ind2) ->printind ind^printsymtex sym^printind ind2
-      | Addint (ind,sym,int) ->printind ind^printsymtex sym^string_of_int int
-      | Addcst (ind,sym,cst,ind2) ->printind ind^printsymtex sym^printcst cst^printind ind2
-      | EXFORALL ind ->" \forall "^printind ind
-      | EXEXISTS ind -> " \exists "^printind ind
-let rec printiopltex il = match il with []->""|i::tl->printioptex i^","^printiopltex tl
+      | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsymtex sym^string_of_int int
+      | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsymtex sym^printcst cst^"_{"^printind ind2^"}"
+      | EXFORALL ind ->" \\forall "^printind ind
+      | EXEXISTS ind -> " \\exists "^printind ind
+let rec printiopltex il = match il with []->""|i::tl->printioptex i^",~"^printiopltex tl
 let printitex i = printind i.ind^" "^printiopltex i.opl
-let printconstex c v = match c with AC -> if v.s then "=" else " \neq " | BC -> if v.s then " \geq " else "<"
+let printconstex c v = match c with AC -> if v.s then "=" else " \\neq " | BC -> if v.s then " \\geq " else "<"
+let printvartex cons v = match v.n with
+  | X -> "X_{"^printind (hd v.i).ind^"}"^(printconstex cons v)^(match v.i with a::b::_ -> printind b.ind^"~"^printiopltex b.opl^printiopltex a.opl | _ ->failwith "what?")
+  | B i -> "ERROR B "
+  | T -> "ERROR T "
+  | I -> "I"^printconstex cons v^printitex (hd v.i)
+  | V -> "V"^printconstex cons v^printitex (hd v.i)
 let rec printetex el cons=
   match el with
       []->""
     | e::tl -> match e with 
         |F|IM|FE|R -> "? "^printetex tl cons
         | T -> printetex tl cons
-        | Var v -> match v.n with
-            | X -> "X"^printind (hd v.i).ind^(printconstex cons v)^(match v.i with a::b::_ -> printind b.ind^" "^printiopltex a.opl^printiopltex b.opl | _ ->failwith "what?")^"  "^printetex tl cons
-            | B i -> "ERROR B "^printetex tl cons
-            | T -> "ERROR T "^printetex tl cons
-            | I -> "I "^printconstex cons v^printitex (hd v.i)^" "^printetex tl cons
-            | V -> "V "^printconstex cons v^printitex (hd v.i)^" "^printetex tl cons
+        | Var v -> printvartex cons v^"~~~"^printetex tl cons
 
 let id  x = x(*identity function*)
 let n   x = if x.s then var false x.n x.i else var true x.n x.i(*negation of var x*)
@@ -267,30 +269,41 @@ let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id]]
 
 (*Tests*)
-let printac l = printe l AC
-let printbc l = printe l BC
+let printac l = printetex l AC
+let printbc l = printetex l BC
 let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
-let nx = var false (B 1) [ind (I 1) [];ind (T 1) []]
+let i  = var true  (B 2) [ind (I 1) []]
+let v  = var true  (B 3) [ind (T 1) []]
 
-let alleqx   = map printbc (an (find x  alleq (hd alleq) []))
-let alleqnx  = map printbc (an (find nx alleq (hd alleq) []))
-let alldifx  = map printac (an (find x  alldif (hd alldif) []))
-let alldifnx = map printac (an (find nx alldif (hd alldif) []))
-let cumulx   = map printbc (an (find x  cumul (hd cumul) []))
-let cumulnx  = map printbc (an (find nx cumul (hd cumul) []))
-let gccx     = map printac (an (find x  gcc (hd gcc) []))
-let gccnx    = map printac (an (find nx gcc (hd gcc) []))
-let elemx    = map printac (an (find x  elem (hd elem) []))
-let elemnx   = map printac (an (find nx elem (hd elem) []))
-let elemi    = map printac (an (find (var true  (B 2) [ind (I 1) []]) elem (hd (tl elem)) []))
-let elemni   = map printac (an (find (var false (B 2) [ind (I 1) []]) elem (hd (tl elem)) []))
-let elemv    = map printac (an (find (var true  (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []))
-let elemnv   = map printac (an (find (var false (B 3) [ind (T 1) []]) elem (hd (tl (tl elem))) []))
-let rootsx   = map printac (an (find x  roots (hd roots) []))
-let rootsnx  = map printac (an (find nx roots (hd roots) []))
-let rangex   = map printac (an (find x  range (hd range) []))
-let rangenx  = map printac (an (find nx range (hd range) []))
+let alleqx   = map printbc (an (find    x  alleq (hd alleq) []))
+let alleqnx  = map printbc (an (find (n x) alleq (hd alleq) []))
+let alldifx  = map printac (an (find    x  alldif (hd alldif) []))
+let alldifnx = map printac (an (find (n x) alldif (hd alldif) []))
+let cumulx   = map printbc (an (find    x  cumul (hd cumul) []))
+let cumulnx  = map printbc (an (find (n x) cumul (hd cumul) []))
+let gccx     = map printac (an (find    x  gcc (hd gcc) []))
+let gccnx    = map printac (an (find (n x) gcc (hd gcc) []))
+let elemx    = map printac (an (find    x  elem (hd elem) []))
+let elemnx   = map printac (an (find (n x) elem (hd elem) []))
+let elemi    = map printac (an (find    i  elem (hd (tl elem)) []))
+let elemni   = map printac (an (find (n i) elem (hd (tl elem)) []))
+let elemv    = map printac (an (find    v  elem (hd (tl (tl elem))) []))
+let elemnv   = map printac (an (find (n v) elem (hd (tl (tl elem))) []))
+let rootsx   = map printac (an (find    x  roots (hd roots) []))
+let rootsnx  = map printac (an (find (n x) roots (hd roots) []))
+let rangex   = map printac (an (find    x  range (hd range) []))
+let rangenx  = map printac (an (find (n x) range (hd range) []))
+
+open Printf
+let rec printfraqtex el x fic= match el with 
+  | [] -> ()
+  | e::tl -> fprintf fic "%s" ("$$\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x fic
+
+let fic = open_out "exp.tex"
+let a = printfraqtex cumulx (var true X [ind (I 1) [];ind (T 1) []]) fic
+let _ =close_out fic;;
 
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
+
