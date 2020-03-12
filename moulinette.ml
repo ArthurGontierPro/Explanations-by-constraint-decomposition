@@ -34,43 +34,40 @@ let ctr id r cvl = {id=id;r=r;cvl=cvl}
 let ind i opl = {ind=i;opl=opl}
 
 (*Affichage en chaine de carractère*)
-let rec prim n = match n with 1 -> "" | _ ->"'"^prim (n-1)
-let printind i = match i with I a -> "i"^prim a | T a -> "t"^prim a 
-let printset s = match s with D a -> "D"^prim a
-let printcst c = match c with C a -> "c"^prim a
+let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
+let printind i = match i with I a -> "i"^printprim a | T a -> "t"^printprim a 
+let printset s = match s with D a -> "D"^printprim a
+let printcst c = match c with C a -> "c"^printprim a
 let printsym s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"="
 let printiop op= match op with
-      | Set (ind,sym,set) ->printind ind^printsym sym^printset set
-      | Rel (ind,sym,ind2) ->printind ind^printsym sym^printind ind2
-      | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsym sym^string_of_int int
-      | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsym sym^printcst cst^printind ind2
-      | EXFORALL ind ->"∀"^printind ind
-      | EXEXISTS ind -> "∃"^printind ind
+  | Set (ind,sym,set) ->printind ind^printsym sym^printset set
+  | Rel (ind,sym,ind2) ->printind ind^printsym sym^printind ind2
+  | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsym sym^string_of_int int
+  | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsym sym^printcst cst^printind ind2
+  | EXFORALL ind ->"∀"^printind ind
+  | EXEXISTS ind -> "∃"^printind ind
 let rec printiopl il = match il with []->""|i::tl->printiop i^","^printiopl tl
 let printi i = printind i.ind^" "^printiopl i.opl
 let printcons c v = match c with AC -> if v.s then "=" else "≠" | BC -> if v.s then "≥" else "<"
 let printvar cons v = match v.n with
-  | X -> "X"^printind (hd v.i).ind^(printcons cons v)^(match v.i with a::b::_ -> printind b.ind^" "^printiopl b.opl^printiopl a.opl | _ ->failwith "what?")
+  | X -> "   X"^printind (hd v.i).ind^(printcons cons v)^(match v.i with a::b::_ -> printind b.ind^" "^printiopl b.opl^printiopl a.opl | _ ->failwith "what?")
   | B i -> "ERROR B "
   | T -> "ERROR T "
-  | I -> "I "^printcons cons v^printi (hd v.i)
-  | V -> "V "^printcons cons v^printi (hd v.i)
-let rec printe el cons=
-  match el with
-      []->""
-    | e::tl -> match e with 
-        |F|IM|FE|R -> "? "^printe tl cons
-        | T -> printe tl cons
-        | Var v -> printvar cons v^printe tl cons
+  | I -> "   I"^printcons cons v^printi (hd v.i)
+  | V -> "   V"^printcons cons v^printi (hd v.i)
+let rec printe el cons = match el with []->"" | e::tl -> match e with 
+  |F|IM|FE|R -> "? "^printe tl cons
+  | T -> printe tl cons
+  | Var v -> printvar cons v^printe tl cons
 (*Affichage en code LaTex*)
 let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq "|LEQ->" \\leq "|GEQ->" \\geq "|EQ->"="
 let printioptex op= match op with
-      | Set (ind,sym,set) ->printind ind^printsymtex sym^printset set
-      | Rel (ind,sym,ind2) ->printind ind^printsymtex sym^printind ind2
-      | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsymtex sym^string_of_int int
-      | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsymtex sym^printcst cst^"_{"^printind ind2^"}"
-      | EXFORALL ind ->" \\forall "^printind ind
-      | EXEXISTS ind -> " \\exists "^printind ind
+  | Set (ind,sym,set) ->printind ind^printsymtex sym^printset set
+  | Rel (ind,sym,ind2) ->printind ind^printsymtex sym^printind ind2
+  | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsymtex sym^string_of_int int
+  | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsymtex sym^printcst cst^"_{"^printind ind2^"}"
+  | EXFORALL ind ->" \\forall "^printind ind
+  | EXEXISTS ind -> " \\exists "^printind ind
 let rec printiopltex il = match il with []->""|i::tl->printioptex i^",~"^printiopltex tl
 let printitex i = printind i.ind^" "^printiopltex i.opl
 let printconstex c v = match c with AC -> if v.s then "=" else " \\neq " | BC -> if v.s then " \\geq " else "<"
@@ -80,13 +77,10 @@ let printvartex cons v = match v.n with
   | T -> "ERROR T "
   | I -> "I"^printconstex cons v^printitex (hd v.i)
   | V -> "V"^printconstex cons v^printitex (hd v.i)
-let rec printetex el cons=
-  match el with
-      []->""
-    | e::tl -> match e with 
-        |F|IM|FE|R -> "? "^printetex tl cons
-        | T -> printetex tl cons
-        | Var v -> printvartex cons v^"~~~"^printetex tl cons
+let rec printetex el cons = match el with []->"" | e::tl -> match e with 
+  |F|IM|FE|R -> "? "^printetex tl cons
+  | T -> printetex tl cons
+  | Var v -> printvartex cons v^"~~~"^printetex tl cons
 
 let id  x = x(*identity function*)
 let n   x = if x.s then var false x.n x.i else var true x.n x.i(*negation of var x*)
@@ -213,30 +207,27 @@ let rec an a = (*Extraction des explications de l'arbre*)
     | EXOR (x,l) -> map (fun x->flatten (an x)) l
     | EXAND (x,l) -> concat (map an l)
 
+(*Constructeurs utilitaires de fonctions d'indices*)
+let prim i = match i with I a -> I (a+1) | T a -> T (a+1)
+let iprim i = ind (prim i.ind) i.opl
+let addint i sym int = ind i.ind ([Addint (i.ind,sym,int)]@i.opl)
+let addcst i sym cst i2 = ind i.ind ([Addcst (i.ind,sym,cst,i2.ind)]@i.opl)
+let sum i d = ind (prim i.ind) ([EXFORALL (prim i.ind);Set (prim i.ind,IN,d);Rel (prim i.ind,NEQ,i.ind);Set (i.ind,IN,d)]@i.opl)
+
 (*Fonctions des modifications d'indices*)
-let ij il = [ind (I 2) [];ind (T 1) []]
-let ji jl = [ind (I 2) [];ind (T 1) []]
+let ij il = match il with i::t::_ -> [iprim i;t]
 
-let ci il = (*cumul*)
-  let i = hd il in 
-  let t = hd(tl il) in
-  [i]@[ind t.ind ([Addcst (t.ind,MINUS,C 1,i.ind)]@t.opl)]
-let ic il = 
-  let i = hd il in 
-  let t = hd(tl il) in
-  [i]@[ind t.ind ([Addcst (t.ind,PLUS,C 1,i.ind)]@t.opl)]
+let ci il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*)
+let ic il = match il with i::t::_ -> [i;addcst t PLUS (C 1) i](*cumul*)
 
-let cs il = (*sums*)
-  [ind (I 2) ([EXFORALL (I 2);Set (I 2,IN,D 1);Rel (I 2,NEQ,(hd il).ind);Set ((hd il).ind,IN,D 1)]@(hd il).opl)]@(tl il)
+let cs il = match il with i::t::_ -> [sum i (D 1);t](*sums*)
 
 let ii il = [hd il](*elem*)
 let vv il = [hd (tl il)]
 let iv il = [ind (I 1) [];ind (T 1) []](*on peut faire ça mieux*)
 
-let ir il = (*roots*)
-[hd il]@[ind (T 2) ([EXFORALL (T 2);Set (T 2,IN,D 1);Rel (T 2,NEQ,(hd (tl il)).ind);Set ((hd (tl il)).ind,IN,D 1)])](*recurtion?*)
-let ri il = 
-[hd il]@[ind (T 2) ([EXFORALL (T 2);Set (T 2,IN,D 2);Rel (T 2,NEQ,(hd (tl il)).ind);Set ((hd (tl il)).ind,IN,D 2)])]
+let ir il = match il with i::t::_ -> [i;sum t (D 1)](*roots*)
+let ri il = match il with i::t::_ -> [i;sum t (D 2)](*roots*)
 
 (*Décompositions*)
 (*let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
@@ -248,7 +239,7 @@ let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
 
 
 let alldif = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule4 [car true   T    id id;car false (B 1) id id]]
+              ctr 2 rule4 [car true   T    id id;car false (B 1) cs id]]
 let cumul  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule3 [car true  (B 2) id id;car false (B 1) id id;car true (B 1) ci ic];
               ctr 3 rule5 [car true   T    id id;car true  (B 2) cs id]]
@@ -269,8 +260,8 @@ let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id]]
 
 (*Tests*)
-let printac l = printetex l AC
-let printbc l = printetex l BC
+let printac l = printe l AC
+let printbc l = printe l BC
 let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
 let i  = var true  (B 2) [ind (I 1) []]
 let v  = var true  (B 3) [ind (T 1) []]
@@ -297,13 +288,13 @@ let rangenx  = map printac (an (find (n x) range (hd range) []))
 open Printf
 let rec printfraqtex el x fic= match el with 
   | [] -> ()
-  | e::tl -> fprintf fic "%s" ("$$\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x fic
+  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x fic
 
 let fic = open_out "exp.tex"
 let a = printfraqtex cumulx (var true X [ind (I 1) [];ind (T 1) []]) fic
-let _ =close_out fic;;
+let _ =close_out fic
 
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
-
+(*public void addLiteral(IntVar var, IntIterableRangeSet dom, boolean pivot)*)
