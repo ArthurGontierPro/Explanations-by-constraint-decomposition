@@ -108,6 +108,7 @@ let rec find v dec prec ch =
   if inl v ch || inl (n v) ch then Lit R else
   let cl = ctrs v dec in
   let cl = subc prec cl in
+  if cl = [] then Lit IM else
   EXOR (v,flatten (map (fun c-> map (fun cv -> c.r v cv c dec ch) (vars v c.cvl)) cl))
 
 and fvr vr v cv dec c ch = (*explication par la variable réifiée*)
@@ -136,7 +137,7 @@ and rule3 v cv c dec ch =
     then EXAND (v,fvl (tl c.cvl) v cv dec c ch)
     else EXOR (v,fnvl (tl c.cvl) v cv dec c ch)
   else 
-    let cvl = if not ((tl c.cvl)=[]) then subl cv (tl c.cvl) else c.cvl in
+    let cvl = if not ((tl (tl c.cvl))=[]) then subl cv (tl c.cvl) else c.cvl in
     if v.s = cv.cs
     then fvr vr v cv dec c ch
     else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch))
@@ -148,7 +149,7 @@ and rule4 v cv c dec ch =
     then EXOR (v,fvl (tl c.cvl) v cv dec c ch)
     else EXAND (v,fnvl (tl c.cvl) v cv dec c ch)
   else 
-    let cvl = if not ((tl c.cvl)=[]) then subl cv (tl c.cvl) else c.cvl in
+    let cvl = if not ((tl (tl c.cvl))=[]) then subl cv (tl c.cvl) else c.cvl in
     if v.s = cv.cs
     then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch))
     else fnvr vr v cv dec c ch
@@ -199,13 +200,13 @@ and rule7 v cv c dec ch =
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))
 
 let rec concat l = (*Concaténation d'un EXAND de EXOR*)
-  match l with l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
+  match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
 
 let rec an a = (*Extraction des explications de l'arbre*)
   match a with
     | Lit x -> [[x]]
-    | EXOR (x,l) -> map (fun x->flatten (an x)) l
-    | EXAND (x,l) -> concat (map an l)
+    | EXOR (_,l) -> flatten (map an l)
+    | EXAND (_,l) -> concat (map an l)
 
 (*Constructeurs utilitaires de fonctions d'indices*)
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1)
@@ -224,22 +225,21 @@ let cs il = match il with i::t::_ -> [sum i (D 1);t](*sums*)
 
 let ii il = [hd il](*elem*)
 let vv il = [hd (tl il)]
-let iv il = [ind (I 1) [];ind (T 1) []](*on peut faire ça mieux*)
+let iv il = [ind (I 1) [EXFORALL (I 1)];hd il]
 
 let ir il = match il with i::t::_ -> [i;sum t (D 1)](*roots*)
 let ri il = match il with i::t::_ -> [i;sum t (D 2)](*roots*)
 
+let s1 il = match il with i::t::_ -> [sum i (D 1);t]
+let s2 il = match il with i::t::_ -> [sum i (D 2);t]
+
 (*Décompositions*)
-(*let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule3 [car true   T    id id;car false (B 1) ij id;car true (B 1) ij id]]*)
 let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule3 [car true  (B 2) id id;car true  (B 1) id id];
-              ctr 3 rule3 [car true  (B 3) id id;car false (B 1) id id];
-              ctr 4 rule4 [car true   T    id id;car false (B 2) id id;car true (B 3) id id]]
-
-
+              ctr 2 rule3 [car true  (B 2) vv iv;car true  (B 1) s1 id];
+              ctr 2 rule3 [car true  (B 3) vv iv;car false (B 1) s2 id];
+              ctr 4 rule4 [car true   T    id id;car true  (B 2) id id;car true  (B 3) id id]]
 let alldif = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule4 [car true   T    id id;car false (B 1) cs id]]
+              ctr 2 rule5 [car true   T    id id;car true  (B 1) cs id]]
 let cumul  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule3 [car true  (B 2) id id;car false (B 1) id id;car true (B 1) ci ic];
               ctr 3 rule5 [car true   T    id id;car true  (B 2) cs id]]
@@ -266,7 +266,7 @@ let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
 let i  = var true  (B 2) [ind (I 1) []]
 let v  = var true  (B 3) [ind (T 1) []]
 
-let alleqx   = map printbc (an (find    x  alleq (hd alleq) []))
+let alleqx   =  map printbc (an (find    x  alleq (hd alleq) []))
 let alleqnx  = map printbc (an (find (n x) alleq (hd alleq) []))
 let alldifx  = map printac (an (find    x  alldif (hd alldif) []))
 let alldifnx = map printac (an (find (n x) alldif (hd alldif) []))
@@ -298,4 +298,5 @@ let _ =close_out fic
 (*Tests concat*)
 let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
+let ei = concat [[[1]];[[]]]
 (*public void addLiteral(IntVar var, IntIterableRangeSet dom, boolean pivot)*)
