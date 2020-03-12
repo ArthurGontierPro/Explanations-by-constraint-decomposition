@@ -291,7 +291,8 @@ let rec printfraqtex el x fic= match el with
   | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x fic
 
 let fic = open_out "exp.tex"
-let a = printfraqtex cumulx (var true X [ind (I 1) [];ind (T 1) []]) fic
+let cumultex = map (fun l-> printetex l BC ) (an (find x cumul (hd cumul) [])) 
+let a = printfraqtex cumultex (var true X [ind (I 1) [];ind (T 1) []]) fic
 let _ =close_out fic
 
 (*Tests concat*)
