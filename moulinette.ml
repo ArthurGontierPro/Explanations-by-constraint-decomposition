@@ -199,8 +199,17 @@ and rule7 v cv c dec ch =
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))
 
+let rec imp l = (*detect impossibles literals*)
+  match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl
+let rec removeimp ll = (*remove explenation with impossible literals*)
+  match ll with []->[]|l::tl->if imp l then removeimp tl else [l]@(removeimp tl)
+
 let rec concat l = (*Concaténation d'un EXAND de EXOR*)
   match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl
+(*Tests concat*)
+let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
+let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
+let ei = concat [[[1]];[[]]]
 
 let rec an a = (*Extraction des explications de l'arbre*)
   match a with
@@ -225,18 +234,22 @@ let cs il = match il with i::t::_ -> [sum i (D 1);t](*sums*)
 
 let ii il = [hd il](*elem*)
 let vv il = [hd (tl il)]
-let iv il = [ind (I 1) [EXFORALL (I 1)];hd il]
+let iv il = [hd il;ind (T 1) [EXFORALL (T 1)]]
+let vi il = [ind (I 1) [EXFORALL (I 1)];hd il]
 
 let ir il = match il with i::t::_ -> [i;sum t (D 1)](*roots*)
 let ri il = match il with i::t::_ -> [i;sum t (D 2)](*roots*)
 
-let s1 il = match il with i::t::_ -> [sum i (D 1);t]
-let s2 il = match il with i::t::_ -> [sum i (D 2);t]
+let s1 il = match il with i::t::_ -> [sum i (D 1);t](*alleq1*)
+let s2 il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)
+
+let po il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*)
+let mo il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*)
 
 (*Décompositions*)
 let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule3 [car true  (B 2) vv iv;car true  (B 1) s1 id];
-              ctr 2 rule3 [car true  (B 3) vv iv;car false (B 1) s2 id];
+              ctr 2 rule3 [car true  (B 2) vv vi;car true  (B 1) s1 id];
+              ctr 2 rule3 [car true  (B 3) vv vi;car false (B 1) s2 id];
               ctr 4 rule4 [car true   T    id id;car true  (B 2) id id;car true  (B 3) id id]]
 let alldif = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule5 [car true   T    id id;car true  (B 1) cs id]]
@@ -245,28 +258,29 @@ let cumul  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 3 rule5 [car true   T    id id;car true  (B 2) cs id]]
 let gcc    = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) cs id]]
+let incr   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 4 rule4 [car true   T    id id;car false (B 1) id id;car true  (B 1) po mo]]
 let elem   = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule1 [car true  (B 2) id id;car true   I    id id];
               ctr 3 rule1 [car true  (B 3) id id;car true   V    id id];
               ctr 4 rule4 [car true   T    id id;
-                           car false (B 3) vv iv;car false (B 2) ii iv;car true  (B 1) id id];
+                           car false (B 3) vv vi;car false (B 2) ii iv;car true  (B 1) id id];
               ctr 4 rule4 [car true   T    id id;
-                           car true  (B 3) vv iv;car false (B 2) ii iv;car false (B 1) id id]]
+                           car true  (B 3) vv vi;car false (B 2) ii iv;car false (B 1) id id]]
 let roots  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ri id]]
 let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
-              ctr 2 rule6 [car true   T    id id;car true  (B 1) cs id];
+              ctr 2 rule6 [car true   T    id id;car true  (B 1) s2 id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id]]
 
 (*Tests*)
-let printac l = printe l AC
-let printbc l = printe l BC
 let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
 let i  = var true  (B 2) [ind (I 1) []]
 let v  = var true  (B 3) [ind (T 1) []]
-
-let alleqx   =  map printbc (an (find    x  alleq (hd alleq) []))
+let printac l = printe l AC
+let printbc l = printe l BC
+let alleqx   = map printbc (an (find    x  alleq (hd alleq) []))
 let alleqnx  = map printbc (an (find (n x) alleq (hd alleq) []))
 let alldifx  = map printac (an (find    x  alldif (hd alldif) []))
 let alldifnx = map printac (an (find (n x) alldif (hd alldif) []))
@@ -274,6 +288,8 @@ let cumulx   = map printbc (an (find    x  cumul (hd cumul) []))
 let cumulnx  = map printbc (an (find (n x) cumul (hd cumul) []))
 let gccx     = map printac (an (find    x  gcc (hd gcc) []))
 let gccnx    = map printac (an (find (n x) gcc (hd gcc) []))
+let incrx    = map printbc (an (find    x  incr (hd incr) []))
+let incrnx   = map printbc (an (find (n x) incr (hd incr) []))
 let elemx    = map printac (an (find    x  elem (hd elem) []))
 let elemnx   = map printac (an (find (n x) elem (hd elem) []))
 let elemi    = map printac (an (find    i  elem (hd (tl elem)) []))
@@ -285,18 +301,18 @@ let rootsnx  = map printac (an (find (n x) roots (hd roots) []))
 let rangex   = map printac (an (find    x  range (hd range) []))
 let rangenx  = map printac (an (find (n x) range (hd range) []))
 
+
+(*sortie dans un fichier tex*)
 open Printf
-let rec printfraqtex el x fic= match el with 
+let rec printfraqtex el x cons fic = match el with 
   | [] -> ()
-  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x fic
+  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex cons x^"}$$ ");printfraqtex tl x cons fic
+let explain x dec cons = 
+  let fic = open_out "exp.tex" in
+  let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (hd dec) []))) in
+  let a = printfraqtex exptex (var x.s X [ind (I 1) [];ind (T 1) []]) cons fic in
+  close_out fic
 
-let fic = open_out "exp.tex"
-let cumultex = map (fun l-> printetex l BC ) (an (find x cumul (hd cumul) [])) 
-let a = printfraqtex cumultex (var true X [ind (I 1) [];ind (T 1) []]) fic
-let _ =close_out fic
 
-(*Tests concat*)
-let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
-let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]]
-let ei = concat [[[1]];[[]]]
-(*public void addLiteral(IntVar var, IntIterableRangeSet dom, boolean pivot)*)
+
+let a = explain (x) cumul BC
