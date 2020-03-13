@@ -416,5 +416,82 @@ println("\n --Roots--")
 mou( piv,1,roots)
 mou(npiv,1,roots)
 
+#=Sortie
+julia> include("moulinette2.jl")
+
+ --AllDifferent--
+ Xi=t <- 
+ Xi≠t <- ∀i' Xi'=t   
+
+ --AllEqual--
+ Xi≥t <- ∃i' Xi'≥t   
+ Xi<t <- ∃i' Xi'<t   
+
+ --AllEqual2--
+ Xi≥t <- ∃i' Xi'≥t   
+ Xi<t <- ∃i' Xi'<t   
+
+ --Increasing--
+ Xi≥t <- Xi-1≥t   
+ Xi<t <- Xi+1<t   
+
+ --AtMost--
+ Xi=t <- 
+ Xi≠t <- ∀i' Xi'=t   
+
+ --NValue--
+ Xi=t <- ∀i' Xi'≠t   ∀t' ∀i' Xi'≠t'   
+ Xi≠t <- ∀t' ∃i' Xi'=t'   
+
+ --NValue2--
+ Xi=t <- ∀i' Xi'≠t   ∀t' ∀i' Xi'≠t'   N=t2   
+ Xi≠t <- ∀t' ∃i' Xi'=t'   N=t2   
+ N=t2 <- 
+ N≠t2 <- 
+
+ --Occurence--
+ Xi=d <- ∀i' Xi'≠d   N=t   
+ Xi≠d <- ∀i' Xi'=d   N=t   
+ N=t <- 
+ N≠t <- 
+
+ --Cumulative--
+ Xi≥t <- ∀i' Xi'≥t-di'   Xi'<t+di'   Xi≥t-di   
+ Xi<t <- ∀i' Xi'≥t-di'   Xi'<t+di'   Xi<t+di   
+
+ --Gcc--
+ Xi=t <- ∀i' Xi'≠t   Ot=t2   
+ Xi≠t <- ∀i' Xi'=t   Ot=t2   
+ Ot=t2 <- 
+ Ot≠t2 <- 
+
+ --AllDiffBC?--
+ Xi≥t <- ∀i' Xi'<b   
+ Xi≥t <- ∀i' Xi'≥a   
+ Xi<t <- ∀i' Xi'<b   
+ Xi<t <- ∀i' Xi'≥a   
+
+ --Element--
+ Xi=t <- V=t   I=i   
+ Xi≠t <- V≠t   I=i   
+ I=i <- 
+ I≠i <- V≠t   Xi=t   
+ I≠i <- V=t   Xi≠t   
+ I≠i <- Xi≠t   V=t   
+ I≠i <- Xi=t   V≠t   
+ V=t <- Xi=t   I=i   
+ V≠t <- Xi≠t   I=i   
+
+ --Range--
+ Xi=t <- ∀i' ∀t' Xi'=t'   
+ Xi=t <- ∀t' Xi≠t'   
+ Xi=t <- ∀i' Xi'≠t   
+ Xi≠t <- ∀t' ∀i' Xi'≠t'   
+ Xi≠t <- ∀t' Xi=t'   
+
+ --Roots--
+ Xi=t <- ∀t' Xi≠t'   
+ Xi≠t <- ∀t' Xi=t'  =#
+
 # symboles
 # ∈ ∉ ≤ ≥ ∧ ∨ ≠ ∀ ∃ || []

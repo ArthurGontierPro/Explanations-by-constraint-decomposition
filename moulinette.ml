@@ -8,8 +8,8 @@ type cst = C of int
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
 type iop = | Set of ind*sym*set 
            | Rel of ind*sym*ind
-           | Addint of ind*sym*int
-           | Addcst of ind*sym*cst*ind
+           | Addint of ind*ind*sym*int
+           | Addcst of ind*ind*sym*cst*ind
            | EXFORALL of ind
            | EXEXISTS of ind
 type cons = AC | BC
@@ -42,8 +42,8 @@ let printsym s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<
 let printiop op= match op with
   | Set (ind,sym,set) ->printind ind^printsym sym^printset set
   | Rel (ind,sym,ind2) ->printind ind^printsym sym^printind ind2
-  | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsym sym^string_of_int int
-  | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsym sym^printcst cst^printind ind2
+  | Addint (ind1,ind2,sym,int) ->printind ind1^"="^printind ind2^printsym sym^string_of_int int
+  | Addcst (ind1,ind2,sym,cst,ind3) ->printind ind1^"="^printind ind2^printsym sym^printcst cst^printind ind3
   | EXFORALL ind ->"∀"^printind ind
   | EXEXISTS ind -> "∃"^printind ind
 let rec printiopl il = match il with []->""|i::tl->printiop i^","^printiopl tl
@@ -64,10 +64,10 @@ let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq
 let printioptex op= match op with
   | Set (ind,sym,set) ->printind ind^printsymtex sym^printset set
   | Rel (ind,sym,ind2) ->printind ind^printsymtex sym^printind ind2
-  | Addint (ind,sym,int) ->printind ind^"="^printind ind^printsymtex sym^string_of_int int
-  | Addcst (ind,sym,cst,ind2) ->printind ind^"="^printind ind^printsymtex sym^printcst cst^"_{"^printind ind2^"}"
-  | EXFORALL ind ->" \\forall "^printind ind
-  | EXEXISTS ind -> " \\exists "^printind ind
+  | Addint (ind1,ind2,sym,int) ->printind ind1^"="^printind ind2^printsymtex sym^string_of_int int
+  | Addcst (ind1,ind2,sym,cst,ind3) ->printind ind1^"="^printind ind2^printsymtex sym^printcst cst^"_{"^printind ind3^"}"
+  | EXFORALL ind ->"~\\forall "^printind ind
+  | EXEXISTS ind -> "~\\exists "^printind ind
 let rec printiopltex il = match il with []->""|i::tl->printioptex i^",~"^printiopltex tl
 let printitex i = printind i.ind^" "^printiopltex i.opl
 let printconstex c v = match c with AC -> if v.s then "=" else " \\neq " | BC -> if v.s then " \\geq " else "<"
@@ -220,8 +220,8 @@ let rec an a = (*Extraction des explications de l'arbre*)
 (*Constructeurs utilitaires de fonctions d'indices*)
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1)
 let iprim i = ind (prim i.ind) i.opl
-let addint i sym int = ind i.ind ([Addint (i.ind,sym,int)]@i.opl)
-let addcst i sym cst i2 = ind i.ind ([Addcst (i.ind,sym,cst,i2.ind)]@i.opl)
+let addint i sym int = ind (prim i.ind) ([Addint ((prim i.ind),i.ind,sym,int)]@i.opl)
+let addcst i sym cst i2 = ind (prim i.ind) ([Addcst ((prim i.ind),i.ind,sym,cst,i2.ind)]@i.opl)
 let sum i d = ind (prim i.ind) ([EXFORALL (prim i.ind);Set (prim i.ind,IN,d);Rel (prim i.ind,NEQ,i.ind);Set (i.ind,IN,d)]@i.opl)
 
 (*Fonctions des modifications d'indices*)
