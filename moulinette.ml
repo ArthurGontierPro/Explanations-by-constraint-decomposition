@@ -14,24 +14,24 @@ type iop = | Set of ind * sym * set (*I∈D*)
            | EXEXISTS of ind
 type cons = AC | BC
 (*Global indice type*)
-type lou = {ind: ind ;opl: iop list}
+type lou = { ind: ind ; opl: iop list}
 (*variable*)
 type var = { s:bool; n: name ;i: lou list}
 (*variables in ctrs (fid and fau are indices modification functions)*)
-type car = {cs:bool;cn: name ;fid: lou list-> lou list;fau: lou list-> lou list}
+type car = { cs:bool; cn: name ; fid: lou list-> lou list; fau: lou list-> lou list}
 (*explanation tree*)
 type lit = Var of var | T | F | IM | R | FE
 type arb = | Lit of lit
            | EXOR of var * arb list 
            | EXAND of var * arb list
 (*constraint with id, explanation rule and car list*)
-type ctr = {id:int;r: var -> car -> ctr -> ctr list-> var list-> arb ;cvl: car list}
+type ctr = { id: int; r: var -> car -> ctr -> ctr list-> var list-> arb ; cvl: car list}
 
 (*fast constructors*)
-let var b n il = {s=b;n=n;i=il}
-let car b n f fa = {cs=b;cn=n;fid=f;fau=fa}
-let ctr id r cvl = {id=id;r=r;cvl=cvl}
-let ind i opl = {ind=i;opl=opl}
+let var b n il = { s= b; n= n; i= il}
+let car b n f fa = { cs= b; cn= n; fid= f; fau= fa}
+let ctr id r cvl = { id= id; r= r; cvl= cvl}
+let ind i opl = { ind= i; opl= opl}
 
 (*Affichage en chaine de carractère*)
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
