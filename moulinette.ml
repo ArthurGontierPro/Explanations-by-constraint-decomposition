@@ -6,26 +6,26 @@ type ind  = I of int | T of int
 type set = D of int
 type cst = C of int
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
-type iop = | Set of ind*sym*set (*I∈D*)
-           | Rel of ind*sym*ind (*I≠I2*)
-           | Addint of ind*ind*sym*int (*I2=I+1*)
-           | Addcst of ind*ind*sym*cst*ind (*I3=I2-C I*)
+type iop = | Set of ind * sym * set (*I∈D*)
+           | Rel of ind * sym * ind (*I≠I2*)
+           | Addint of ind * ind * sym * int (*I2=I+1*)
+           | Addcst of ind * ind * sym * cst * ind (*I3=I2-C I*)
            | EXFORALL of ind
            | EXEXISTS of ind
 type cons = AC | BC
 (*Global indice type*)
-type lou = {ind:ind;opl:iop list}
+type lou = {ind: ind ;opl: iop list}
 (*variable*)
-type var = { s:bool; n:name;i:lou list}
+type var = { s:bool; n: name ;i: lou list}
 (*variables in ctrs (fid and fau are indices modification functions)*)
-type car = {cs:bool;cn:name;fid:lou list->lou list;fau:lou list->lou list}
+type car = {cs:bool;cn: name ;fid: lou list-> lou list;fau: lou list-> lou list}
 (*explanation tree*)
 type lit = Var of var | T | F | IM | R | FE
 type arb = | Lit of lit
-           | EXOR of var*arb list 
-           | EXAND of var*arb list
+           | EXOR of var * arb list 
+           | EXAND of var * arb list
 (*constraint with id, explanation rule and car list*)
-type ctr = {id:int;r:var->car->ctr->ctr list->var list->arb;cvl:car list}
+type ctr = {id:int;r: var -> car -> ctr -> ctr list-> var list-> arb ;cvl: car list}
 
 (*fast constructors*)
 let var b n il = {s=b;n=n;i=il}
@@ -315,3 +315,5 @@ let explain x dec cons =
 
 
 let _ = explain (x) cumul BC
+
+
