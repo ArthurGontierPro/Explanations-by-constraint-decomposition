@@ -6,10 +6,10 @@ type ind  = I of int | T of int
 type set = D of int
 type cst = C of int
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
-type iop = | Set of ind*sym*set 
-           | Rel of ind*sym*ind
-           | Addint of ind*ind*sym*int
-           | Addcst of ind*ind*sym*cst*ind
+type iop = | Set of ind*sym*set (*I∈D*)
+           | Rel of ind*sym*ind (*I≠I2*)
+           | Addint of ind*ind*sym*int (*I2=I+1*)
+           | Addcst of ind*ind*sym*cst*ind (*I3=I2-C I*)
            | EXFORALL of ind
            | EXEXISTS of ind
 type cons = AC | BC
@@ -314,5 +314,4 @@ let explain x dec cons =
   close_out fic
 
 
-
-let a = explain (x) cumul BC
+let _ = explain (x) cumul BC
