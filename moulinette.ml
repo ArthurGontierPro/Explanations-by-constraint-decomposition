@@ -2,36 +2,36 @@
 open List
 type name = X | B of int | T | I | V 
 (*indice options*)
-type ind  = I of int | T of int
+type ind = I of int | T of int
 type set = D of int
 type cst = C of int
 type sym = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
-type iop = | Set of ind * sym * set (*I∈D*)
-           | Rel of ind * sym * ind (*I≠I2*)
-           | Addint of ind * ind * sym * int (*I2=I+1*)
-           | Addcst of ind * ind * sym * cst * ind (*I3=I2-C I*)
+type iop = | Set of ind*sym*set (*I∈D*)
+           | Rel of ind*sym*ind (*I≠I2*)
+           | Addint of ind*ind*sym*int (*I2=I+1*)
+           | Addcst of ind*ind*sym*cst*ind (*I3=I2-C I*)
            | EXFORALL of ind
            | EXEXISTS of ind
-type cons = AC | BC
+type consi = AC | BC
 (*Global indice type*)
-type lou = { ind: ind ; opl: iop list}
+type lou = {ind:ind;opl:iop list}
 (*variable*)
-type var = { s:bool; n: name ;i: lou list}
+type var = { s:bool; n:name;i:lou list}
 (*variables in ctrs (fid and fau are indices modification functions)*)
-type car = { cs:bool; cn: name ; fid: lou list-> lou list; fau: lou list-> lou list}
+type car = {cs:bool;cn:name;fid:lou list->lou list;fau:lou list->lou list}
 (*explanation tree*)
 type lit = Var of var | T | F | IM | R | FE
 type arb = | Lit of lit
-           | EXOR of var * arb list 
-           | EXAND of var * arb list
+           | EXOR of var*arb list
+           | EXAND of var*arb list
 (*constraint with id, explanation rule and car list*)
-type ctr = { id: int; r: var -> car -> ctr -> ctr list-> var list-> arb ; cvl: car list}
+type ctr = {id:int;r:var->car->ctr->ctr list->var list->arb;cvl:car list}
 
 (*fast constructors*)
-let var b n il = { s= b; n= n; i= il}
-let car b n f fa = { cs= b; cn= n; fid= f; fau= fa}
-let ctr id r cvl = { id= id; r= r; cvl= cvl}
-let ind i opl = { ind= i; opl= opl}
+let var b n il = {s=b;n=n;i=il}
+let car b n f fa = {cs=b;cn=n;fid=f;fau=fa}
+let ctr id r cvl = {id=id;r=r;cvl=cvl}
+let ind i opl = {ind=i;opl=opl}
 
 (*Affichage en chaine de carractère*)
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
@@ -40,12 +40,12 @@ let printset s = match s with D a -> "D"^printprim a
 let printcst c = match c with C a -> "c"^printprim a
 let printsym s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"="
 let printiop op= match op with
-  | Set (ind,sym,set) ->printind ind^printsym sym^printset set
-  | Rel (ind,sym,ind2) ->printind ind^printsym sym^printind ind2
-  | Addint (ind1,ind2,sym,int) ->printind ind1^"="^printind ind2^printsym sym^string_of_int int
-  | Addcst (ind1,ind2,sym,cst,ind3) ->printind ind1^"="^printind ind2^printsym sym^printcst cst^printind ind3
-  | EXFORALL ind ->"∀"^printind ind
-  | EXEXISTS ind -> "∃"^printind ind
+  | Set (ind1,sym1,set1) ->printind ind1^printsym sym1^printset set1
+  | Rel (ind1,sym1,ind2) ->printind ind1^printsym sym1^printind ind2
+  | Addint (ind1,ind2,sym1,int) ->printind ind1^"="^printind ind2^printsym sym1^string_of_int int
+  | Addcst (ind1,ind2,sym1,cst1,ind3) ->printind ind1^"="^printind ind2^printsym sym1^printcst cst1^printind ind3
+  | EXFORALL ind1 ->"∀"^printind ind1
+  | EXEXISTS ind1 ->"∃"^printind ind1
 let rec printiopl il = match il with []->""|i::tl->printiop i^","^printiopl tl
 let printi i = printind i.ind^" "^printiopl i.opl
 let printcons c v = match c with AC -> if v.s then "=" else "≠" | BC -> if v.s then "≥" else "<"
@@ -62,12 +62,12 @@ let rec printe el cons = match el with []->"" | e::tl -> match e with
 (*Affichage en code LaTex*)
 let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq "|LEQ->" \\leq "|GEQ->" \\geq "|EQ->"="
 let printioptex op= match op with
-  | Set (ind,sym,set) ->printind ind^printsymtex sym^printset set
-  | Rel (ind,sym,ind2) ->printind ind^printsymtex sym^printind ind2
-  | Addint (ind1,ind2,sym,int) ->printind ind1^"="^printind ind2^printsymtex sym^string_of_int int
-  | Addcst (ind1,ind2,sym,cst,ind3) ->printind ind1^"="^printind ind2^printsymtex sym^printcst cst^"_{"^printind ind3^"}"
-  | EXFORALL ind ->"~\\forall "^printind ind
-  | EXEXISTS ind -> "~\\exists "^printind ind
+  | Set (ind1,sym1,set1) ->printind ind1^printsymtex sym1^printset set1
+  | Rel (ind1,sym1,ind2) ->printind ind1^printsymtex sym1^printind ind2
+  | Addint (ind1,ind2,sym1,int) ->printind ind1^"="^printind ind2^printsymtex sym1^string_of_int int
+  | Addcst (ind1,ind2,sym1,cst1,ind3) ->printind ind1^"="^printind ind2^printsymtex sym1^printcst cst1^"_{"^printind ind3^"}"
+  | EXFORALL ind1 ->"~\\forall "^printind ind1
+  | EXEXISTS ind1 ->"~\\exists "^printind ind1
 let rec printiopltex il = match il with []->""|i::tl->printioptex i^",~"^printiopltex tl
 let printitex i = printind i.ind^" "^printiopltex i.opl
 let printconstex c v = match c with AC -> if v.s then "=" else " \\neq " | BC -> if v.s then " \\geq " else "<"
@@ -83,7 +83,7 @@ let rec printetex el cons = match el with []->"" | e::tl -> match e with
   | Var v -> printvartex cons v^"~~~"^printetex tl cons
 
 let id  x = x(*identity function*)
-let n   x = if x.s then var false x.n x.i else var true x.n x.i(*negation of var x*)
+let n   x = if x.s then var false x.n x.i else var true x.n x.i (*negation of var x*)
 (*apply indices function on a variable*)
 let ap  v cv cvp = var cv.cs cv.cn (cv.fid (cvp.fau v.i))
 (*apply indices functions with negation*)
