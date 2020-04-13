@@ -25,12 +25,12 @@ type tree = | Lit of leaf
            | EXOR of event_var*tree list 
            | EXAND of event_var*tree list 
 (*constraint with id, explanation rule and make_decomp_var list*) 
-type decomp_ctr = {id:int;explenation_rule:event_var->decomp_var->decomp_ctr->decomp_ctr list->event_var list->tree;constraint_list:decomp_var list} 
+type decomp_ctr = {id:int;explenation_rule:event_var->decomp_var->decomp_ctr->decomp_ctr list->event_var list->tree;dec_var_list:decomp_var list} 
  
 (*fast constructors*) 
 let make_event_var b n il = {var_sign=b;var_name=n;index_list=il} 
 let make_decomp_var b n f fa = {dec_var_sign=b;dec_var_name=n;index_propagate=f;index_update=fa} 
-let make_decomp_ctr id r cvl = {id=id;explenation_rule=r;constraint_list=cvl} 
+let make_decomp_ctr id r cvl = {id=id;explenation_rule=r;dec_var_list=cvl} 
 let make_index i opl = {ind_name=i;ind_modifs_list=opl} 
  
 (*Affichage en chaine de carractère*) 
@@ -95,7 +95,7 @@ let rec invars v cvl = (* make_event_var v in make_decomp_var list? *)
 let rec vars v cvl = (* vars list with the same name as v*) 
   match cvl with [] -> [] | cv::tl -> if cv.dec_var_name=v.var_name then cv::vars v tl else vars v tl 
 let rec ctrs v dec = (* constraint list where v is*) 
-  match dec with [] -> [] | c::tl -> if invars v c.constraint_list then c::ctrs v tl else ctrs v tl 
+  match dec with [] -> [] | c::tl -> if invars v c.dec_var_list then c::ctrs v tl else ctrs v tl 
 let rec subl v l = (* make_event_var list without variable v*) 
   match l with [] -> [] | c::tl -> if (v.dec_var_sign=c.dec_var_sign)&&(v.dec_var_name=c.dec_var_name) then subl v tl else c::subl v tl 
 let rec subc v l = (* make_decomp_ctr list without constraint v*) 
@@ -109,7 +109,7 @@ let rec find v dec prec ch =
   let cl = ctrs v dec in 
   let cl = subc prec cl in 
   if cl = [] then Lit IM else 
-  EXOR (v,flatten (map (fun c-> map (fun cv -> c.explenation_rule v cv c dec ch) (vars v c.constraint_list)) cl)) 
+  EXOR (v,flatten (map (fun c-> map (fun cv -> c.explenation_rule v cv c dec ch) (vars v c.dec_var_list)) cl)) 
  
 and fvr vr v cv dec c ch = (*explication par la variable réifiée*) 
   if vr.dec_var_name = T then Lit T else EXAND (v,[find (ap v vr cv) dec c (ch@[v])]) 
@@ -122,8 +122,8 @@ and fnvl vl v cv dec c ch = (*explication par la liste de littéraux négatifs*)
  
 (*Explenation rules*) 
 and rule1 v cv c dec ch = 
-  let b = hd c.constraint_list in 
-  let x = hd (tl c.constraint_list) in 
+  let b = hd c.dec_var_list in 
+  let x = hd (tl c.dec_var_list) in 
   if b.dec_var_name = v.var_name  
   then if v.var_sign = cv.dec_var_sign 
     then EXAND (v,[Lit (Var ( ap v x b))]) 
@@ -131,73 +131,73 @@ and rule1 v cv c dec ch =
   else Lit FE 
  
 and rule3 v cv c dec ch = 
-  let vr = hd c.constraint_list in 
+  let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if v.var_sign = cv.dec_var_sign 
-    then EXAND (v,fvl (tl c.constraint_list) v cv dec c ch) 
-    else EXOR (v,fnvl (tl c.constraint_list) v cv dec c ch) 
+    then EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch) 
+    else EXOR (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
   else  
-    let cvl = if not ((tl (tl c.constraint_list))=[]) then subl cv (tl c.constraint_list) else c.constraint_list in 
+    let cvl = if not ((tl (tl c.dec_var_list))=[]) then subl cv (tl c.dec_var_list) else c.dec_var_list in 
     if v.var_sign = cv.dec_var_sign 
     then fvr vr v cv dec c ch 
     else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch)) 
  
 and rule4 v cv c dec ch = 
-  let vr = hd c.constraint_list in 
+  let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if v.var_sign = cv.dec_var_sign 
-    then EXOR (v,fvl (tl c.constraint_list) v cv dec c ch) 
-    else EXAND (v,fnvl (tl c.constraint_list) v cv dec c ch) 
+    then EXOR (v,fvl (tl c.dec_var_list) v cv dec c ch) 
+    else EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
   else  
-    let cvl = if not ((tl (tl c.constraint_list))=[]) then subl cv (tl c.constraint_list) else c.constraint_list in 
+    let cvl = if not ((tl (tl c.dec_var_list))=[]) then subl cv (tl c.dec_var_list) else c.dec_var_list in 
     if v.var_sign = cv.dec_var_sign 
     then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch)) 
     else fnvr vr v cv dec c ch 
  
 and rule5 v cv c dec ch = 
-  let vr = hd c.constraint_list in 
+  let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign 
-    then EXAND (v,fnvl (tl c.constraint_list) v cv dec c ch) 
+    then EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
     else Lit IM 
   else  
-    let cvl =subl cv (tl c.constraint_list) in 
+    let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
       failwith "sommes multiples pas encore implémentés" 
     else  
       if v.var_sign = cv.dec_var_sign 
       then Lit IM 
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.constraint_list) v cv dec c ch)) 
+      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
 and rule6 v cv c dec ch = 
-  let vr = hd c.constraint_list in 
+  let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
-    then EXAND (v,fvl (tl c.constraint_list) v cv dec c ch) 
+    then EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch) 
     else Lit IM 
   else  
-    let cvl =subl cv (tl c.constraint_list) in 
+    let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
       failwith "sommes multiples pas encore implémentés" 
     else  
       if v.var_sign = cv.dec_var_sign 
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.constraint_list) v cv dec c ch)) 
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
       else Lit IM 
  
 and rule7 v cv c dec ch = 
-  let vr = hd c.constraint_list in 
+  let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
     then Lit IM 
-    else EXAND (v,(fvl (tl c.constraint_list) v cv dec c ch)@(fnvl (tl c.constraint_list) v cv dec c ch))(*incohérent?*) 
+    else EXAND (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
   else  
-    let cvl =subl cv (tl c.constraint_list) in 
+    let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
       failwith "sommes multiples pas encore implémentés" 
     else  
       if v.var_sign = cv.dec_var_sign 
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.constraint_list) v cv dec c ch)) 
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.constraint_list) v cv dec c ch)) 
+      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
+      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
 let rec imp l = (*detect impossibles literals*) 
   match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl 

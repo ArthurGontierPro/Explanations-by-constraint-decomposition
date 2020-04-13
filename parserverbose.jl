@@ -38,7 +38,7 @@ function main()
        ("fid","index_propagate"),
        ("fau","index_update"),
        ("r","explenation_rule"),
-       ("cvl","constraint_list")]
+       ("cvl","dec_var_list")]
     prefix = ['{',"{ ",';',"; "]
     suffix = [':','=']
     ap(rr,prefix,r,suffix)
