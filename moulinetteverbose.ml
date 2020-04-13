@@ -17,7 +17,7 @@ type consistancy = AC | BC
 type index = {ind_name:ind_name;ind_modifs_list:ind_modifs list} 
 (*variable*) 
 type event_var = { var_sign:bool; var_name:var_name;index_list:index list} 
-(*variables in ctrs (fid and fau are indices modification functions)*) 
+(*variables in ctrs*) 
 type decomp_var = {dec_var_sign:bool;dec_var_name:var_name;index_propagate:index list->index list;index_update:index list->index list} 
 (*explanation tree*) 
 type leaf = Var of event_var | T | F | IM | R | FE 
@@ -33,7 +33,7 @@ let make_decomp_var b n f fa = {dec_var_sign=b;dec_var_name=n;index_propagate=f;
 let make_decomp_ctr id r cvl = {id=id;explenation_rule=r;dec_var_list=cvl} 
 let make_index i opl = {ind_name=i;ind_modifs_list=opl} 
  
-(*Affichage en chaine de carractère*) 
+(*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1) 
 let printind_name i = match i with I a -> "i"^printprim a | T a -> "t"^printprim a  
 let printind_set s = match s with D a -> "D"^printprim a 
@@ -59,7 +59,7 @@ let rec printe el cons = match el with []->"" | e::tl -> match e with
   |F|IM|FE|R -> "? "^printe tl cons 
   | T -> printe tl cons 
   | Var v -> printevent_var cons v^printe tl cons 
-(*Affichage en code LaTex*) 
+(*Print explanation in LaTex*) 
 let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq "|LEQ->" \\leq "|GEQ->" \\geq "|EQ->"=" 
 let printioptex op= match op with 
   | Set (ind1,sym1,set1) ->printind_name ind1^printsymtex sym1^printind_set set1 
@@ -111,13 +111,13 @@ let rec find v dec prec ch =
   if cl = [] then Lit IM else 
   EXOR (v,flatten (map (fun c-> map (fun cv -> c.explenation_rule v cv c dec ch) (vars v c.dec_var_list)) cl)) 
  
-and fvr vr v cv dec c ch = (*explication par la variable réifiée*) 
+and fvr vr v cv dec c ch = (*explanation by refied variable*) 
   if vr.dec_var_name = T then Lit T else EXAND (v,[find (ap v vr cv) dec c (ch@[v])]) 
-and fnvr vr v cv dec c ch = (*explication par la négations de la variable réifiée*) 
+and fnvr vr v cv dec c ch = (*explanation by negative refied variable*) 
   if vr.dec_var_name = T then Lit F else EXAND (v,[find (nap v vr cv) dec c (ch@[v])]) 
-and fvl vl v cv dec c ch = (*explication par la liste de littéraux positifs*) 
+and fvl vl v cv dec c ch = (*explanation by variable list*) 
   map (fun cv2-> find (ap v cv2 cv) dec c (ch@[v])) vl 
-and fnvl vl v cv dec c ch = (*explication par la liste de littéraux négatifs*) 
+and fnvl vl v cv dec c ch = (*explanation by negative variable list*) 
   map (fun cv2-> find (nap v cv2 cv) dec c (ch@[v])) vl 
  
 (*Explenation rules*) 
@@ -211,20 +211,20 @@ let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]]
 let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]] 
 let ei = concat [[[1]];[[]]] 
  
-let rec an a = (*Extraction des explications de l'arbre*) 
+let rec an a = (*analysis of the explanation tree, return explanations*) 
   match a with 
     | Lit x -> [[x]] 
     | EXOR (_,l) -> flatten (map an l) 
     | EXAND (_,l) -> concat (map an l) 
  
-(*Constructeurs utilitaires de fonctions d'indices*) 
+(*Constructors for index modification functions*) 
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1) 
 let iprim i = make_index (prim i.ind_name) i.ind_modifs_list 
 let addint i sym int = make_index (prim i.ind_name) ([Addint ((prim i.ind_name),i.ind_name,sym,int)]@i.ind_modifs_list) 
 let addcst i sym cst i2 = make_index (prim i.ind_name) ([Addcst ((prim i.ind_name),i.ind_name,sym,cst,i2.ind_name)]@i.ind_modifs_list) 
 let sum i d = make_index (prim i.ind_name) ([EXFORALL (prim i.ind_name);Set (prim i.ind_name,IN,d);Rel (prim i.ind_name,NEQ,i.ind_name);Set (i.ind_name,IN,d)]@i.ind_modifs_list) 
  
-(*Fonctions des modifications d'indices*) 
+(*Index modification functions*) 
 let ij il = match il with i::t::_ -> [iprim i;t] 
  
 let ci il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*) 
@@ -246,7 +246,7 @@ let s2 il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)
 let po il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*) 
 let mo il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
  
-(*Décompositions*) 
+(*Decompositions*) 
 let alleq  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
               make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) vv vi;make_decomp_var true  (B 1) s1 id]; 
               make_decomp_ctr 2 rule3 [make_decomp_var true  (B 3) vv vi;make_decomp_var false (B 1) s2 id]; 
@@ -302,11 +302,13 @@ let rangex   = map printac (an (find    x  range (hd range) []))
 let rangenx  = map printac (an (find (n x) range (hd range) [])) 
  
  
-(*sortie dans un fichier tex*) 
+(*Output in tex file*) 
 open Printf 
 let rec printfraqtex el x cons fic = match el with  
   | [] -> () 
   | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex cons x^"}$$ ");printfraqtex tl x cons fic 
+ 
+(*Output explanations from a decomposition of a global constraint*) 
 let explain x dec cons =  
   let fic = open_out "exp.tex" in 
   let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (hd dec) []))) in 
