@@ -25,12 +25,12 @@ type tree = | Lit of leaf
            | EXOR of event_var*tree list 
            | EXAND of event_var*tree list 
 (*constraint with id, explanation rule and make_decomp_var list*) 
-type decomp_ctr = {id:int;explenation_rule:event_var->decomp_var->decomp_ctr->decomp_ctr list->event_var list->tree;dec_var_list:decomp_var list} 
+type decomp_ctr = {id:int;explanation_rule:event_var->decomp_var->decomp_ctr->decomp_ctr list->event_var list->tree;dec_var_list:decomp_var list} 
  
 (*fast constructors*) 
 let make_event_var b n il = {var_sign=b;var_name=n;index_list=il} 
 let make_decomp_var b n f fa = {dec_var_sign=b;dec_var_name=n;index_propagate=f;index_update=fa} 
-let make_decomp_ctr id r cvl = {id=id;explenation_rule=r;dec_var_list=cvl} 
+let make_decomp_ctr id r cvl = {id=id;explanation_rule=r;dec_var_list=cvl} 
 let make_index i opl = {ind_name=i;ind_modifs_list=opl} 
  
 (*Print explanation in string*) 
@@ -109,7 +109,7 @@ let rec find v dec prec ch =
   let cl = ctrs v dec in 
   let cl = subc prec cl in 
   if cl = [] then Lit IM else 
-  EXOR (v,flatten (map (fun c-> map (fun cv -> c.explenation_rule v cv c dec ch) (vars v c.dec_var_list)) cl)) 
+  EXOR (v,flatten (map (fun c-> map (fun cv -> c.explanation_rule v cv c dec ch) (vars v c.dec_var_list)) cl)) 
  
 and fvr vr v cv dec c ch = (*explanation by refied variable*) 
   if vr.dec_var_name = T then Lit T else EXAND (v,[find (ap v vr cv) dec c (ch@[v])]) 
