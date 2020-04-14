@@ -84,9 +84,9 @@ let rec printetex el cons = match el with []->"" | e::tl -> match e with
  
 let id  x = x(*identity function*) 
 let n   x = if x.var_sign then make_event_var false x.var_name x.index_list else make_event_var true x.var_name x.index_list (*negation of event_var x*) 
-(*apply indices function on a variable*) 
+(*apply index modification functions on a variable*) 
 let ap  v cv cvp = make_event_var cv.dec_var_sign cv.dec_var_name (cv.index_propagate (cvp.index_update v.index_list)) 
-(*apply indices functions with negation*) 
+(*apply index modification functions with negation*) 
 let nap v cv cvp = make_event_var (not cv.dec_var_sign) cv.dec_var_name (cv.index_propagate (cvp.index_update v.index_list)) 
  
 (*Utilitary functions*) 
@@ -100,7 +100,7 @@ let rec subl v l = (* make_event_var list without variable v*)
   match l with [] -> [] | c::tl -> if (v.dec_var_sign=c.dec_var_sign)&&(v.dec_var_name=c.dec_var_name) then subl v tl else c::subl v tl 
 let rec subc v l = (* make_decomp_ctr list without constraint v*) 
   match l with [] -> [] | c::tl -> if v.id=c.id then subc v tl else c::subc v tl 
-let rec inl v l = (* v in l? *) 
+let rec inl v l = (* v in list l? *) 
   match l with [] -> false | c::tl -> if v=c then true else inl v tl 
  
 (*find and call rules that explain varriable v*) 
@@ -121,7 +121,7 @@ and fnvl vl v cv dec c ch = (*explanation by negative variable list*)
   map (fun cv2-> find (nap v cv2 cv) dec c (ch@[v])) vl 
  
 (*Explenation rules*) 
-and rule1 v cv c dec ch = 
+and rule1 v cv c dec ch = (*Xi=t<=>b*) 
   let b = hd c.dec_var_list in 
   let x = hd (tl c.dec_var_list) in 
   if b.dec_var_name = v.var_name  
@@ -130,7 +130,7 @@ and rule1 v cv c dec ch =
     else EXAND (v,[Lit (Var (nap v x b))]) 
   else Lit FE 
  
-and rule3 v cv c dec ch = 
+and rule3 v cv c dec ch = (*conjonction*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if v.var_sign = cv.dec_var_sign 
@@ -142,7 +142,7 @@ and rule3 v cv c dec ch =
     then fvr vr v cv dec c ch 
     else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch)) 
  
-and rule4 v cv c dec ch = 
+and rule4 v cv c dec ch = (*disjunction*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if v.var_sign = cv.dec_var_sign 
@@ -154,7 +154,7 @@ and rule4 v cv c dec ch =
     then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch)) 
     else fnvr vr v cv dec c ch 
  
-and rule5 v cv c dec ch = 
+and rule5 v cv c dec ch = (*Bool sum<c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign 
@@ -169,7 +169,7 @@ and rule5 v cv c dec ch =
       then Lit IM 
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
-and rule6 v cv c dec ch = 
+and rule6 v cv c dec ch = (*Bool sum>c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
@@ -184,7 +184,7 @@ and rule6 v cv c dec ch =
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
       else Lit IM 
  
-and rule7 v cv c dec ch = 
+and rule7 v cv c dec ch = (*Bool sum=c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  

@@ -84,9 +84,9 @@ let rec printetex el cons = match el with []->"" | e::tl -> match e with
 
 let id  x = x(*identity function*)
 let n   x = if x.s then var false x.n x.i else var true x.n x.i (*negation of var x*)
-(*apply indices function on a variable*)
+(*apply index modification functions on a variable*)
 let ap  v cv cvp = var cv.cs cv.cn (cv.fid (cvp.fau v.i))
-(*apply indices functions with negation*)
+(*apply index modification functions with negation*)
 let nap v cv cvp = var (not cv.cs) cv.cn (cv.fid (cvp.fau v.i))
 
 (*Utilitary functions*)
@@ -100,7 +100,7 @@ let rec subl v l = (* var list without variable v*)
   match l with [] -> [] | c::tl -> if (v.cs=c.cs)&&(v.cn=c.cn) then subl v tl else c::subl v tl
 let rec subc v l = (* ctr list without constraint v*)
   match l with [] -> [] | c::tl -> if v.id=c.id then subc v tl else c::subc v tl
-let rec inl v l = (* v in l? *)
+let rec inl v l = (* v in list l? *)
   match l with [] -> false | c::tl -> if v=c then true else inl v tl
 
 (*find and call rules that explain varriable v*)
@@ -121,7 +121,7 @@ and fnvl vl v cv dec c ch = (*explanation by negative variable list*)
   map (fun cv2-> find (nap v cv2 cv) dec c (ch@[v])) vl
 
 (*Explenation rules*)
-and rule1 v cv c dec ch =
+and rule1 v cv c dec ch = (*Xi=t<=>b*)
   let b = hd c.cvl in
   let x = hd (tl c.cvl) in
   if b.cn = v.n 
@@ -130,7 +130,7 @@ and rule1 v cv c dec ch =
     else EXAND (v,[Lit (Var (nap v x b))])
   else Lit FE
 
-and rule3 v cv c dec ch =
+and rule3 v cv c dec ch = (*conjonction*)
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if v.s = cv.cs
@@ -142,7 +142,7 @@ and rule3 v cv c dec ch =
     then fvr vr v cv dec c ch
     else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch))
 
-and rule4 v cv c dec ch =
+and rule4 v cv c dec ch = (*disjunction*)
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if v.s = cv.cs
@@ -154,7 +154,7 @@ and rule4 v cv c dec ch =
     then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch))
     else fnvr vr v cv dec c ch
 
-and rule5 v cv c dec ch =
+and rule5 v cv c dec ch = (*Bool sum<c*)
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs
@@ -169,7 +169,7 @@ and rule5 v cv c dec ch =
       then Lit IM
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.cvl) v cv dec c ch))
 
-and rule6 v cv c dec ch =
+and rule6 v cv c dec ch = (*Bool sum>c*)
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
@@ -184,7 +184,7 @@ and rule6 v cv c dec ch =
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.cvl) v cv dec c ch))
       else Lit IM
 
-and rule7 v cv c dec ch =
+and rule7 v cv c dec ch = (*Bool sum=c*)
   let vr = hd c.cvl in
   if cv.cn=vr.cn then
     if cv.cs = vr.cs 
