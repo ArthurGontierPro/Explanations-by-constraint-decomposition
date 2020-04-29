@@ -1,4 +1,4 @@
-(*Moulinette by Arthur GONTIER 2020 (explenation genarator from constraint decomposition)*) 
+(*Moulinette by Arthur GONTIER 2020 (explenation generator from constraint decomposition)*) 
 open List 
 type var_name = X | B of int | T | I | V | N  
 (*indice options*) 
@@ -55,6 +55,7 @@ let printevent_var cons v = match v.var_name with
   | T -> "ERROR T " 
   | I -> "   I"^printcons cons v^printi (hd v.index_list) 
   | V -> "   V"^printcons cons v^printi (hd v.index_list) 
+  | N -> "   N"^printcons BC v^printi (hd v.index_list) 
 let rec printe el cons = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printe tl cons 
   | T -> printe tl cons 
@@ -77,6 +78,7 @@ let printvartex cons v = match v.var_name with
   | T -> "ERROR T " 
   | I -> "I"^printconstex cons v^printitex (hd v.index_list) 
   | V -> "V"^printconstex cons v^printitex (hd v.index_list) 
+  | N -> "N"^printconstex BC v^printitex (hd v.index_list) 
 let rec printetex el cons = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printetex tl cons 
   | T -> printetex tl cons 
@@ -121,7 +123,7 @@ and fnvl vl v cv dec c ch = (*explanation by negative variable list*)
   map (fun cv2-> find (nap v cv2 cv) dec c (ch@[v])) vl 
  
 (*Explenation rules*) 
-and rule1 v cv c dec ch = (*Xi=t<=>b*) 
+and rule1 v cv c dec ch = (*b<=>Xi=t*) 
   let b = hd c.dec_var_list in 
   let x = hd (tl c.dec_var_list) in 
   if b.dec_var_name = v.var_name  
@@ -154,7 +156,7 @@ and rule4 v cv c dec ch = (*disjunction*)
     then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch)) 
     else fnvr vr v cv dec c ch 
  
-and rule5 v cv c dec ch = (*Bool sum<c*) 
+and rule5 v cv c dec ch = (*Bool sum<=c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign 
@@ -169,7 +171,7 @@ and rule5 v cv c dec ch = (*Bool sum<c*)
       then Lit IM 
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
-and rule6 v cv c dec ch = (*Bool sum>c*) 
+and rule6 v cv c dec ch = (*Bool sum=>c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
@@ -199,24 +201,22 @@ and rule7 v cv c dec ch = (*Bool sum=c*)
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
+let rec removesame l = (*remove keeps one occurence of each element*)
+  match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
 let rec imp l = (*detect impossibles literals*) 
   match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl 
 let rec removeimp ll = (*remove explenation with impossible literals*) 
-  match ll with []->[]|l::tl->if imp l then removeimp tl else [l]@(removeimp tl) 
+  match ll with []->[]|l::tl->if imp l || inl l tl then removeimp tl else [removesame l]@(removeimp tl) 
  
-let rec concat l = (*Concaténation d'un EXAND de EXOR*) 
+let morgan l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
   match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl 
-(*Tests concat*) 
-let ei = concat [[[1];[2]]; [[3];[4]]; [[5];[6]]] 
-let eo = ei = [[5;3;1]; [5;3;2]; [5;4;1]; [5;4;2]; [6;3;1]; [6;3;2]; [6;4;1]; [6;4;2]] 
-let ei = concat [[[1]];[[]]] 
- 
+
 let rec an a = (*analysis of the explanation tree, return explanations*) 
   match a with 
     | Lit x -> [[x]] 
     | EXOR (_,l) -> flatten (map an l) 
-    | EXAND (_,l) -> concat (map an l) 
- 
+    | EXAND (_,l) -> morgan (map an l) 
+
 (*Constructors for index modification functions*) 
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1) 
 let iprim i = make_index (prim i.ind_name) i.ind_modifs_list 
@@ -224,74 +224,68 @@ let addint i sym int = make_index (prim i.ind_name) ([Addint ((prim i.ind_name),
 let addcst i sym cst i2 = make_index (prim i.ind_name) ([Addcst ((prim i.ind_name),i.ind_name,sym,cst,i2.ind_name)]@i.ind_modifs_list) 
 let sum i d = make_index (prim i.ind_name) ([EXFORALL (prim i.ind_name);Set (prim i.ind_name,IN,d);Rel (prim i.ind_name,NEQ,i.ind_name);Set (i.ind_name,IN,d)]@i.ind_modifs_list) 
  
-(*Index modification functions*) 
-let ij il = match il with i::t::_ -> [iprim i;t] 
+(*Index modification functions*)  
+let itmc1i il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*) 
+let itpc1i il = match il with i::t::_ -> [i;addcst t PLUS (C 1) i](*cumul*) 
  
-let ci il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*) 
-let ic il = match il with i::t::_ -> [i;addcst t PLUS (C 1) i](*cumul*) 
+let sumid1t il = match il with i::t::_ -> [sum i (D 1);t](*sums*) 
  
-let cs il = match il with i::t::_ -> [sum i (D 1);t](*sums*) 
+let i_out il = match il with i::t::_ -> [t](*elem*) 
+let t_out il = match il with i::t::_ -> [i]
+let tfor_in il = [hd il;make_index (T 1) [EXFORALL (T 1)]] 
+let ifor_in il = [make_index (I 1) [EXFORALL (I 1)];hd il] 
  
-let ii il = [hd il](*elem*) 
-let vv il = [hd (tl il)] 
-let iv il = [hd il;make_index (T 1) [EXFORALL (T 1)]] 
-let vi il = [make_index (I 1) [EXFORALL (I 1)];hd il] 
+let isumtd1 il = match il with i::t::_ -> [i;sum t (D 1)](*roots*) 
+let isumtd2 il = match il with i::t::_ -> [i;sum t (D 2)](*roots*) 
  
-let ir il = match il with i::t::_ -> [i;sum t (D 1)](*roots*) 
-let ri il = match il with i::t::_ -> [i;sum t (D 2)](*roots*) 
- 
-let s1 il = match il with i::t::_ -> [sum i (D 1);t](*alleq1*) 
-let s2 il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*) 
- 
-let po il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*) 
-let mo il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
- 
-let ui il = match il with i::t::_ -> [t](*nvalue*) 
-let vi il = match il with i::t::_ -> [sum i (D 1);t](*nvalue*) 
-let iu il = match il with t::_ -> [make_index (I 1) [Set (I 1,IN,D 1)];t](*nvalue*) 
-let st il = match il with t::_ -> [sum t (D 2)](*nvalue*) 
-let tt1 il = match il with t::_ -> [t;iprim t](*nvalue*) 
-let tt2 il = match il with t::_ -> [iprim t;t](*nvalue*) 
-let t1t il = match il with t::tt::_ -> [t](*nvalue*) 
-let t2t il = match il with t::tt::_ -> [tt](*nvalue*) 
-let t1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*) 
-let t2 il = match il with t::_ -> [addint t PLUS 1](*nvalue*) 
+let sumid2t il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)  
+let id1_in_t il = match il with t::_ -> [make_index (I 1) [Set (I 1,IN,D 1)];t]
+let id2_in_t il = match il with t::_ -> [make_index (I 1) [Set (I 1,IN,D 2)];t]
+
+let ip1t il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*) 
+let im1t il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
+
+let sumtd2 il = match il with t::_ -> [sum t (D 2)](*nvalue*) 
+let ttprim_in il = match il with t::_ -> [t;iprim t](*nvalue*) 
+let tprim_in_t il = match il with t::_ -> [iprim t;t](*nvalue*) 
+let tm1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*) 
+let tp1 il = match il with t::_ -> [addint t PLUS 1](*nvalue*) 
+let sumtd2tprim_out il = match il with t::tt::_ -> [sum t (D 2)](*nvalue*) 
+
  
  
  
 (*Decompositions*) 
 let alleq  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) vv vi;make_decomp_var true  (B 1) s1 id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 3) vv vi;make_decomp_var false (B 1) s2 id]; 
+              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) t_out id1_in_t ;make_decomp_var true  (B 1) sumid1t id]; 
+              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 3) t_out id2_in_t ;make_decomp_var false (B 1) sumid2t id]; 
               make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var true  (B 2) id id;make_decomp_var true  (B 3) id id]] 
 let alldif = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) cs id]] 
+              make_decomp_ctr 2 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid1t id]] 
 let cumul  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) id id;make_decomp_var false (B 1) id id;make_decomp_var true (B 1) ci ic]; 
-              make_decomp_ctr 3 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 2) cs id]] 
+              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) id id;make_decomp_var false (B 1) id id;make_decomp_var true (B 1) itpc1i itmc1i]; 
+              make_decomp_ctr 3 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 2) sumid1t id]] 
 let gcc    = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) cs id]] 
+              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid1t id]] 
 let incr   = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var false (B 1) id id;make_decomp_var true  (B 1) po mo]] 
+              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var false (B 1) id id;make_decomp_var true  (B 1) ip1t im1t]] 
 let elem   = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
               make_decomp_ctr 2 rule1 [make_decomp_var true  (B 2) id id;make_decomp_var true   I    id id]; 
               make_decomp_ctr 3 rule1 [make_decomp_var true  (B 3) id id;make_decomp_var true   V    id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id; 
-                           make_decomp_var false (B 3) vv vi;make_decomp_var false (B 2) ii iv;make_decomp_var true  (B 1) id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id; 
-                           make_decomp_var true  (B 3) vv vi;make_decomp_var false (B 2) ii iv;make_decomp_var false (B 1) id id]] 
+              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var false (B 3) i_out ifor_in;make_decomp_var false (B 2) t_out tfor_in;make_decomp_var true  (B 1) id id]; 
+              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var true  (B 3) i_out ifor_in;make_decomp_var false (B 2) t_out tfor_in;make_decomp_var false (B 1) id id]] 
 let roots  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) ir id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) ri id]] 
+              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd1 id]; 
+              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd2 id]] 
 let range  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule6 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) s2 id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) ir id]] 
+              make_decomp_ctr 2 rule6 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd1 id]; 
+              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid2t id]]
 let nvalue = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) ui iu;make_decomp_var true  (B 1) vi id]; 
-              make_decomp_ctr 3 rule7 [make_decomp_var true  (B 3) t2t tt2;make_decomp_var true  (B 2) t1t tt1];] 
-(*              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    ir id]; 
-              make_decomp_ctr 5 rule3 [make_decomp_var true  (B 3) id id;make_decomp_var false (B 4) t1 t2;make_decomp_var true (B 4) ci ic]] 
-*) 
+              make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) i_out id1_in_t;make_decomp_var true  (B 1) sumid1t id]; 
+              make_decomp_ctr 3 rule7 [make_decomp_var true  (B 3) t_out ttprim_in;make_decomp_var true  (B 2)  sumtd2tprim_out tprim_in_t];
+              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]; 
+              make_decomp_ctr 5 rule3 [make_decomp_var true  (B 3) id id;make_decomp_var false (B 4) tp1 tm1;make_decomp_var true (B 4) id id]] 
+
 (*Tests*) 
 let x  = make_event_var true  (B 1) [make_index (I 1) [];make_index (T 1) []] 
 let i  = make_event_var true  (B 2) [make_index (I 1) []] 
@@ -318,7 +312,7 @@ let rootsx   = map printac (an (find    x  roots (hd roots) []))
 let rootsnx  = map printac (an (find (n x) roots (hd roots) [])) 
 let rangex   = map printac (an (find    x  range (hd range) [])) 
 let rangenx  = map printac (an (find (n x) range (hd range) [])) 
-let nvaluex  = map printac (an (find (n x) nvalue (hd nvalue) [])) 
+let nvaluex  = map printac (an (find (x) nvalue (hd nvalue) []))
  
  
 (*Output in tex file*) 
@@ -335,7 +329,9 @@ let explain x dec cons =
   close_out fic 
  
  
-let _ = explain (x) cumul BC 
+let _ = explain (x) nvalue AC
  
  
 (*TODO : mettre toutes les variables dans un seul tableau => plus travailler sur les evenements d' entree*) 
+ 
+(*TODO : detecter et enlever les redondances*) 
