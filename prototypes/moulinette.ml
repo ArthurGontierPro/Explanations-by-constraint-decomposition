@@ -1,6 +1,6 @@
 (*Moulinette by Arthur GONTIER 2020 (explenation genarator from constraint decomposition)*)
 open List
-type name = X | B of int | T | I | V 
+type name = X | B of int | T | I | V | N 
 (*indice options*)
 type ind = I of int | T of int
 type set = D of int
@@ -246,6 +246,19 @@ let s2 il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)
 let po il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*)
 let mo il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*)
 
+let ui il = match il with i::t::_ -> [t](*nvalue*)
+let vi il = match il with i::t::_ -> [sum i (D 1);t](*nvalue*)
+let iu il = match il with t::_ -> [ind (I 1) [];t](*nvalue*)
+let st il = match il with t::_ -> [sum t (D 2)](*nvalue*)
+let tt1 il = match il with t::_ -> [t;iprim t](*nvalue*)
+let tt2 il = match il with t::_ -> [iprim t;t](*nvalue*)
+let t1t il = match il with t::tt::_ -> [t](*nvalue*)
+let t2t il = match il with t::tt::_ -> [tt](*nvalue*)
+let t1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*)
+let t2 il = match il with t::_ -> [addint t PLUS 1](*nvalue*)
+
+
+
 (*Decompositions*)
 let alleq  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule3 [car true  (B 2) vv vi;car true  (B 1) s1 id];
@@ -273,7 +286,12 @@ let roots  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
 let range  = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
               ctr 2 rule6 [car true   T    id id;car true  (B 1) s2 id];
               ctr 2 rule7 [car true   T    id id;car true  (B 1) ir id]]
-
+let nvalue = [ctr 1 rule1 [car true  (B 1) id id;car true   X    id id];
+              ctr 2 rule4 [car true  (B 2) ui iu;car true  (B 1) vi id];
+              ctr 3 rule7 [car true  (B 3) t2t tt2;car true  (B 2) t1t tt1];]
+(*              ctr 4 rule1 [car true  (B 4) id id;car true   N    ir id];
+              ctr 5 rule3 [car true  (B 3) id id;car false (B 4) t1 t2;car true (B 4) ci ic]]
+*)
 (*Tests*)
 let x  = var true  (B 1) [ind (I 1) [];ind (T 1) []]
 let i  = var true  (B 2) [ind (I 1) []]
@@ -300,6 +318,7 @@ let rootsx   = map printac (an (find    x  roots (hd roots) []))
 let rootsnx  = map printac (an (find (n x) roots (hd roots) []))
 let rangex   = map printac (an (find    x  range (hd range) []))
 let rangenx  = map printac (an (find (n x) range (hd range) []))
+let nvaluex  = map printac (an (find (n x) nvalue (hd nvalue) []))
 
 
 (*Output in tex file*)
@@ -312,10 +331,12 @@ let rec printfraqtex el x cons fic = match el with
 let explain x dec cons = 
   let fic = open_out "exp.tex" in
   let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (hd dec) []))) in
-  let a = printfraqtex exptex (var x.s X [ind (I 1) [];ind (T 1) []]) cons fic in
+  let _ = printfraqtex exptex (var x.s X [ind (I 1) [];ind (T 1) []]) cons fic in
   close_out fic
 
 
 let _ = explain (x) cumul BC
 
+
+(*TODO : mettre toutes les variables dans un seul tableau => plus travailler sur les evenements d' entree*)
 
