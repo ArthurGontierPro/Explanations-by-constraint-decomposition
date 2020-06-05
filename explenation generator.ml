@@ -340,5 +340,4 @@ let _ = explain (n nn) atleastnvalue AC
 
  
 (*TODO : metre dans un vrais type la varible reifiee et les evenements*) 
-(*TODO : mettre toutes les variables dans un seul tableau => plus travailler sur les evenements d' entree*) 
  
