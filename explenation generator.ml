@@ -34,10 +34,10 @@ let make_decomp_ctr id r cvl = {id=id;explanation_rule=r;dec_var_list=cvl}
 let make_index i opl = {ind_name=i;ind_modifs_list=opl} 
  
 (*Print explanation in string*) 
-let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1) 
-let printind_name i = match i with I a -> "i"^printprim a | T a -> "t"^printprim a  
-let printind_set s = match s with D a -> "D"^printprim a 
-let printind_const c = match c with C a -> "c"^printprim a 
+let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
+let printind_name i = match i with I a -> "i_{"^string_of_int a^"}" | T a -> "t_{"^string_of_int a  ^"}"
+let printind_set s = match s with D a -> "D_{"^string_of_int a ^"}"
+let printind_const c = match c with C a -> "c_{"^string_of_int a ^"}"
 let printind_symbols s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"=" 
 let printind_modifs op= match op with 
   | Set (ind1,sym1,set1) ->printind_name ind1^printind_symbols sym1^printind_set set1 
@@ -55,7 +55,7 @@ let printevent_var cons v = match v.var_name with
   | T -> "ERROR T " 
   | I -> "   I"^printcons cons v^printi (hd v.index_list) 
   | V -> "   V"^printcons cons v^printi (hd v.index_list) 
-  | N -> "   N"^printcons BC v^printi (hd v.index_list) 
+  | N -> "   N"^printcons cons v^printi (hd v.index_list) 
 let rec printe el cons = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printe tl cons 
   | T -> printe tl cons 
@@ -78,7 +78,7 @@ let printvartex cons v = match v.var_name with
   | T -> "ERROR T " 
   | I -> "I"^printconstex cons v^printitex (hd v.index_list) 
   | V -> "V"^printconstex cons v^printitex (hd v.index_list) 
-  | N -> "N"^printconstex BC v^printitex (hd v.index_list) 
+  | N -> "N"^printconstex cons v^printitex (hd v.index_list) 
 let rec printetex el cons = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printetex tl cons 
   | T -> printetex tl cons 
@@ -161,14 +161,14 @@ and rule5 v cv c dec ch = (*Bool sum<=c*)
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign 
     then EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
-    else Lit IM 
+    else EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch)
   else  
     let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
       failwith "sommes multiples pas encore implémentés" 
     else  
       if v.var_sign = cv.dec_var_sign 
-      then Lit IM 
+      then EXAND (v,[fnvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
  
 and rule6 v cv c dec ch = (*Bool sum=>c*) 
@@ -176,7 +176,7 @@ and rule6 v cv c dec ch = (*Bool sum=>c*)
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
     then EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch) 
-    else Lit IM 
+    else EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch)
   else  
     let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
@@ -184,14 +184,14 @@ and rule6 v cv c dec ch = (*Bool sum=>c*)
     else  
       if v.var_sign = cv.dec_var_sign 
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
-      else Lit IM 
+      else EXAND (v,[fnvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch))  
  
 and rule7 v cv c dec ch = (*Bool sum=c*) 
   let vr = hd c.dec_var_list in 
   if cv.dec_var_name=vr.dec_var_name then 
     if cv.dec_var_sign = vr.dec_var_sign  
-    then Lit IM 
-    else EXAND (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
+    then  EXAND (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
+    else EXOR (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
   else  
     let cvl =subl cv (tl c.dec_var_list) in 
     if not (cvl=[]) then 
@@ -200,7 +200,7 @@ and rule7 v cv c dec ch = (*Bool sum=c*)
       if v.var_sign = cv.dec_var_sign 
       then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
       else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
- 
+
 let rec removesame l = (*remove keeps one occurence of each element*)
   match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
 let rec imp l = (*detect impossibles literals*) 
@@ -246,8 +246,9 @@ let ip1t il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*)
 let im1t il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
 
 let sumtd2 il = match il with t::_ -> [sum t (D 2)](*nvalue*) 
-let ttprim_in il = match il with t::_ -> [t;iprim t](*nvalue*) 
-let tprim_in_t il = match il with t::_ -> [iprim t;t](*nvalue*) 
+let sumtd3 il = match il with t::_ -> [sum t (D 3)](*nvalue*) 
+let tt10_in il = match il with t::_ -> [t;make_index (T 10) [Set (T 10,IN,D 3)]](*nvalue*) 
+let t1_in_t il = match il with t::_ -> [make_index (T 1) [Set (T 1,IN,D 2)];t](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
 let tm1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*) 
 let tp1 il = match il with t::_ -> [addint t PLUS 1](*nvalue*) 
 let sumtd2tprim_out il = match il with t::tt::_ -> [sum t (D 2)](*nvalue*) 
@@ -282,14 +283,19 @@ let range  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_de
               make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid2t id]]
 let nvalue = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
               make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) i_out id1_in_t;make_decomp_var true  (B 1) sumid1t id]; 
-              make_decomp_ctr 3 rule7 [make_decomp_var true  (B 3) t_out ttprim_in;make_decomp_var true  (B 2)  sumtd2tprim_out tprim_in_t];
-              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]; 
-              make_decomp_ctr 5 rule3 [make_decomp_var true  (B 3) id id;make_decomp_var false (B 4) tp1 tm1;make_decomp_var true (B 4) id id]] 
+              make_decomp_ctr 3 rule7 [make_decomp_var true  (B 4) t_out tt10_in;make_decomp_var true  (B 2)  sumtd2tprim_out t1_in_t];
+              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]]
+              (*make_decomp_ctr 5 rule3 [make_decomp_var true  (B 3) id id;make_decomp_var false (B 4) tp1 tm1;make_decomp_var true (B 4) id id]]*)
+let atleastnvalue = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
+              make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) i_out id1_in_t;make_decomp_var true  (B 1) sumid1t id]; 
+              make_decomp_ctr 3 rule5 [make_decomp_var true  (B 4) t_out tt10_in;make_decomp_var true  (B 2)  sumtd2tprim_out t1_in_t];
+              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]]
 
 (*Tests*) 
 let x  = make_event_var true  (B 1) [make_index (I 1) [];make_index (T 1) []] 
 let i  = make_event_var true  (B 2) [make_index (I 1) []] 
 let v  = make_event_var true  (B 3) [make_index (T 1) []] 
+let nn = make_event_var true  (B 4) [make_index (T 1) []] 
 let printac l = printe l AC 
 let printbc l = printe l BC 
 let alleqx   = map printbc (an (find    x  alleq (hd alleq) [])) 
@@ -312,26 +318,27 @@ let rootsx   = map printac (an (find    x  roots (hd roots) []))
 let rootsnx  = map printac (an (find (n x) roots (hd roots) [])) 
 let rangex   = map printac (an (find    x  range (hd range) [])) 
 let rangenx  = map printac (an (find (n x) range (hd range) [])) 
-let nvaluex  = map printac (an (find (x) nvalue (hd nvalue) []))
+let nvaluex  = map printac (an (find (  x) nvalue (hd nvalue) []))
+let nvaluenx = map printac (an (find (n x) nvalue (hd nvalue) []))
  
  
 (*Output in tex file*) 
 open Printf 
 let rec printfraqtex el x cons fic = match el with  
   | [] -> () 
-  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex cons x^"}$$ ");printfraqtex tl x cons fic 
+  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x cons fic 
  
 (*Output explanations from a decomposition of a global constraint*) 
 let explain x dec cons =  
   let fic = open_out "exp.tex" in 
-  let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (hd dec) []))) in 
-  let _ = printfraqtex exptex (make_event_var x.var_sign X [make_index (I 1) [];make_index (T 1) []]) cons fic in 
+  let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (match dec with a::b::c::d::_->d) []))) in 
+  let _ = printfraqtex exptex (make_event_var x.var_sign N [make_index (T 10) []]) cons fic in 
   close_out fic 
  
+let _ = explain (n nn) atleastnvalue AC
+
+
  
-let _ = explain (x) nvalue AC
- 
- 
+(*TODO : metre dans un vrais type la varible reifiee et les evenements*) 
 (*TODO : mettre toutes les variables dans un seul tableau => plus travailler sur les evenements d' entree*) 
  
-(*TODO : detecter et enlever les redondances*) 
