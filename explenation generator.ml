@@ -7,32 +7,191 @@ type ind_set = D of int
 type ind_const = C of int 
 type ind_symbols = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ 
 type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*) 
-           | Rel of ind_name*ind_symbols*ind_name (*I≠I2*) 
-           | Addint of ind_name*ind_name*ind_symbols*int (*I2=I+1*) 
-           | Addcst of ind_name*ind_name*ind_symbols*ind_const*ind_name (*I3=I2-C I*) 
-           | EXFORALL of ind_name 
-           | EXEXISTS of ind_name 
+                  | Rel of ind_name*ind_symbols*ind_name (*I≠I2*) 
+                  | Addint of ind_name*ind_name*ind_symbols*int (*I2=I+1*) 
+                  | Addcst of ind_name*ind_name*ind_symbols*ind_const*ind_name (*I3=I2-C I*) 
+                  | EXFORALL of ind_name 
+                  | EXEXISTS of ind_name 
 type consistancy = AC | BC 
 (*Global indice type*) 
-type index = {ind_name:ind_name;ind_modifs_list:ind_modifs list} 
-(*variable*) 
-type event_var = { var_sign:bool; var_name:var_name;index_list:index list} 
-(*variables in ctrs*) 
-type decomp_var = {dec_var_sign:bool;dec_var_name:var_name;index_propagate:index list->index list;index_update:index list->index list} 
+type index = Ind of ind_name*ind_modifs list 
+type event = | Global_event of bool*var_name*index list*consistancy
+             | Decomp_event of bool*var_name*index list
+type decomp_event = | Global_devent  of bool*var_name*(index list->index list)*(index list->index list)*consistancy
+                    | Decomp_devent  of bool*var_name*(index list->index list)*(index list->index list)
+                    | Reified_devent of bool*var_name*(index list->index list)*(index list->index list)
 (*explanation tree*) 
-type leaf = Var of event_var | T | F | IM | R | FE 
+type leaf = Var of event | T | F | IM | R | FE 
 type tree = | Lit of leaf 
-           | EXOR of event_var*tree list 
-           | EXAND of event_var*tree list 
-(*constraint with id, explanation rule and make_decomp_var list*) 
-type decomp_ctr = {id:int;explanation_rule:event_var->decomp_var->decomp_ctr->decomp_ctr list->event_var list->tree;dec_var_list:decomp_var list} 
+            | EXOR of event*tree list 
+            | EXAND of event*tree list 
+(*constraint with id, explanation rule and devent list*) 
+type decomp_ctr = Decomp of int*(event->decomp_event->decomp_ctr->decomp_ctr list->event list->tree)*decomp_event list
+
+(*event accessors*)
+let sign x = match x with Global_event (b,_,_,_) | Decomp_event (b,_,_) -> b
+let dsign x = match x with Global_devent (b,_,_,_,_) | Decomp_devent (b,_,_,_) | Reified_devent (b,_,_,_) -> b
+let name x = match x with Global_event (_,n,_,_) | Decomp_event (_,n,_) -> n
+let dname x = match x with Global_devent (_,n,_,_,_) | Decomp_devent (_,n,_,_) | Reified_devent (_,n,_,_) -> n
+let index_list x = match x with Global_event (_,_,l,_) | Decomp_event (_,_,l)->l
+let cons x = match x with Global_event (_,_,_,c) -> c
+  | _ -> failwith "inner decomp events have no consistancy"
+let dcons x = match x with Global_devent (_,_,_,_,c) -> c 
+  | _ -> failwith "inner decomp events have no consistancy"
+let index_update x = match x with Global_devent (_,_,f,_,_) | Decomp_devent (_,_,f,_) | Reified_devent (_,_,f,_) -> f
+let index_propagate x = match x with Global_devent (_,_,_,f,_) | Decomp_devent (_,_,_,f) | Reified_devent (_,_,_,f) -> f
+let ind_name i = match i with Ind (i,_) -> i
+let ind_modifs_list i = match i with Ind (_,l) -> l
+let decomp_ctr_rule c = match c with Decomp (_,r,_) -> r
+let decomp_ctr_id c = match c with Decomp (id,_,_) -> id
+let decomp_event_list c = match c with Decomp (_,_,l) -> l
  
-(*fast constructors*) 
-let make_event_var b n il = {var_sign=b;var_name=n;index_list=il} 
-let make_decomp_var b n f fa = {dec_var_sign=b;dec_var_name=n;index_propagate=f;index_update=fa} 
-let make_decomp_ctr id r cvl = {id=id;explanation_rule=r;dec_var_list=cvl} 
-let make_index i opl = {ind_name=i;ind_modifs_list=opl} 
+let id  x = x(*identity function*) 
+let n   e = match e with(*negation of event x*) 
+  | Global_event (b,n,l,c)-> Global_event (not b,n,l,c)
+  | Decomp_event (b,n,l) -> Decomp_event (not b,n,l)
+(*apply index modification functions on an event*) 
+let ap  e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(index_propagate de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(index_propagate de) ((index_update dep) (index_list e)))
+(*apply index modification functions with negation*) 
+let nap e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)))
+(*Utilitary functions*) 
+let rec invars e del = (* devent in decomp ctr list? *) 
+  match del with [] -> false | de::tl -> if dname de = name e then true else invars e tl 
+let rec vars e del = (* event list with the same name as e*) 
+  match del with [] -> [] | de::tl -> if dname de = name e then de::vars e tl else vars e tl 
+let rec ctrs e dec = (* constraint list where event e appears*) 
+  match dec with [] -> [] | c::tl -> if invars e (decomp_event_list c) then c::ctrs e tl else ctrs e tl 
+let rec subl e l = (* event list without event e*) 
+  match l with [] -> [] | c::tl -> if (dsign e = dsign c)&&(dname e = dname c) then subl e tl else c::subl e tl 
+let rec subc cc l = (* ctr list without constraint cc*) 
+  match l with [] -> [] | c::tl -> if  decomp_ctr_id cc = decomp_ctr_id c then subc cc tl else c::subc cc tl 
+let rec inl cc l = (* cc in list l? *) 
+  match l with [] -> false | c::tl -> if cc=c then true else inl cc tl 
+let rec reified_devent del = 
+  match del with [] -> Reified_devent (true, T,id,id) | de::tl -> match de with | Reified_devent (_,_,_,_) -> de | _ -> reified_devent tl
  
+(*find event e  in the decomposition and call the explanations rules*) 
+let rec find e prec dec ch =  
+  if inl e ch || inl (n e) ch then Lit R else 
+  let cl = ctrs e dec in 
+  let cl = subc prec cl in 
+  if cl = [] then Lit IM else 
+  EXOR (e,flatten (map (fun c-> map (fun de -> (decomp_ctr_rule c) e de c dec (ch@[e])) (vars e (decomp_event_list c))) cl)) 
+ 
+and fre  re e de c dec ch =  (*explanation by refied event*) 
+  if dname re  = T then Lit T else EXAND (e,[find ( ap e re de) c dec ch]) 
+and fnre re e de c dec ch =  (*explanation by negative refied event*) 
+  if dname re  = T then Lit F else EXAND (e,[find (nap e re de) c dec ch])
+and fel  del e de c dec ch = (*explanation by event list*) 
+  map (fun dee-> find ( ap e dee de) c dec ch) del 
+and fnel del e de c dec ch = (*explanation by negative event list*) 
+  map (fun dee-> find (nap e dee de) c dec ch) del 
+
+(*Explenation rules*) 
+and rule1 e de c dec ch = (*Global_devent<=>Reified_devent*) 
+  let re = reified_devent (decomp_event_list c) in 
+  let x = hd (subl re (decomp_event_list c)) in 
+  if dname re = name e 
+  then if dsign de = sign e 
+    then EXAND (e,[Lit (Var ( ap e x re))]) 
+    else EXAND (e,[Lit (Var (nap e x re))]) 
+  else Lit FE
+
+and rule3 e de c dec ch = (*conjonction*) 
+  let re = reified_devent (decomp_event_list c) in
+  let del = subl re (decomp_event_list c) in
+  if dname de = dname re
+  then if dsign de = sign e
+    then EXAND (e, fel del e de c dec ch) 
+    else EXOR  (e,fnel del e de c dec ch) 
+  else  
+    let del = match del with _::[] -> del | _ ->  subl de del in
+    if sign e = dsign de
+    then fre re e de c dec ch 
+    else EXAND (e,[fnre re e de c dec ch]@(fel del e de c dec ch)) 
+
+and rule4 e de c dec ch = (*disjunction*) 
+  let re = reified_devent (decomp_event_list c) in
+  let del = subl re (decomp_event_list c) in
+  if dname de = dname re
+  then if dsign de = sign e 
+    then EXOR  (e, fel del e de c dec ch) 
+    else EXAND (e,fnel del e de c dec ch) 
+  else  
+    let del = match del with _::[] -> del | _ ->  subl de del in
+    if sign e = dsign de
+    then EXAND (e,[fre re e de c dec ch]@(fnel del e de c dec ch)) 
+    else fnre re e de c dec ch 
+
+and rule5 e de c dec ch = (*Bool sum<=c*) 
+  let re = reified_devent (decomp_event_list c) in
+  let del = subl re (decomp_event_list c) in
+  if dname de = dname re
+  then if dsign de = sign e 
+    then EXAND (e,fnel del e de c dec ch) 
+    else EXAND (e,fel del e de c dec ch)
+  else  
+    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
+    if sign e = dsign de
+    then EXAND (e,[fnre re e de c dec ch]@(fnel del e de c dec ch)) 
+    else EXAND (e,[ fre re e de c dec ch]@( fel del e de c dec ch)) 
+    
+ and rule6 e de c dec ch = (*Bool sum=>c*) 
+  let re = reified_devent (decomp_event_list c) in
+  let del = subl re (decomp_event_list c) in
+  if dname de = dname re
+  then if dsign de = sign e 
+    then EXAND (e, fel del e de c dec ch) 
+    else EXAND (e,fnel del e de c dec ch)
+  else  
+    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
+    if sign e = dsign de
+    then EXAND (e,[ fre re e de c dec ch]@(fnel del e de c dec ch)) 
+    else EXAND (e,[fnre re e de c dec ch]@( fel del e de c dec ch))  
+ 
+and rule7 e de c dec ch = (*Bool sum=c*) 
+  let re = reified_devent (decomp_event_list c) in
+  let del = subl re (decomp_event_list c) in
+  if dname de = dname re
+  then if dsign de = sign e 
+    then EXAND (e,(fel del e de c dec ch)@(fnel del e de c dec ch))(*incohérent?*) 
+    else EXOR  (e,(fel del e de c dec ch)@(fnel del e de c dec ch))(*incohérent?*) 
+  else  
+    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
+    if sign e = dsign de
+    then EXAND (e,[fre re e de c dec ch]@(fnel del e de c dec ch)) 
+    else EXAND (e,[fre re e de c dec ch]@( fel del e de c dec ch)) 
+
+let rec removesame l = (*keeps one occurence of each element*)
+  match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
+let rec imp l = (*detect impossibles literals*) 
+  match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl 
+let rec removeimp ll = (*remove explenation with impossible literals*) 
+  match ll with []->[]|l::tl->if imp l || inl l tl then removeimp tl else [removesame l]@(removeimp tl) 
+ 
+let morgan l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
+  match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl 
+
+let rec an a = (*analysis of the explanation tree, return explanation list*) 
+  match a with 
+    | Lit x -> [[x]] 
+    | EXOR (_,l) -> flatten (map an l) 
+    | EXAND (_,l) -> morgan (map an l) 
+
+(*Input global event*)
+let rule0 e de c dec ch = (*Global_devent<=>Reified_devent*)  
+  let re = reified_devent (decomp_event_list c) in 
+  let x = hd (subl re (decomp_event_list c)) in 
+  if dsign de = sign e 
+  then  fre re e de c dec ch
+  else fnre re e de c dec ch
+
 (*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
 let printind_name i = match i with I a -> "i_{"^string_of_int a^"}" | T a -> "t_{"^string_of_int a  ^"}"
@@ -47,19 +206,19 @@ let printind_modifs op= match op with
   | EXFORALL ind1 ->"∀"^printind_name ind1 
   | EXEXISTS ind1 ->"∃"^printind_name ind1 
 let rec printiopl il = match il with []->""|i::tl->printind_modifs i^","^printiopl tl 
-let printi i = printind_name i.ind_name^" "^printiopl i.ind_modifs_list 
-let printcons c v = match c with AC -> if v.var_sign then "=" else "≠" | BC -> if v.var_sign then "≥" else "<" 
-let printevent_var cons v = match v.var_name with 
-  | X -> "   X"^printind_name (hd v.index_list).ind_name^(printcons cons v)^(match v.index_list with a::b::_ -> printind_name b.ind_name^" "^printiopl b.ind_modifs_list^printiopl a.ind_modifs_list | _ ->failwith "what?") 
+let printi i = printind_name (ind_name i)^" "^printiopl (ind_modifs_list i) 
+let printcons v = match cons v with AC -> if sign v then "=" else "≠" | BC -> if sign v then "≥" else "<" 
+let printevent_var v = match name v with 
+  | X -> "   X"^printind_name (ind_name (hd (index_list v)))^(printcons v)^(match index_list v with a::b::_ -> printind_name (ind_name b)^" "^printiopl (ind_modifs_list b)^printiopl (ind_modifs_list a) | _ ->failwith "what?") 
   | B i -> "ERROR B " 
   | T -> "ERROR T " 
-  | I -> "   I"^printcons cons v^printi (hd v.index_list) 
-  | V -> "   V"^printcons cons v^printi (hd v.index_list) 
-  | N -> "   N"^printcons cons v^printi (hd v.index_list) 
-let rec printe el cons = match el with []->"" | e::tl -> match e with  
-  |F|IM|FE|R -> "? "^printe tl cons 
-  | T -> printe tl cons 
-  | Var v -> printevent_var cons v^printe tl cons 
+  | I -> "   I"^printcons v^printi (hd (index_list v)) 
+  | V -> "   V"^printcons v^printi (hd (index_list v)) 
+  | N -> "   N"^printcons v^printi (hd (index_list v)) 
+let rec printe el = match el with []->"" | e::tl -> match e with  
+  |F|IM|FE|R -> "? "^printe tl 
+  | T -> printe tl 
+  | Var v -> printevent_var v^printe tl 
 (*Print explanation in LaTex*) 
 let printsymtex s = match s with PLUS-> "+"|MINUS->"-"|IN->" \\in "|NEQ->" \\neq "|LEQ->" \\leq "|GEQ->" \\geq "|EQ->"=" 
 let printioptex op= match op with 
@@ -70,159 +229,39 @@ let printioptex op= match op with
   | EXFORALL ind1 ->"~\\forall "^printind_name ind1 
   | EXEXISTS ind1 ->"~\\exists "^printind_name ind1 
 let rec printiopltex il = match il with []->""|i::tl->printioptex i^",~"^printiopltex tl 
-let printitex i = printind_name i.ind_name^" "^printiopltex i.ind_modifs_list 
-let printconstex c v = match c with AC -> if v.var_sign then "=" else " \\neq " | BC -> if v.var_sign then " \\geq " else "<" 
-let printvartex cons v = match v.var_name with 
-  | X -> "X_{"^printind_name (hd v.index_list).ind_name^"}"^(printconstex cons v)^(match v.index_list with a::b::_ -> printind_name b.ind_name^"~"^printiopltex b.ind_modifs_list^printiopltex a.ind_modifs_list | _ ->failwith "what?") 
+let printitex i = printind_name (ind_name i)^" "^printiopltex (ind_modifs_list i) 
+let printconstex v = match cons v with AC -> if sign v then "=" else " \\neq " | BC -> if sign v then " \\geq " else "<"
+let printvartex v = match name v with 
+  | X -> "X_{"^printind_name (ind_name (hd (index_list v)))^"}"^(printconstex v)^(match index_list v with a::b::_ -> printind_name (ind_name b)^"~"^printiopltex (ind_modifs_list b)^printiopltex (ind_modifs_list a) | _ ->failwith "what?") 
   | B i -> "ERROR B " 
   | T -> "ERROR T " 
-  | I -> "I"^printconstex cons v^printitex (hd v.index_list) 
-  | V -> "V"^printconstex cons v^printitex (hd v.index_list) 
-  | N -> "N"^printconstex cons v^printitex (hd v.index_list) 
-let rec printetex el cons = match el with []->"" | e::tl -> match e with  
-  |F|IM|FE|R -> "? "^printetex tl cons 
-  | T -> printetex tl cons 
-  | Var v -> printvartex cons v^"~~~"^printetex tl cons 
- 
-let id  x = x(*identity function*) 
-let n   x = if x.var_sign then make_event_var false x.var_name x.index_list else make_event_var true x.var_name x.index_list (*negation of event_var x*) 
-(*apply index modification functions on a variable*) 
-let ap  v cv cvp = make_event_var cv.dec_var_sign cv.dec_var_name (cv.index_propagate (cvp.index_update v.index_list)) 
-(*apply index modification functions with negation*) 
-let nap v cv cvp = make_event_var (not cv.dec_var_sign) cv.dec_var_name (cv.index_propagate (cvp.index_update v.index_list)) 
- 
-(*Utilitary functions*) 
-let rec invars v cvl = (* make_event_var v in make_decomp_var list? *) 
-  match cvl with [] -> false | cv::tl -> if cv.dec_var_name=v.var_name then true else invars v tl 
-let rec vars v cvl = (* vars list with the same name as v*) 
-  match cvl with [] -> [] | cv::tl -> if cv.dec_var_name=v.var_name then cv::vars v tl else vars v tl 
-let rec ctrs v dec = (* constraint list where v is*) 
-  match dec with [] -> [] | c::tl -> if invars v c.dec_var_list then c::ctrs v tl else ctrs v tl 
-let rec subl v l = (* make_event_var list without variable v*) 
-  match l with [] -> [] | c::tl -> if (v.dec_var_sign=c.dec_var_sign)&&(v.dec_var_name=c.dec_var_name) then subl v tl else c::subl v tl 
-let rec subc v l = (* make_decomp_ctr list without constraint v*) 
-  match l with [] -> [] | c::tl -> if v.id=c.id then subc v tl else c::subc v tl 
-let rec inl v l = (* v in list l? *) 
-  match l with [] -> false | c::tl -> if v=c then true else inl v tl 
- 
-(*find and call rules that explain varriable v*) 
-let rec find v dec prec ch =  
-  if inl v ch || inl (n v) ch then Lit R else 
-  let cl = ctrs v dec in 
-  let cl = subc prec cl in 
-  if cl = [] then Lit IM else 
-  EXOR (v,flatten (map (fun c-> map (fun cv -> c.explanation_rule v cv c dec ch) (vars v c.dec_var_list)) cl)) 
- 
-and fvr vr v cv dec c ch = (*explanation by refied variable*) 
-  if vr.dec_var_name = T then Lit T else EXAND (v,[find (ap v vr cv) dec c (ch@[v])]) 
-and fnvr vr v cv dec c ch = (*explanation by negative refied variable*) 
-  if vr.dec_var_name = T then Lit F else EXAND (v,[find (nap v vr cv) dec c (ch@[v])]) 
-and fvl vl v cv dec c ch = (*explanation by variable list*) 
-  map (fun cv2-> find (ap v cv2 cv) dec c (ch@[v])) vl 
-and fnvl vl v cv dec c ch = (*explanation by negative variable list*) 
-  map (fun cv2-> find (nap v cv2 cv) dec c (ch@[v])) vl 
- 
-(*Explenation rules*) 
-and rule1 v cv c dec ch = (*b<=>Xi=t*) 
-  let b = hd c.dec_var_list in 
-  let x = hd (tl c.dec_var_list) in 
-  if b.dec_var_name = v.var_name  
-  then if v.var_sign = cv.dec_var_sign 
-    then EXAND (v,[Lit (Var ( ap v x b))]) 
-    else EXAND (v,[Lit (Var (nap v x b))]) 
-  else Lit FE 
- 
-and rule3 v cv c dec ch = (*conjonction*) 
-  let vr = hd c.dec_var_list in 
-  if cv.dec_var_name=vr.dec_var_name then 
-    if v.var_sign = cv.dec_var_sign 
-    then EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch) 
-    else EXOR (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
-  else  
-    let cvl = if not ((tl (tl c.dec_var_list))=[]) then subl cv (tl c.dec_var_list) else c.dec_var_list in 
-    if v.var_sign = cv.dec_var_sign 
-    then fvr vr v cv dec c ch 
-    else EXAND (v,[fnvr vr v cv dec c ch]@(fvl cvl v cv dec c ch)) 
- 
-and rule4 v cv c dec ch = (*disjunction*) 
-  let vr = hd c.dec_var_list in 
-  if cv.dec_var_name=vr.dec_var_name then 
-    if v.var_sign = cv.dec_var_sign 
-    then EXOR (v,fvl (tl c.dec_var_list) v cv dec c ch) 
-    else EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
-  else  
-    let cvl = if not ((tl (tl c.dec_var_list))=[]) then subl cv (tl c.dec_var_list) else c.dec_var_list in 
-    if v.var_sign = cv.dec_var_sign 
-    then EXAND (v,[fvr vr v cv dec c ch]@(fnvl cvl v cv dec c ch)) 
-    else fnvr vr v cv dec c ch 
- 
-and rule5 v cv c dec ch = (*Bool sum<=c*) 
-  let vr = hd c.dec_var_list in 
-  if cv.dec_var_name=vr.dec_var_name then 
-    if cv.dec_var_sign = vr.dec_var_sign 
-    then EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch) 
-    else EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch)
-  else  
-    let cvl =subl cv (tl c.dec_var_list) in 
-    if not (cvl=[]) then 
-      failwith "sommes multiples pas encore implémentés" 
-    else  
-      if v.var_sign = cv.dec_var_sign 
-      then EXAND (v,[fnvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
- 
-and rule6 v cv c dec ch = (*Bool sum=>c*) 
-  let vr = hd c.dec_var_list in 
-  if cv.dec_var_name=vr.dec_var_name then 
-    if cv.dec_var_sign = vr.dec_var_sign  
-    then EXAND (v,fvl (tl c.dec_var_list) v cv dec c ch) 
-    else EXAND (v,fnvl (tl c.dec_var_list) v cv dec c ch)
-  else  
-    let cvl =subl cv (tl c.dec_var_list) in 
-    if not (cvl=[]) then 
-      failwith "sommes multiples pas encore implémentés" 
-    else  
-      if v.var_sign = cv.dec_var_sign 
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
-      else EXAND (v,[fnvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch))  
- 
-and rule7 v cv c dec ch = (*Bool sum=c*) 
-  let vr = hd c.dec_var_list in 
-  if cv.dec_var_name=vr.dec_var_name then 
-    if cv.dec_var_sign = vr.dec_var_sign  
-    then  EXAND (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
-    else EXOR (v,(fvl (tl c.dec_var_list) v cv dec c ch)@(fnvl (tl c.dec_var_list) v cv dec c ch))(*incohérent?*) 
-  else  
-    let cvl =subl cv (tl c.dec_var_list) in 
-    if not (cvl=[]) then 
-      failwith "sommes multiples pas encore implémentés" 
-    else  
-      if v.var_sign = cv.dec_var_sign 
-      then EXAND (v,[fvr vr v cv dec c ch]@(fnvl (tl c.dec_var_list) v cv dec c ch)) 
-      else EXAND (v,[fvr vr v cv dec c ch]@(fvl (tl c.dec_var_list) v cv dec c ch)) 
+  | I -> "I"^printconstex v^printitex (hd (index_list v)) 
+  | V -> "V"^printconstex v^printitex (hd (index_list v)) 
+  | N -> "N"^printconstex v^printitex (hd (index_list v)) 
+let rec printetex el = match el with []->"" | e::tl -> match e with  
+  |F|IM|FE|R -> "? "^printetex tl 
+  | T -> printetex tl
+  | Var v -> printvartex v^"~~~"^printetex tl
 
-let rec removesame l = (*remove keeps one occurence of each element*)
-  match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
-let rec imp l = (*detect impossibles literals*) 
-  match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl 
-let rec removeimp ll = (*remove explenation with impossible literals*) 
-  match ll with []->[]|l::tl->if imp l || inl l tl then removeimp tl else [removesame l]@(removeimp tl) 
- 
-let morgan l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
-  match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl 
+(*Output fraction in tex file*) 
+open Printf 
+let rec printfraqtex el x fic = match el with  
+  | [] -> () 
+  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex x^"}$$ ");printfraqtex tl x fic 
 
-let rec an a = (*analysis of the explanation tree, return explanations*) 
-  match a with 
-    | Lit x -> [[x]] 
-    | EXOR (_,l) -> flatten (map an l) 
-    | EXAND (_,l) -> morgan (map an l) 
+(*Output event explanation LateX rule from a global event and a decomposition*) 
+let explain e dec = 
+  let fic = open_out "exp.tex" in 
+  let cl = ctrs e dec in  
+  let _ = printfraqtex (map (fun l-> printetex l) (removeimp (an (EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)))))) e fic in
+  close_out fic 
 
 (*Constructors for index modification functions*) 
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1) 
-let iprim i = make_index (prim i.ind_name) i.ind_modifs_list 
-let addint i sym int = make_index (prim i.ind_name) ([Addint ((prim i.ind_name),i.ind_name,sym,int)]@i.ind_modifs_list) 
-let addcst i sym cst i2 = make_index (prim i.ind_name) ([Addcst ((prim i.ind_name),i.ind_name,sym,cst,i2.ind_name)]@i.ind_modifs_list) 
-let sum i d = make_index (prim i.ind_name) ([EXFORALL (prim i.ind_name);Set (prim i.ind_name,IN,d);Rel (prim i.ind_name,NEQ,i.ind_name);Set (i.ind_name,IN,d)]@i.ind_modifs_list) 
+let iprim i = Ind (prim (ind_name i), ind_modifs_list i) 
+let addint i sym int = Ind (prim (ind_name i), [Addint (prim (ind_name i), ind_name i, sym, int)]@ind_modifs_list i) 
+let addcst i sym cst i2 = Ind (prim (ind_name i), [Addcst (prim (ind_name i), ind_name i, sym, cst, ind_name i2)]@ind_modifs_list i) 
+let sum i d = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i), IN, d); Rel (prim (ind_name i), NEQ, ind_name i); Set (ind_name i, IN, d)]@ind_modifs_list i) 
  
 (*Index modification functions*)  
 let itmc1i il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*) 
@@ -232,112 +271,68 @@ let sumid1t il = match il with i::t::_ -> [sum i (D 1);t](*sums*)
  
 let i_out il = match il with i::t::_ -> [t](*elem*) 
 let t_out il = match il with i::t::_ -> [i]
-let tfor_in il = [hd il;make_index (T 1) [EXFORALL (T 1)]] 
-let ifor_in il = [make_index (I 1) [EXFORALL (I 1)];hd il] 
+let tfor_in il = [hd il;Ind ((T 1), [EXFORALL (T 1)])] 
+let ifor_in il = [Ind ((I 1), [EXFORALL (I 1)]);hd il] 
  
 let isumtd1 il = match il with i::t::_ -> [i;sum t (D 1)](*roots*) 
 let isumtd2 il = match il with i::t::_ -> [i;sum t (D 2)](*roots*) 
  
 let sumid2t il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)  
-let id1_in_t il = match il with t::_ -> [make_index (I 1) [Set (I 1,IN,D 1)];t]
-let id2_in_t il = match il with t::_ -> [make_index (I 1) [Set (I 1,IN,D 2)];t]
+let id1_in_t il = match il with t::_ -> [Ind ((I 1), [Set (I 1,IN,D 1)]);t]
+let id2_in_t il = match il with t::_ -> [Ind ((I 1), [Set (I 1,IN,D 2)]);t]
 
 let ip1t il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*) 
 let im1t il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
 
 let sumtd2 il = match il with t::_ -> [sum t (D 2)](*nvalue*) 
 let sumtd3 il = match il with t::_ -> [sum t (D 3)](*nvalue*) 
-let tt10_in il = match il with t::_ -> [t;make_index (T 10) [Set (T 10,IN,D 3)]](*nvalue*) 
-let t1_in_t il = match il with t::_ -> [make_index (T 1) [Set (T 1,IN,D 2)];t](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
+let tt10_in il = match il with t::_ -> [t;Ind ((T 10), [Set (T 10,IN,D 3)])](*nvalue*) 
+let t1_in_t il = match il with t::_ -> [Ind ((T 1), [Set (T 1,IN,D 2)]);t](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
 let tm1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*) 
 let tp1 il = match il with t::_ -> [addint t PLUS 1](*nvalue*) 
 let sumtd2tprim_out il = match il with t::tt::_ -> [sum t (D 2)](*nvalue*) 
-
- 
- 
  
 (*Decompositions*) 
-let alleq  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) t_out id1_in_t ;make_decomp_var true  (B 1) sumid1t id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 3) t_out id2_in_t ;make_decomp_var false (B 1) sumid2t id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var true  (B 2) id id;make_decomp_var true  (B 3) id id]] 
-let alldif = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid1t id]] 
-let cumul  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule3 [make_decomp_var true  (B 2) id id;make_decomp_var false (B 1) id id;make_decomp_var true (B 1) itpc1i itmc1i]; 
-              make_decomp_ctr 3 rule5 [make_decomp_var true   T    id id;make_decomp_var true  (B 2) sumid1t id]] 
-let gcc    = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid1t id]] 
-let incr   = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var false (B 1) id id;make_decomp_var true  (B 1) ip1t im1t]] 
-let elem   = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule1 [make_decomp_var true  (B 2) id id;make_decomp_var true   I    id id]; 
-              make_decomp_ctr 3 rule1 [make_decomp_var true  (B 3) id id;make_decomp_var true   V    id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var false (B 3) i_out ifor_in;make_decomp_var false (B 2) t_out tfor_in;make_decomp_var true  (B 1) id id]; 
-              make_decomp_ctr 4 rule4 [make_decomp_var true   T    id id;make_decomp_var true  (B 3) i_out ifor_in;make_decomp_var false (B 2) t_out tfor_in;make_decomp_var false (B 1) id id]] 
-let roots  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd1 id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd2 id]] 
-let range  = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule6 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) isumtd1 id]; 
-              make_decomp_ctr 2 rule7 [make_decomp_var true   T    id id;make_decomp_var true  (B 1) sumid2t id]]
-let nvalue = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) i_out id1_in_t;make_decomp_var true  (B 1) sumid1t id]; 
-              make_decomp_ctr 3 rule7 [make_decomp_var true  (B 4) t_out tt10_in;make_decomp_var true  (B 2)  sumtd2tprim_out t1_in_t];
-              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]]
-              (*make_decomp_ctr 5 rule3 [make_decomp_var true  (B 3) id id;make_decomp_var false (B 4) tp1 tm1;make_decomp_var true (B 4) id id]]*)
-let atleastnvalue = [make_decomp_ctr 1 rule1 [make_decomp_var true  (B 1) id id;make_decomp_var true   X    id id]; 
-              make_decomp_ctr 2 rule4 [make_decomp_var true  (B 2) i_out id1_in_t;make_decomp_var true  (B 1) sumid1t id]; 
-              make_decomp_ctr 3 rule5 [make_decomp_var true  (B 4) t_out tt10_in;make_decomp_var true  (B 2)  sumtd2tprim_out t1_in_t];
-              make_decomp_ctr 4 rule1 [make_decomp_var true  (B 4) id id;make_decomp_var true   N    id id]]
+let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id,  AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), sumid1t, id); Reified_devent (true, (B 2), t_out, id1_in_t)]);
+              Decomp (2, rule3, [Decomp_devent (false, (B 1), sumid2t, id); Reified_devent (true, (B 3), t_out, id2_in_t)]);
+              Decomp (3, rule4, [Decomp_devent (true , (B 2), id, id); Decomp_devent (true, (B 3), id, id)])]
 
-(*Tests*) 
-let x  = make_event_var true  (B 1) [make_index (I 1) [];make_index (T 1) []] 
-let i  = make_event_var true  (B 2) [make_index (I 1) []] 
-let v  = make_event_var true  (B 3) [make_index (T 1) []] 
-let nn = make_event_var true  (B 4) [make_index (T 1) []] 
-let printac l = printe l AC 
-let printbc l = printe l BC 
-let alleqx   = map printbc (an (find    x  alleq (hd alleq) [])) 
-let alleqnx  = map printbc (an (find (n x) alleq (hd alleq) [])) 
-let alldifx  = map printac (an (find    x  alldif (hd alldif) [])) 
-let alldifnx = map printac (an (find (n x) alldif (hd alldif) [])) 
-let cumulx   = map printbc (an (find    x  cumul (hd cumul) [])) 
-let cumulnx  = map printbc (an (find (n x) cumul (hd cumul) [])) 
-let gccx     = map printac (an (find    x  gcc (hd gcc) [])) 
-let gccnx    = map printac (an (find (n x) gcc (hd gcc) [])) 
-let incrx    = map printbc (an (find    x  incr (hd incr) [])) 
-let incrnx   = map printbc (an (find (n x) incr (hd incr) [])) 
-let elemx    = map printac (an (find    x  elem (hd elem) [])) 
-let elemnx   = map printac (an (find (n x) elem (hd elem) [])) 
-let elemi    = map printac (an (find    i  elem (hd (tl elem)) [])) 
-let elemni   = map printac (an (find (n i) elem (hd (tl elem)) [])) 
-let elemv    = map printac (an (find    v  elem (hd (tl (tl elem))) [])) 
-let elemnv   = map printac (an (find (n v) elem (hd (tl (tl elem))) [])) 
-let rootsx   = map printac (an (find    x  roots (hd roots) [])) 
-let rootsnx  = map printac (an (find (n x) roots (hd roots) [])) 
-let rangex   = map printac (an (find    x  range (hd range) [])) 
-let rangenx  = map printac (an (find (n x) range (hd range) [])) 
-let nvaluex  = map printac (an (find (  x) nvalue (hd nvalue) []))
-let nvaluenx = map printac (an (find (n x) nvalue (hd nvalue) []))
- 
- 
-(*Output in tex file*) 
-open Printf 
-let rec printfraqtex el x cons fic = match el with  
-  | [] -> () 
-  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex BC x^"}$$ ");printfraqtex tl x cons fic 
- 
-(*Output explanations from a decomposition of a global constraint*) 
-let explain x dec cons =  
-  let fic = open_out "exp.tex" in 
-  let exptex = map (fun l-> printetex l cons ) (removeimp (an (find x dec (match dec with a::b::c::d::_->d) []))) in 
-  let _ = printfraqtex exptex (make_event_var x.var_sign N [make_index (T 10) []]) cons fic in 
-  close_out fic 
- 
-let _ = explain (n nn) atleastnvalue AC
+let alldiff= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule5, [Decomp_devent (true , (B 1), sumid1t, id)])]
 
+let cumul  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), itpc1i, itmc1i); Decomp_devent (false, (B 1), id,id); Reified_devent (true, (B 2), id, id)]);
+              Decomp (3, rule5, [Decomp_devent (true , (B 2), sumid1t, id)])]
 
- 
-(*TODO : metre dans un vrais type la varible reifiee et les evenements*) 
- 
+let gcc    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumid1t, id)])]
+
+let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), ip1t, im1t)])]
+
+let elem   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 2), id, id)]);
+              Decomp (3, rule1, [Global_devent (true ,  V   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
+              Decomp (4, rule4, [Decomp_devent (false, (B 3), i_out, ifor_in); Decomp_devent (false, (B 2), t_out, tfor_in); Decomp_devent (true , (B 1), id, id)]);
+              Decomp (4, rule4, [Decomp_devent (true , (B 3), i_out, ifor_in); Decomp_devent (false, (B 2), t_out, tfor_in); Decomp_devent (false, (B 1), id, id)])]  
+
+let nvalues= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (1, rule1, [Global_devent (true ,  N   , id, id, AC); Reified_devent (true, (B 4), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), sumid1t, id); Reified_devent (true, (B 2), i_out, id1_in_t)]);
+              Decomp (3, rule7, [Decomp_devent (true , (B 2), sumtd2tprim_out, t1_in_t); Reified_devent (true, (B 4), t_out, tt10_in)])]
+
+let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+                      Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
+                      Decomp (2, rule4, [Decomp_devent (true , (B 1), sumid1t, id); Reified_devent (true, (B 2), i_out, id1_in_t)]);
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), sumtd2tprim_out, t1_in_t); Reified_devent (true, (B 4), t_out, tt10_in)])]
+
+(*global events*) 
+let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
+let xac = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], AC)
+let nbc = Global_event (true, N, [Ind (T 10, [])], BC)
+let nac = Global_event (true, N, [Ind (T 10, [])], AC)
+let i   = Global_event (true, X, [Ind (I 1, [])], AC)
+let v   = Global_event (true, X, [Ind (T 1, [])], AC)
+
+let _ = explain xbc cumul
