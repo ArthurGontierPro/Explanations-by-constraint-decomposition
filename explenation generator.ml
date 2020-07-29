@@ -1,8 +1,8 @@
 (*Moulinette by Arthur GONTIER 2020 (explenation generator from constraint decomposition)*) 
 open List 
-type var_name = X | B of int | T | I | V | N  
-(*indice options*) 
-type ind_name = I of int | T of int 
+type var_name = X | B of int | T | I | V | N | O
+(*index modifications*) 
+type ind_name = I of int | T of int | P of int
 type ind_set = D of int 
 type ind_const = C of int 
 type ind_symbols = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ 
@@ -13,7 +13,7 @@ type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*)
                   | EXFORALL of ind_name 
                   | EXEXISTS of ind_name 
 type consistancy = AC | BC 
-(*Global indice type*) 
+(*event types*) 
 type index = Ind of ind_name*ind_modifs list 
 type event = | Global_event of bool*var_name*index list*consistancy
              | Decomp_event of bool*var_name*index list
@@ -175,14 +175,14 @@ let rec imp l = (*detect impossibles literals*)
 let rec removeimp ll = (*remove explenation with impossible literals*) 
   match ll with []->[]|l::tl->if imp l || inl l tl then removeimp tl else [removesame l]@(removeimp tl) 
  
-let morgan l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
+let concat l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
   match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl 
 
 let rec an a = (*analysis of the explanation tree, return explanation list*) 
   match a with 
     | Lit x -> [[x]] 
     | EXOR (_,l) -> flatten (map an l) 
-    | EXAND (_,l) -> morgan (map an l) 
+    | EXAND (_,l) -> concat (map an l) 
 
 (*Input global event*)
 let rule0 e de c dec ch = (*Global_devent<=>Reified_devent*)  
@@ -194,7 +194,7 @@ let rule0 e de c dec ch = (*Global_devent<=>Reified_devent*)
 
 (*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
-let printind_name i = match i with I a -> "i_{"^string_of_int a^"}" | T a -> "t_{"^string_of_int a  ^"}"
+let printind_name i = match i with I a -> "i_{"^string_of_int a^"}" | T a -> "t_{"^string_of_int a  ^"}" | P a -> "p_{"^string_of_int a  ^"}"
 let printind_set s = match s with D a -> "D_{"^string_of_int a ^"}"
 let printind_const c = match c with C a -> "c_{"^string_of_int a ^"}"
 let printind_symbols s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"=" 
@@ -215,6 +215,7 @@ let printevent_var v = match name v with
   | I -> "   I"^printcons v^printi (hd (index_list v)) 
   | V -> "   V"^printcons v^printi (hd (index_list v)) 
   | N -> "   N"^printcons v^printi (hd (index_list v)) 
+  | O -> "   X"^printind_name (ind_name (hd (index_list v)))^(printcons v)^(match index_list v with a::b::_ -> printind_name (ind_name b)^" "^printiopl (ind_modifs_list b)^printiopl (ind_modifs_list a) | _ ->failwith "what?") 
 let rec printe el = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printe tl 
   | T -> printe tl 
@@ -238,6 +239,7 @@ let printvartex v = match name v with
   | I -> "I"^printconstex v^printitex (hd (index_list v)) 
   | V -> "V"^printconstex v^printitex (hd (index_list v)) 
   | N -> "N"^printconstex v^printitex (hd (index_list v)) 
+  | O -> "O_{"^printind_name (ind_name (hd (index_list v)))^"}"^(printconstex v)^(match index_list v with a::b::_ -> printind_name (ind_name b)^"~"^printiopltex (ind_modifs_list b)^printiopltex (ind_modifs_list a) | _ ->failwith "what?") 
 let rec printetex el = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printetex tl 
   | T -> printetex tl
@@ -247,7 +249,7 @@ let rec printetex el = match el with []->"" | e::tl -> match e with
 open Printf 
 let rec printfraqtex el x fic = match el with  
   | [] -> () 
-  | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex x^"}$$ ");printfraqtex tl x fic 
+  | e::tl -> fprintf fic "%s" ("$\\frac{"^e^"}{"^printvartex x^"}$ ");printfraqtex tl x fic 
 
 (*Output event explanation LateX rule from a global event and a decomposition*) 
 let explain e dec = 
@@ -264,34 +266,57 @@ let addcst i sym cst i2 = Ind (prim (ind_name i), [Addcst (prim (ind_name i), in
 let sum i d = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i), IN, d); Rel (prim (ind_name i), NEQ, ind_name i); Set (ind_name i, IN, d)]@ind_modifs_list i) 
  
 (*Index modification functions*)  
-let itmc1i il = match il with i::t::_ -> [i;addcst t MINUS (C 1) i](*cumul*) 
-let itpc1i il = match il with i::t::_ -> [i;addcst t PLUS (C 1) i](*cumul*) 
- 
-let sumid1t il = match il with i::t::_ -> [sum i (D 1);t](*sums*) 
- 
-let i_out il = match il with i::t::_ -> [t](*elem*) 
-let t_out il = match il with i::t::_ -> [i]
-let tfor_in il = [hd il;Ind ((T 1), [EXFORALL (T 1)])] 
-let ifor_in il = [Ind ((I 1), [EXFORALL (I 1)]);hd il] 
- 
-let isumtd1 il = match il with i::t::_ -> [i;sum t (D 1)](*roots*) 
-let isumtd2 il = match il with i::t::_ -> [i;sum t (D 2)](*roots*) 
- 
-let sumid2t il = match il with i::t::_ -> [sum i (D 2);t](*alleq2*)  
-let id1_in_t il = match il with t::_ -> [Ind ((I 1), [Set (I 1,IN,D 1)]);t]
-let id2_in_t il = match il with t::_ -> [Ind ((I 1), [Set (I 1,IN,D 2)]);t]
+let itmc1i il = 
+  match il with i::t::_ -> i::addcst t MINUS (C 1) i::[](*cumul*) 
+let itpc1i il = 
+  match il with i::t::_ -> i::addcst t PLUS (C 1) i::[](*cumul*) 
+let sumid1t il = 
+  match il with i::t::_ -> sum i (D 1)::t::[](*sums*) 
+let i_out il = 
+  match il with i::t::_ -> t::[](*elem*) 
+let t_out il = 
+  match il with i::t::_ -> i::[]
+let tfor_in il = 
+  match il with i::_ -> i::Ind ((T 1), [EXFORALL (T 1)])::[] 
+let ifor_in il = 
+  match il with t::_ -> Ind ((I 1), [EXFORALL (I 1)])::t::[] 
+let isumtd1 il = 
+  match il with i::t::_ -> i::sum t (D 1)::[](*roots*) 
+let isumtd2 il = 
+  match il with i::t::_ -> i::sum t (D 2)::[](*roots*) 
+let sumid2t il = 
+  match il with i::t::_ -> sum i (D 2)::t::[](*alleq2*)  
+let id1_in_t il = 
+  match il with t::_ -> Ind ((I 1), [Set (I 1,IN,D 1)])::t::[]
+let id2_in_t il = 
+  match il with t::_ -> Ind ((I 1), [Set (I 1,IN,D 2)])::t::[]
+let ip1t il = 
+  match il with i::t::_ -> addint i PLUS 1::t::[](*incr*) 
+let im1t il = 
+  match il with i::t::_ -> addint i MINUS 1::t::[](*incr*) 
+let sumtd2 il = 
+  match il with t::_ -> sum t (D 2)::[](*nvalue*) 
+let sumtd3 il = 
+  match il with t::_ -> sum t (D 3)::[](*nvalue*) 
+let tt10_in il = 
+  match il with t::_ -> t::Ind ((T 10), [Set (T 10,IN,D 3)])::[](*nvalue*) 
+let t1_in_t il = 
+  match il with t::_ -> Ind ((T 1), [Set (T 1,IN,D 2)])::t::[](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
+let tm1 il = 
+  match il with t::_ -> addint t MINUS 1::[](*nvalue*) 
+let tp1 il = 
+  match il with t::_ -> addint t PLUS 1::[](*nvalue*) 
+let sumtd2tprim_out il = 
+  match il with t::tt::_ -> sum t (D 2)::[](*nvalue*) 
+let i_intp il = (*gcc n variable*) 
+  match il with t::p::_ -> Ind ((I 1), [Set (I 1,IN,D 1)])::t::p::[]
+let i_outtp il = 
+  match il with i::t::p::_ -> t::p::[]
+let itp_out il = 
+  match il with i::t::p::_ -> i::t::[]
+let sumid1tp_in il = 
+  match il with i::t::_ -> sum i (D 1)::t::Ind ((P 1), [Set (P 1,IN,D 3)])::[]
 
-let ip1t il = match il with i::t::_ -> [addint i PLUS 1;t](*incr*) 
-let im1t il = match il with i::t::_ -> [addint i MINUS 1;t](*incr*) 
-
-let sumtd2 il = match il with t::_ -> [sum t (D 2)](*nvalue*) 
-let sumtd3 il = match il with t::_ -> [sum t (D 3)](*nvalue*) 
-let tt10_in il = match il with t::_ -> [t;Ind ((T 10), [Set (T 10,IN,D 3)])](*nvalue*) 
-let t1_in_t il = match il with t::_ -> [Ind ((T 1), [Set (T 1,IN,D 2)]);t](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
-let tm1 il = match il with t::_ -> [addint t MINUS 1](*nvalue*) 
-let tp1 il = match il with t::_ -> [addint t PLUS 1](*nvalue*) 
-let sumtd2tprim_out il = match il with t::tt::_ -> [sum t (D 2)](*nvalue*) 
- 
 (*Decompositions*) 
 let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id,  AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule3, [Decomp_devent (true , (B 1), sumid1t, id); Reified_devent (true, (B 2), t_out, id1_in_t)]);
@@ -307,6 +332,10 @@ let cumul  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
 
 let gcc    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule7, [Decomp_devent (true , (B 1), sumid1t, id)])]
+
+let gccn   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), sumid1tp_in, itp_out); Reified_devent (true, (B 2), i_intp, i_outtp)]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 
 let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), ip1t, im1t)])]
@@ -334,5 +363,6 @@ let nbc = Global_event (true, N, [Ind (T 10, [])], BC)
 let nac = Global_event (true, N, [Ind (T 10, [])], AC)
 let i   = Global_event (true, X, [Ind (I 1, [])], AC)
 let v   = Global_event (true, X, [Ind (T 1, [])], AC)
+let ngbc= Global_event (true, O, [Ind (T 1, []); Ind (P 1, [])], BC)
 
-let _ = explain xbc cumul
+let _ = explain ngbc gccn
