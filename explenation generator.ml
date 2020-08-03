@@ -71,6 +71,8 @@ let rec subl e l = (* event list without event e*)
   match l with [] -> [] | c::tl -> if (dsign e = dsign c)&&(dname e = dname c) then subl e tl else c::subl e tl 
 let rec subc cc l = (* ctr list without constraint cc*) 
   match l with [] -> [] | c::tl -> if  decomp_ctr_id cc = decomp_ctr_id c then subc cc tl else c::subc cc tl 
+let rec subi i l = (* ind list without index i*) 
+  match l with [] -> [] | j::tl -> if  ind_name i = ind_name j then subi i tl else j::subi i tl 
 let rec inl cc l = (* cc in list l? *) 
   match l with [] -> false | c::tl -> if cc=c then true else inl cc tl 
 let rec reified_devent del = 
@@ -194,9 +196,12 @@ let rule0 e de c dec ch = (*Global_devent<=>Reified_devent*)
 
 (*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
-let printind_name i = match i with I a -> "i_{"^string_of_int a^"}" | T a -> "t_{"^string_of_int a  ^"}" | P a -> "p_{"^string_of_int a  ^"}"
-let printind_set s = match s with D a -> "D_{"^string_of_int a ^"}"
-let printind_const c = match c with C a -> "c_{"^string_of_int a ^"}"
+let printind_name_int a = match a with 1 -> "" | 2 -> "'" | 3 -> "''" | _ -> "_{"^string_of_int a^"}"
+let printind_name i = match i with I a -> "i"^printind_name_int a | T a -> "t"^printind_name_int a | P a -> "p"^printind_name_int a
+let printind_set_int a = match a with 1 -> "\\llbracket1,n\\rrbracket" | 2 -> "\\llbracket1,m\\rrbracket" | 3 -> "\\llbracket1,n\\rrbracket" | _ -> "D_{"^string_of_int a ^"}"
+let printind_set s = match s with D a -> printind_set_int a
+let printind_const_int a = match a with 1 -> "" | _ -> "_{"^string_of_int a^"}"
+let printind_const c = match c with C a -> "d"^printind_const_int a
 let printind_symbols s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"=" 
 let printind_modifs op= match op with 
   | Set (ind1,sym1,set1) ->printind_name ind1^printind_symbols sym1^printind_set set1 
@@ -270,67 +275,78 @@ let explainall el dec str =
   close_out fic 
 
 (*Constructors for index modification functions*) 
-let prim i = match i with I a -> I (a+1) | T a -> T (a+1) 
+let prim i = match i with I a -> I (a+1) | T a -> T (a+1) | P a -> P (a+1) 
 let iprim i = Ind (prim (ind_name i), ind_modifs_list i) 
 let iprimneqi i = Ind (prim (ind_name i), Rel (prim (ind_name i),NEQ,ind_name i)::ind_modifs_list i) 
 let addint i sym int = Ind (prim (ind_name i), [Addint (prim (ind_name i), ind_name i, sym, int)]@ind_modifs_list i) 
 let addcst i sym cst i2 = Ind (prim (ind_name i), [Addcst (prim (ind_name i), ind_name i, sym, cst, ind_name i2)]@ind_modifs_list i) 
-let sum i d = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i), IN, d); Rel (prim (ind_name i), NEQ, ind_name i); Set (ind_name i, IN, d)]@ind_modifs_list i) 
+let rec uniqueset i set iml = match iml with [] -> [Set (i,IN,set)] | Set (j,_,d)::tl -> if i!=j||set!=d then uniqueset i set tl else [] | _ -> []
+let sum i d = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i),IN,d); Rel (prim (ind_name i), NEQ, ind_name i)]@ind_modifs_list i) 
  
-(*Index modification functions*)  
-let itmc1i il = 
-  match il with i::t::_ -> i::addcst t MINUS (C 1) i::[](*cumul*) 
-let itpc1i il = 
-  match il with i::t::_ -> i::addcst t PLUS (C 1) i::[](*cumul*) 
-let sumid1t il = 
-  match il with i::t::_ -> sum i (D 1)::t::[](*sums*) 
-let i_out il = 
-  match il with i::t::_ -> t::[](*elem*) 
-let t_out il = 
-  match il with i::t::_ -> i::[]
-let tfor_in il = 
-  match il with i::_ -> i::Ind ((T 1), [EXFORALL (T 1)])::[] 
-let ifor_in il = 
-  match il with t::_ -> Ind ((I 1), [EXFORALL (I 1)])::t::[] 
-let isumtd1 il = 
-  match il with i::t::_ -> i::sum t (D 1)::[](*roots*) 
-let isumtd2 il = 
-  match il with i::t::_ -> i::sum t (D 2)::[](*roots*) 
-let sumid2t il = 
-  match il with i::t::_ -> sum i (D 2)::t::[](*alleq2*)  
-let id1_in_t il = 
-  match il with t::_ -> Ind ((I 1), [Set (I 1,IN,D 1)])::t::[]
-let id2_in_t il = 
-  match il with t::_ -> Ind ((I 1), [Set (I 1,IN,D 2)])::t::[]
-let ip1t il = 
-  match il with i::t::_ -> addint i PLUS 1::t::[](*incr*) 
-let im1t il = 
-  match il with i::t::_ -> addint i MINUS 1::t::[](*incr*) 
-let sumtd2 il = 
-  match il with t::_ -> sum t (D 2)::[](*nvalue*) 
-let sumtd3 il = 
-  match il with t::_ -> sum t (D 3)::[](*nvalue*) 
-let tp_in il = 
-  match il with t::_ -> t::Ind ((P 1), [Set (P 1,IN,D 3)])::[](*nvalue*) 
-let t_inp il = 
-  match il with p::_ -> Ind ((T 1), [Set (T 1,IN,D 2)])::p::[](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
-let tm1 il = 
-  match il with t::_ -> addint t MINUS 1::[](*nvalue*) 
-let tp1 il = 
-  match il with t::_ -> addint t PLUS 1::[](*nvalue*) 
-let sumtd2p_out il = 
-  match il with t::p::_ -> sum t (D 2)::[](*nvalue*) 
-let i_intp il = (*gcc n variable*) 
-  match il with t::p::_ -> Ind ((I 1), [Set (I 1,IN,D 1)])::t::p::[]
-let i_outtp il = 
-  match il with i::t::p::_ -> t::p::[]
-let itp_out il = 
-  match il with i::t::p::_ -> i::t::[]
-let sumid1tp_in il = 
-  match il with i::t::_ -> sum i (D 1)::t::Ind ((P 1), [Set (P 1,IN,D 3)])::[]
-let i2neqit il =
-  match il with i::t::_ -> iprimneqi i::t::[]
 
+(*Index finders applyers and removals*)
+let rec iii il = match il with [] -> failwith "Index i has left the building" | i::tl -> match i with Ind (I _,_) -> i | _ -> iii tl
+let rec ttt il = match il with [] -> failwith "Index t has left the building" | i::tl -> match i with Ind (T _,_) -> i | _ -> ttt tl
+let rec ppp il = match il with [] -> failwith "Index p has left the building" | i::tl -> match i with Ind (P _,_) -> i | _ -> ppp tl
+let rec iap f il = match il with [] -> [] | i::tl -> match i with Ind (I _,_) -> f i::iap f tl | _ -> i::iap f tl
+let rec tap f il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> f i::tap f tl | _ -> i::tap f tl
+let rec pap f il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> f i::pap f tl | _ -> i::pap f tl
+let rec i_out il = match il with [] -> [] | i::tl -> match i with Ind (I _,_) -> tl | _ -> i::i_out tl
+let rec t_out il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> tl | _ -> i::t_out tl
+let rec p_out il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> tl | _ -> i::p_out tl
+
+let sumiin set = iap (function x -> sum x set) 
+let sumtin set = tap (function x -> sum x set) 
+let sumpin set = pap (function x -> sum x set) 
+let sumi = iap (function x -> sum x (D 1)) 
+let sumt = tap (function x -> sum x (D 2)) 
+let sump = pap (function x -> sum x (D 3)) 
+let foralliin set = function il -> Ind (I 1,[EXFORALL (I 1);Set (I 1,IN,set)])::il 
+let foralltin set = function il -> Ind (T 1,[EXFORALL (T 1);Set (T 1,IN,set)])::il 
+let forallpin set = function il -> Ind (P 1,[EXFORALL (P 1);Set (P 1,IN,set)])::il 
+let foralli = function il -> Ind (I 1,[EXFORALL (I 1);Set (I 1,IN,D 1)])::il 
+let forallt = function il -> Ind (T 1,[EXFORALL (T 1);Set (T 1,IN,D 2)])::il 
+let forallp = function il -> Ind (P 1,[EXFORALL (P 1);Set (P 1,IN,D 3)])::il 
+let iplus int = iap (function x -> addint x PLUS int)
+let imoin int = iap (function x -> addint x MINUS int)
+let tplus int = tap (function x -> addint x PLUS int)
+let tmoin int = tap (function x -> addint x MINUS int)
+let tplusci c = function il -> tap (function x -> addcst x PLUS c (iii il)) il
+let tmoinci c = function il -> tap (function x -> addcst x MINUS c (iii il)) il
+
+let il = [Ind (I 1, []); Ind (T 1, [])]
+let a = (tplusci (C 1)) il
+(*
+
+(*Index modification functions*)  
+let itmc1i il =      match il with i::t::_ -> i::addcst t MINUS (C 1) i::[](*cumul*) 
+let itpc1i il =      match il with i::t::_ -> i::addcst t PLUS (C 1) i::[](*cumul*) 
+let sumid1t il =     match il with i::t::_ -> sum i (D 1)::t::[](*sums*) 
+let i_out il =       match il with i::t::_ -> t::[](*elem*) 
+let t_out il =       match il with i::t::_ -> i::[]
+let tfor_in il =     match il with i::_ -> i::Ind ((T 1), [EXFORALL (T 1)])::[] 
+let ifor_in il =     match il with t::_ -> Ind ((I 1), [EXFORALL (I 1)])::t::[] 
+let isumtd1 il =     match il with i::t::_ -> i::sum t (D 1)::[](*roots*) 
+let isumtd2 il =     match il with i::t::_ -> i::sum t (D 2)::[](*roots*) 
+let id1_in_t il =    match il with t::_ -> Ind ((I 1), [])::t::[]
+let id2_in_t il =    match il with t::_ -> Ind ((I 1), [])::t::[]
+let ip1t il =        match il with i::t::_ -> addint i PLUS 1::t::[](*incr*) 
+let im1t il =        match il with i::t::_ -> addint i MINUS 1::t::[](*incr*) 
+let sumid1 il =      match il with i::_ -> sum i (D 1)::[](*nvalue*) 
+let sumtd2 il =      match il with t::_ -> sum t (D 2)::[](*nvalue*) 
+let sumtd3 il =      match il with t::_ -> sum t (D 3)::[](*nvalue*) 
+let tp_in il =       match il with t::_ -> t::Ind ((P 1), [])::[](*nvalue*) 
+let t_inp il =       match il with p::_ -> Ind ((T 1), [])::p::[](*nvalue[EXFORALL (T 1);Set (T 1,IN,D 2)]*) 
+let tm1 il =         match il with t::_ -> addint t MINUS 1::[](*nvalue*) 
+let tp1 il =         match il with t::_ -> addint t PLUS 1::[](*nvalue*) 
+let sumtd2p_out il = match il with t::p::_ -> sum t (D 2)::[](*nvalue*) 
+let i_intp il = (*gcc n variable*)   match il with t::p::_ -> Ind ((I 1), [])::t::p::[]
+let i_outtp il =     match il with i::t::p::_ -> t::p::[]
+let itp_out il =     match il with i::t::p::_ -> i::t::[]
+let sumid1tp_in il = match il with i::t::_ -> sum i (D 1)::t::Ind ((P 1), [])::[]
+let i2neqit il =     match il with i::t::_ -> iprimneqi i::t::[]
+let isumtd4 il =     match il with i::t::_ -> i::sum t (D 4)::[]
+let it_in il =       match il with i::_ -> i::Ind (T 1,[])::[]
 
 (*Decompositions*) 
 let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id,  AC); Reified_devent (true, (B 1), id, id)]);
@@ -364,12 +380,17 @@ let elem   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
 let nvalues= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (1, rule1, [Global_devent (true ,  N   , id, id, AC); Reified_devent (true, (B 4), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, sumid1t); Reified_devent (true, (B 2), id1_in_t, i_out)]);
-              Decomp (3, rule7, [Decomp_devent (true , (B 2), tp_in, sumtd2p_out); Reified_devent (true, (B 4), t_inp, t_out)])]
+              Decomp (3, rule7, [Decomp_devent (true , (B 2), tp_in, sumtd2p_out); Reified_devent (true, (B 4), t_inp, i_out)])]
 
 let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
                       Decomp (2, rule4, [Decomp_devent (true , (B 1), id, sumid1t); Reified_devent (true, (B 2), id1_in_t, i_out)]);
-                      Decomp (3, rule5, [Decomp_devent (true , (B 2), tp_in, sumtd2p_out); Reified_devent (true, (B 4), t_inp, t_out)])]
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), tp_in, sumtd2p_out); Reified_devent (true, (B 4), t_inp, i_out)])]
+
+let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, isumtd4); Reified_devent (true, (B 2), it_in, t_out)]);
+              Decomp (3, rule7, [Decomp_devent (true , (B 2), id, sumi)])]
+
 
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
@@ -390,4 +411,5 @@ let _ = explainall [xbc] incr "cata/increasing.tex"
 let _ = explainall [xac;i;v] elem "cata/element.tex"
 let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"
+let _ = explainall [xac] among "cata/among.tex"
                                                     
