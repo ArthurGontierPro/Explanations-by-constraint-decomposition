@@ -239,16 +239,16 @@ let printioptex op= match op with
   | Rel (ind1,sym1,ind2) ->printind_name ind1^printsymtex sym1^printind_name ind2 
   | Addint (ind1,ind2,sym1,int) ->printind_name ind1^"="^printind_name ind2^printsymtex sym1^string_of_int int 
   | Addcst (ind1,ind2,sym1,cst1,ind3) ->printind_name ind1^"="^printind_name ind2^printsymtex sym1^printind_const cst1^"_{"^printind_name ind3^"}" 
-  | EXFORALL ind1 ->"~\\forall "^printind_name ind1 
-  | EXEXISTS ind1 ->"~\\exists "^printind_name ind1 
+  | EXFORALL ind1 ->"\\forall "^printind_name ind1 
+  | EXEXISTS ind1 ->"\\exists "^printind_name ind1 
 let rec printiopltex il = match il with []->""|i::[]->printioptex i|i::tl->printioptex i^",~"^printiopltex tl 
-let printitex i = printind_name (ind_name i)^" "^printiopltex (ind_modifs_list i) 
+let printitex i = printind_name (ind_name i)^(if ind_modifs_list i!=[]then ",~" else "")^printiopltex (ind_modifs_list i) 
 let printconstex v = match cons v with AC -> if sign v then "=" else " \\neq " | BC -> if sign v then " \\geq " else "<"
-let rec printiopl_listtex il = match il with []->""|i::[]->printiopltex (ind_modifs_list i)|i::tl->printiopltex (ind_modifs_list i)^",~"^printiopl_listtex tl
+let rec printiopl_listtex il = match il with []->""|i::tl->(if ind_modifs_list i!=[]then ",~" else "")^printiopltex (ind_modifs_list i)^printiopl_listtex tl
 let printglobal_eventtex e = 
-  let right = hd (isppp (index_list e) @isttt (index_list e)) in
+  let right = hd (isppp (index_list e)@isttt (index_list e)) in
   let left = subi right (index_list e) in
-  "_{"^printind_name_list left^"}"^printconstex e^printind_name (ind_name right)^"~"^printiopl_listtex (index_list e)
+  "_{"^printind_name_list left^"}"^printconstex e^printind_name (ind_name right)^""^printiopl_listtex (index_list e)
 let printvartex v = match name v with 
   | X -> "X"^printglobal_eventtex v
   | B i -> "ERROR B " 
@@ -260,7 +260,7 @@ let printvartex v = match name v with
 let rec printetex el = match el with []->"" | e::tl -> match e with  
   |F|IM|FE|R -> "? "^printetex tl 
   | T -> printetex tl
-  | Var v -> printvartex v^"~~~"^printetex tl
+  | Var v ->printvartex v^(match tl with []->""|v2::_->match v2 with Var _ -> "~~~~"|_->"")^printetex tl
 
 (*Output fraction in tex file*) 
 open Printf 
@@ -361,12 +361,11 @@ let nvalues= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
 let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
                       Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-                      Decomp (3, rule5, [Decomp_devent (true , (B 2), (function il -> sumt(forallp il)),p_out); Reified_devent (true, (B 4), forallt, i_out)])]
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), (function il -> sumt(forallp il)), p_out); Reified_devent (true, (B 4), forallt, i_out)])]
 
 let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), sumtin (D 4), id); Reified_devent (true, (B 2), forallt, t_out)]);
               Decomp (3, rule7, [Decomp_devent (true , (B 2), id, sumi)])]
-
 
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
@@ -389,11 +388,3 @@ let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"
 let _ = explainall [xac] among "cata/among.tex"
     
-
-(*                                                
-let e = xbc
-let dec = cumul
-let cl = ctrs e dec
-
-let a = (map (fun l-> printetex l) (removeimp (an (EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl))))))
-*)
