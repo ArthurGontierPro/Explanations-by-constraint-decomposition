@@ -138,7 +138,7 @@ and rule5 e de c dec ch = (*Bool sum<=c*)
   if dname de = dname re
   then if dsign de = sign e 
     then EXAND (e,fnel del e de c dec ch) 
-    else EXAND (e,fel del e de c dec ch)
+    else EXAND (e, fel del e de c dec ch)
   else  
     let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
     if sign e = dsign de
@@ -342,7 +342,9 @@ let gccn   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
               Decomp (2, rule6, [Decomp_devent (true , (B 1), imap [sumi;forallp], p_out); Reified_devent (true, (B 2), foralli, i_out)]);
               Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imoin 1, tplus 1)])]
+              Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imoin 1, iplus 1)])]
+let decr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id); Decomp_devent (false , (B 1), imoin 1, iplus 1)])]
 let elem   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 2), id, id)]);
               Decomp (3, rule1, [Global_devent (true ,  V   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
@@ -355,7 +357,11 @@ let nvalues= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
 let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
                       Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-                      Decomp (3, rule5, [Decomp_devent (true , (B 2), imap [sumt;forallp], p_out); Reified_devent (true, (B 4), forallt, i_out)])]
+                      Decomp (3, rule6, [Decomp_devent (true , (B 2), imap [sumt;forallp], p_out); Reified_devent (true, (B 4), forallt, i_out)])]
+let atmostnvalues  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+                      Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
+                      Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), imap [sumt;f§orallp], p_out); Reified_devent (false, (B 4), forallt, i_out)])]
 let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), sumtin (D 4), id); Reified_devent (true, (B 2), forallt, t_out)]);
               Decomp (3, rule7, [Decomp_devent (true , (B 2), id, sumi)])]
@@ -365,8 +371,8 @@ let sum    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
 let regular= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id);Decomp_devent (false, (B 1), imap [imoin 1;tprimin (D 8)], imap [iplus 1;tprimin (D 9)])])]
 let table  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (3, rule3, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-              Decomp (3, rule3, [Decomp_devent (false, (B 2), foralli, imap [sumt;i_out]); Reified_devent (false, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), imap [sumi;forallp], p_out); Reified_devent (true, (B 2), imap [foralli;forallt], imap [i_out;t_out])]);
+              Decomp (3, rule3, [Decomp_devent (false, (B 2), imap [foralli;forallt], imap [sump;i_out;t_out]); Reified_devent (false, (B 1), forallp, p_out)]);
               Decomp (4, rule4, [Decomp_devent (true , (B 2), sumt, id)])]
 
 
@@ -385,10 +391,12 @@ let _ = explainall [xac] alleq "cata/allequal.tex"
 let _ = explainall [xac] alldiff "cata/alldifferent.tex"
 let _ = explainall [xbc] cumul "cata/cumulative.tex"
 let _ = explainall [xac;ngbc] gccn "cata/gcc.tex"
+let _ = explainall [xbc] decr "cata/decreasing.tex"
 let _ = explainall [xbc] incr "cata/increasing.tex"
 let _ = explainall [xac;i;v] elem "cata/element.tex"
 let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"
+let _ = explainall [xac;nbc] atmostnvalues "cata/atmostnvalues.tex"
 let _ = explainall [xac] among "cata/among.tex"
 let _ = explainall [xbc;nbc] sum "cata/sum.tex"
 let _ = explainall [xac] regular "cata/regular.tex"
