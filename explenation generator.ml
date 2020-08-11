@@ -361,7 +361,7 @@ let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC
 let atmostnvalues  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
                       Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-                      Decomp (3, rule5, [Decomp_devent (true , (B 2), imap [sumt;f§orallp], p_out); Reified_devent (false, (B 4), forallt, i_out)])]
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), imap [sumt;forallp], p_out); Reified_devent (false, (B 4), forallt, i_out)])]
 let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), sumtin (D 4), id); Reified_devent (true, (B 2), forallt, t_out)]);
               Decomp (3, rule7, [Decomp_devent (true , (B 2), id, sumi)])]
@@ -374,6 +374,13 @@ let table  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
               Decomp (2, rule3, [Decomp_devent (true , (B 1), imap [sumi;forallp], p_out); Reified_devent (true, (B 2), imap [foralli;forallt], imap [i_out;t_out])]);
               Decomp (3, rule3, [Decomp_devent (false, (B 2), imap [foralli;forallt], imap [sump;i_out;t_out]); Reified_devent (false, (B 1), forallp, p_out)]);
               Decomp (4, rule4, [Decomp_devent (true , (B 2), sumt, id)])]
+let roots  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 5), id)]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 6), id)])]
+let range  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), sumiin (D 5), id)]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 6), id)])]
+
 
 
 (*global events*) 
@@ -401,3 +408,5 @@ let _ = explainall [xac] among "cata/among.tex"
 let _ = explainall [xbc;nbc] sum "cata/sum.tex"
 let _ = explainall [xac] regular "cata/regular.tex"
 let _ = explainall [xac] table "cata/table.tex"
+let _ = explainall [xac] roots "cata/roots.tex"
+let _ = explainall [xac] range "cata/range.tex"
