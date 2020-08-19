@@ -14,7 +14,7 @@ type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*)
                   | EXEXISTS of ind_name 
 type consistancy = AC | BC 
 (*event types*) 
-type index = Ind of ind_name*ind_modifs list 
+type index = Ind of ind_name*ind_modifs list
 type event = | Global_event of bool*var_name*index list*consistancy
              | Decomp_event of bool*var_name*index list
 type decomp_event = | Global_devent  of bool*var_name*(index list->index list)*(index list->index list)*consistancy
@@ -46,6 +46,9 @@ let decomp_ctr_rule c = match c with Decomp (_,r,_) -> r
 let decomp_ctr_id c = match c with Decomp (id,_,_) -> id
 let decomp_event_list c = match c with Decomp (_,_,l) -> l
 
+let prim i = match i with I a -> I (a+1) | T a -> T (a+1) | P a -> P (a+1) | R a -> R (a+1) 
+
+
 let id  x = x(*identity function*) 
 let n   e = match e with(*negation of event x*) 
   | Global_event (b,n,l,c)-> Global_event (not b,n,l,c)
@@ -60,6 +63,35 @@ let nap e de dep = match de with
   | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
   | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)))
+(*apply index modification functions with particularities for sum, bigvee and bigwedge*)
+let addexists de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXEXISTS i::il)|_->failwith "missing index set exist")::ill)
+let addforall de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXFORALL i::il)|_->failwith "missing index set forall")::ill)
+let addprim   de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (prim i,EXFORALL (prim i)::Rel (prim i,NEQ,i)::Set (prim i,IN,match il with Set (_,_,d)::[]->d|_->failwith "missing index set" )::il)|_->failwith "missing index set prim")::ill)
+let apexists e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addexists de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addexists de) ((index_update dep) (index_list e)))
+let apforall e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addforall de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addforall de) ((index_update dep) (index_list e)))
+let apprim e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addprim de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addprim de) ((index_update dep) (index_list e)))
+let napexists e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addexists de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addexists de) ((index_update dep) (index_list e)))
+let napforall e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addforall de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addforall de) ((index_update dep) (index_list e)))
+let napprim e de dep = match de with
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addprim de) ((index_update dep) (index_list e)),c)
+  | Decomp_devent  (b,n,_,_)
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addprim de) ((index_update dep) (index_list e)))
+
 (*Utilitary functions*) 
 let rec invars e del = (* devent in decomp ctr list? *) 
   match del with [] -> false | de::tl -> if dname de = name e then true else invars e tl 
@@ -111,65 +143,78 @@ and rule3 e de c dec ch = (*conjonction*)
   let del = subl re (decomp_event_list c) in
   if dname de = dname re
   then if dsign de = sign e
-    then EXAND (e, fel del e de c dec ch) 
-    else EXOR  (e,fnel del e de c dec ch) 
-  else  
-    let del = match del with _::[] -> del | _ ->  subl de del in
+    then match del with 
+      | dee::[] -> EXAND (e,[find (apforall e dee de) c dec ch]) 
+      | _       -> EXAND (e, fel del e de c dec ch) 
+    else match del with 
+      | dee::[] -> EXOR  (e,[find (napexists e dee de) c dec ch]) 
+      | _       -> EXOR  (e,fnel del e de c dec ch) 
+  else 
     if sign e = dsign de
     then fre re e de c dec ch 
-    else EXAND (e,[fnre re e de c dec ch]@(fel del e de c dec ch)) 
+    else match del with
+      | dee::[] -> EXOR  (e,fnre re e de c dec ch::[find (apprim e dee de) c dec ch]) 
+      | _       -> EXAND (e,fnre re e de c dec ch::fel (subl de del) e de c dec ch) 
 
 and rule4 e de c dec ch = (*disjunction*) 
   let re = reified_devent (decomp_event_list c) in
   let del = subl re (decomp_event_list c) in
   if dname de = dname re
   then if dsign de = sign e 
-    then EXOR  (e, fel del e de c dec ch) 
-    else EXAND (e,fnel del e de c dec ch) 
+    then match del with 
+      | dee::[] -> EXOR  (e,[find (apexists e dee de) c dec ch]) 
+      | _       -> EXOR  (e,fel del e de c dec ch) 
+    else match del with 
+      | dee::[] -> EXAND (e,[find (napforall e dee de) c dec ch]) 
+      | _       -> EXAND (e,fnel del e de c dec ch) 
   else  
-    let del = match del with _::[] -> del | _ ->  subl de del in
     if sign e = dsign de
-    then EXAND (e,[fre re e de c dec ch]@(fnel del e de c dec ch)) 
+    then match del with
+      | dee::[] -> EXOR  (e,fre re e de c dec ch::[find (napprim e dee de) c dec ch]) 
+      | _       -> EXAND (e,fre re e de c dec ch::fnel (subl de del) e de c dec ch) 
     else fnre re e de c dec ch 
 
 and rule5 e de c dec ch = (*Bool sum<=c*) 
   let re = reified_devent (decomp_event_list c) in
-  let del = subl re (decomp_event_list c) in
-  if dname de = dname re
-  then if dsign de = sign e 
-    then EXAND (e,fnel del e de c dec ch) 
-    else EXAND (e, fel del e de c dec ch)
-  else  
-    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
-    if sign e = dsign de
-    then EXAND (e,[fnre re e de c dec ch]@(fnel del e de c dec ch)) 
-    else EXAND (e,[ fre re e de c dec ch]@( fel del e de c dec ch)) 
+  match subl re (decomp_event_list c) with
+    | dee::[]->
+      if dname de = dname re
+      then if dsign de = sign e 
+        then EXAND (e,[find (napforall e dee de) c dec ch])
+        else EXAND (e,[find ( apforall e dee de) c dec ch]) 
+      else  
+        if sign e = dsign de
+        then EXAND (e,fnre re e de c dec ch::[find (napprim e dee de) c dec ch])
+        else EXAND (e, fre re e de c dec ch::[find ( apprim e dee de) c dec ch])
+    | _ -> failwith "sommes multiples pas encore implémentés"
 
 and rule6 e de c dec ch = (*Bool sum=>c*) 
   let re = reified_devent (decomp_event_list c) in
-  let del = subl re (decomp_event_list c) in
-  if dname de = dname re
-  then if dsign de = sign e 
-    then EXAND (e, fel del e de c dec ch) 
-    else EXAND (e,fnel del e de c dec ch)
-  else  
-    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
-    if sign e = dsign de
-    then EXAND (e,[ fre re e de c dec ch]@(fnel del e de c dec ch)) 
-    else EXAND (e,[fnre re e de c dec ch]@( fel del e de c dec ch))  
+  match subl re (decomp_event_list c) with
+    | dee::[]->
+      if dname de = dname re
+      then if dsign de = sign e 
+        then EXAND (e,[find ( apforall e dee de) c dec ch]) 
+        else EXAND (e,[find (napforall e dee de) c dec ch])
+      else  
+        if sign e = dsign de
+        then EXAND (e, fre re e de c dec ch::[find (napprim e dee de) c dec ch])
+        else EXAND (e,fnre re e de c dec ch::[find ( apprim e dee de) c dec ch])
+    | _ -> failwith "sommes multiples pas encore implémentés"
 
 and rule7 e de c dec ch = (*Bool sum=c*) 
   let re = reified_devent (decomp_event_list c) in
-  let del = subl re (decomp_event_list c) in
-  if dname de = dname re
-  then if dsign de = sign e 
-    then EXAND (e,(fel del e de c dec ch)@(fnel del e de c dec ch))(*incohérent?*) 
-    else EXOR  (e,(fel del e de c dec ch)@(fnel del e de c dec ch))(*incohérent?*) 
-  else  
-    let del = match del with _::[] -> del | _ -> failwith "sommes multiples pas encore implémentés" in
-    if sign e = dsign de
-    then EXAND (e,[fre re e de c dec ch]@(fnel del e de c dec ch)) 
-    else EXAND (e,[fre re e de c dec ch]@( fel del e de c dec ch)) 
+  match subl re (decomp_event_list c) with
+    | dee::[]->
+      if dname de = dname re
+      then if dsign de = sign e 
+        then EXAND (e,find (apforall e dee de) c dec ch::[find (napforall e dee de) c dec ch])(*incohérent?*) 
+        else EXOR  (e,find (apforall e dee de) c dec ch::[find (napforall e dee de) c dec ch])(*incohérent?*) 
+      else  
+        if sign e = dsign de
+        then EXAND (e,fre re e de c dec ch::[find (napforall e dee de) c dec ch]) 
+        else EXAND (e,fre re e de c dec ch::[find ( apforall e dee de) c dec ch]) 
+    | _ -> failwith "sommes multiples pas encore implémentés"
 
 let rec removesame l = (*keeps one occurence of each element*)
   match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
@@ -287,7 +332,6 @@ let explainall el dec str =
 
 
 (*Constructors for index modification functions*) 
-let prim i = match i with I a -> I (a+1) | T a -> T (a+1) | P a -> P (a+1) 
 let iprim i = Ind (prim (ind_name i), ind_modifs_list i) 
 let iprimneqi i = Ind (prim (ind_name i), Rel (prim (ind_name i),NEQ,ind_name i)::ind_modifs_list i) 
 let addint i sym int = Ind (prim (ind_name i), [Addint (prim (ind_name i), ind_name i, sym, int)]@ind_modifs_list i) 
@@ -304,6 +348,15 @@ let rec pap f il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) ->
 let rec i_out il = match il with [] -> [] | i::tl -> match i with Ind (I _,_) -> tl | _ -> i::i_out tl
 let rec t_out il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> tl | _ -> i::t_out tl
 let rec p_out il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> tl | _ -> i::p_out tl
+let oni il = Ind (I 1,Set (I 1,IN,D 1)::[])::[]
+let ont il = Ind (T 1,Set (T 1,IN,D 2)::[])::[]
+let onp il = Ind (P 1,Set (P 1,IN,D 3)::[])::[]
+let onr il = Ind (R 1,Set (R 1,IN,D 4)::[])::[]
+let oniin set = fun il -> Ind (I 1,Set (I 1,IN,set)::[])::[]
+let ontin set = fun il -> Ind (T 1,Set (T 1,IN,set)::[])::[]
+let onpin set = fun il -> Ind (P 1,Set (P 1,IN,set)::[])::[]
+let onrin set = fun il -> Ind (R 1,Set (R 1,IN,set)::[])::[]
+
 (*Index modification functions*)
 let sumiin set = iap (function x -> sum x set) 
 let sumtin set = tap (function x -> sum x set) 
@@ -324,22 +377,22 @@ let tmoin int = tap (function x -> addint x MINUS int)
 let tplusci c = function il -> tap (function x -> addcst x PLUS c (iii il)) il
 let tmoinci c = function il -> tap (function x -> addcst x MINUS c (iii il)) il
 let tprimin d = tap (function x -> Ind (prim (ind_name x), [Set (prim (ind_name x),IN,d); Rel (prim (ind_name x), NEQ, ind_name x)]@ind_modifs_list x))
-let rec imap l = match l with []->failwith "empty im list" | f::[] -> (function il -> f il) | f::tl -> (function il -> f ((imap tl) il))
+let rec imap l = match l with []->failwith "empty im list" | f::[] -> (fun il -> f il) | f::tl -> (fun il -> f ((imap tl) il))
 
 (*Decompositions*) 
 let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id,  AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule3, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-              Decomp (2, rule3, [Decomp_devent (false, (B 1), sumi, id); Reified_devent (true, (B 3), foralli, i_out)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (2, rule3, [Decomp_devent (false, (B 1), id, oni); Reified_devent (true, (B 3), id, i_out)]);
               Decomp (4, rule4, [Decomp_devent (true , (B 2), id, id); Decomp_devent (true, (B 3), id, id)])]
 let alldiff= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule5, [Decomp_devent (true , (B 1), id, sumi)])]
+              Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oni)])]
 let cumul  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule3, [Decomp_devent (true , (B 1), tmoinci (C 1), tplusci (C 1)); Decomp_devent (false, (B 1), id, id); Reified_devent (true, (B 2), id, id)]);
-              Decomp (3, rule5, [Decomp_devent (true , (B 2), id, sumi)])]
+              Decomp (3, rule5, [Decomp_devent (true , (B 2), id, oni)])]
 let gcc    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule7, [Decomp_devent (true , (B 1), id, sumi)])]
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), id, oni)])]
 let gccn   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule6, [Decomp_devent (true , (B 1), imap [sumi;forallp], p_out); Reified_devent (true, (B 2), foralli, i_out)]);
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), imap [foralli;p_out], imap [i_out;forallp])]);
               Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imoin 1, iplus 1)])]
@@ -349,38 +402,33 @@ let elem   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
               Decomp (2, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 2), id, id)]);
               Decomp (3, rule1, [Global_devent (true ,  V   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
               Decomp (4, rule4, [Decomp_devent (false, (B 3), foralli, i_out); Decomp_devent (false, (B 2), forallt, t_out); Decomp_devent (true , (B 1), id, id)]);
-              Decomp (4, rule4, [Decomp_devent (true , (B 3), foralli, i_out); Decomp_devent (false, (B 2), forallt, t_out); Decomp_devent (false, (B 1), id, id)])]  
+              Decomp (4, rule4, [Decomp_devent (true , (B 3), foralli, i_out); Decomp_devent (false, (B 2), forallt, t_out); Decomp_devent (false, (B 1), id, id)])] 
 let nvalues= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (1, rule1, [Global_devent (true ,  N   , id, id, AC); Reified_devent (true, (B 4), id, id)]);
-              Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-              Decomp (3, rule7, [Decomp_devent (true , (B 2), imap [sumt;forallp],p_out); Reified_devent (true, (B 4), forallt, i_out)])]
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule7, [Decomp_devent (true , (B 2), id, ont); Reified_devent (true, (B 4), imap [foralli;p_out], imap [i_out;t_out;forallp])])]
 let atleastnvalues = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
-                      Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-                      Decomp (3, rule6, [Decomp_devent (true , (B 2), imap [sumt;forallp], p_out); Reified_devent (true, (B 4), forallt, i_out)])]
+                      Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), foralli, i_out)]);
+                      Decomp (3, rule6, [Decomp_devent (true , (B 2), id, ont); Reified_devent (true, (B 4), imap [foralli;p_out], imap [i_out;t_out;forallp])])]
 let atmostnvalues  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
-                      Decomp (2, rule4, [Decomp_devent (true , (B 1), sumi, id); Reified_devent (true, (B 2), foralli, i_out)]);
-                      Decomp (3, rule5, [Decomp_devent (true , (B 2), imap [sumt;forallp], p_out); Reified_devent (false, (B 4), forallt, i_out)])]
+                      Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), foralli, i_out)]);
+                      Decomp (3, rule5, [Decomp_devent (true , (B 2), id, ont); Reified_devent (false, (B 4), imap [foralli;p_out], imap [i_out;t_out;forallp])])]
 let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule4, [Decomp_devent (true , (B 1), sumtin (D 4), id); Reified_devent (true, (B 2), forallt, t_out)]);
-              Decomp (3, rule7, [Decomp_devent (true , (B 2), id, sumi)])]
-let sum    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (4, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 3), id, id)]);
-              Decomp (3, rule6, [Decomp_devent (true , (B 1), imap [sumi;sumt;forallp], p_out); Reified_devent (true, (B 3), imap [forallt;foralli], imap [i_out;t_out])])]
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, ontin (D 4)); Reified_devent (true, (B 2), id, t_out)]);
+              Decomp (3, rule7, [Decomp_devent (true , (B 2), id, oni)])]
 let regular= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id);Decomp_devent (false, (B 1), imap [imoin 1;tprimin (D 8)], imap [iplus 1;tprimin (D 9)])])]
-let table  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule3, [Decomp_devent (true , (B 1), imap [sumi;forallp], p_out); Reified_devent (true, (B 2), imap [foralli;forallt], imap [i_out;t_out])]);
-              Decomp (3, rule3, [Decomp_devent (false, (B 2), imap [foralli;forallt], imap [sump;i_out;t_out]); Reified_devent (false, (B 1), forallp, p_out)]);
-              Decomp (4, rule4, [Decomp_devent (true , (B 2), sumt, id)])]
 let roots  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 5), id)]);
-              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 6), id)])]
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), id, ontin (D 5))]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), id, ontin (D 6))])]
 let range  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule6, [Decomp_devent (true , (B 1), sumiin (D 5), id)]);
-              Decomp (2, rule7, [Decomp_devent (true , (B 1), sumtin (D 6), id)])]
-
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), id, ontin (D 5))]);
+              Decomp (2, rule7, [Decomp_devent (true , (B 1), id, ontin (D 6))])]
+let table  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, imap [i_out])]);
+              Decomp (4, rule4, [Decomp_devent (true , (B 2), id, onr)])]
 
 
 (*global events*) 
@@ -391,6 +439,7 @@ let nac = Global_event (true, N, [Ind (P 1, [])], AC)
 let i   = Global_event (true, I, [Ind (I 1, [])], AC)
 let v   = Global_event (true, V, [Ind (T 1, [])], AC)
 let ngbc= Global_event (true, O, [Ind (T 1, []); Ind (P 1, [])], BC)
+let x3ac= Global_event (true, X, [Ind (I 1, []); Ind (T 1, []);Ind (R 1, [])], AC)
 
 let _ = explain xbc incr
 
@@ -405,8 +454,7 @@ let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"
 let _ = explainall [xac;nbc] atmostnvalues "cata/atmostnvalues.tex"
 let _ = explainall [xac] among "cata/among.tex"
-let _ = explainall [xbc;nbc] sum "cata/sum.tex"
 let _ = explainall [xac] regular "cata/regular.tex"
-let _ = explainall [xac] table "cata/table.tex"
 let _ = explainall [xac] roots "cata/roots.tex"
 let _ = explainall [xac] range "cata/range.tex"
+let _ = explainall [x3ac] table "cata/table.tex"
