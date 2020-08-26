@@ -380,14 +380,14 @@ let tprimin d = tap (function x -> Ind (prim (ind_name x), [Set (prim (ind_name 
 let rec imap l = match l with []->failwith "empty im list" | f::[] -> (fun il -> f il) | f::tl -> (fun il -> f ((imap tl) il))
 
 (*Decompositions*) 
-let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id,  AC); Reified_devent (true, (B 1), id, id)]);
+let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
               Decomp (2, rule3, [Decomp_devent (false, (B 1), id, oni); Reified_devent (true, (B 3), id, i_out)]);
               Decomp (4, rule4, [Decomp_devent (true , (B 2), id, id); Decomp_devent (true, (B 3), id, id)])]
 let alldiff= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oni)])]
 let cumul  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule3, [Decomp_devent (true , (B 1), tmoinci (C 1), tplusci (C 1)); Decomp_devent (false, (B 1), id, id); Reified_devent (true, (B 2), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), tplusci (C 1), tmoinci (C 1)); Decomp_devent (false, (B 1), id, id); Reified_devent (true, (B 2), id, id)]);
               Decomp (3, rule5, [Decomp_devent (true , (B 2), id, oni)])]
 let gcc    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule7, [Decomp_devent (true , (B 1), id, oni)])]
@@ -443,7 +443,7 @@ let x3ac= Global_event (true, X, [Ind (I 1, []); Ind (T 1, []);Ind (R 1, [])], A
 
 let _ = explain xbc incr
 
-let _ = explainall [xac] alleq "cata/allequal.tex"
+let _ = explainall [xbc] alleq "cata/allequal.tex"
 let _ = explainall [xac] alldiff "cata/alldifferent.tex"
 let _ = explainall [xbc] cumul "cata/cumulative.tex"
 let _ = explainall [xac;ngbc] gccn "cata/gcc.tex"
