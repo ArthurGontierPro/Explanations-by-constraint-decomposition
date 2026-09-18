@@ -1,0 +1,134 @@
+# MiniZinc globals snapshot — NOT a live parse
+#
+# release:      2.10.1
+# how known:    CMakeLists.txt of the libminizinc source tree carries
+#               "project(libminizinc ... VERSION 2.10.1)"; changes.rst dates
+#               2.10.1 to 31 August 2026.
+# source file:  share/minizinc/std/globals.mzn of a libminizinc-master source
+#               tree (upstream: https://github.com/MiniZinc/libminizinc)
+# sha256:       1988d2b927fc8bcd528bfb45e59e54f2aab701fc7601ba7f9d61ed359ea55fb6
+# extracted:    2026-09-18 by tools/mzn_coverage.py --share ... --emit-snapshot
+# extraction:   one name per 'include "<name>.mzn";' line of std/globals.mzn
+#
+# This file exists because no MiniZinc installation is on PATH in this
+# environment and /usr/local/share/minizinc holds only Gecode redefinitions
+# (no std/). Pass --share <dir> to classify against a real installation
+# instead; this snapshot is only the fallback.
+all_different
+all_different_except
+all_different_except_0
+all_disjoint
+all_equal
+alternative
+among
+among_fn
+arg_max
+arg_min
+arg_sort
+arg_val
+at_least
+at_most
+at_most1
+bin_packing
+bin_packing_capa
+bin_packing_load
+bin_packing_load_fn
+bounded_path
+circuit
+circuit_opt
+connected
+cost_mdd
+cost_regular
+count
+count_fn
+cumulative
+cumulative_opt
+cumulatives
+cumulatives_opt
+dag
+decreasing
+diffn
+diffn_k
+diffn_nonstrict
+diffn_nonstrict_k
+disjoint
+disjunctive
+disjunctive_opt
+disjunctive_strict
+disjunctive_strict_opt
+distribute
+distribute_fn
+element
+exactly
+geost
+global_cardinality
+global_cardinality_closed
+global_cardinality_closed_fn
+global_cardinality_fn
+global_cardinality_low_up
+global_cardinality_low_up_closed
+increasing
+int_set_channel
+inverse
+inverse_fn
+inverse_in_range
+inverse_set
+knapsack
+lex2
+lex2_strict
+lex_chain_greater
+lex_chain_greatereq
+lex_chain_greatereq_orbitope
+lex_chain_less
+lex_chain_lesseq
+lex_chain_lesseq_orbitope
+lex_greater
+lex_greatereq
+lex_less
+lex_lesseq
+link_set_to_booleans
+maximum
+mdd
+mdd_nondet
+member
+minimum
+network_flow
+neural_net
+nvalue
+nvalue_fn
+partition_set
+piecewise_linear
+piecewise_linear_non_continuous
+range
+range_fn
+reachable
+regular
+regular_nfa
+regular_regexp
+roots
+roots_fn
+seq_precede_chain
+sliding_among
+sliding_sum
+sort
+sort_fn
+span
+steiner
+strict_lex2
+strictly_decreasing
+strictly_increasing
+subcircuit
+subgraph
+sum_pred
+sum_set
+symmetric_all_different
+table
+tree
+value_precede
+value_precede_chain
+var_perm_sym
+var_sqr_sym
+weighted_spanning_tree
+write
+writes
+writes_seq
