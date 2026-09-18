@@ -30,7 +30,7 @@ _Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero 
 
 _M-1-T1 RELEASED 2026-09-18. Nothing is claimed._
 
-_W1-D RELEASED 2026-09-18. W1-S RELEASED 2026-09-18 at `b93644a`. W1-V RELEASED 2026-09-18 at `3578e05`. **Wave one is closed. Nothing is claimed.**_
+_W1-D RELEASED 2026-09-18. W1-S RELEASED 2026-09-18 at `b93644a`. W1-V RELEASED 2026-09-18 at `3578e05`. **Wave one is closed.** Wave two claimed 2026-09-18: three spec sessions, disjoint by constraint name, none touching engine code. Each writes its own `_shapes-*` and `_gaps-*` file so nothing merges by hand; the orchestrator consolidates into `docs/DECOMP_FORMAT_NOTES.md` at close._
 
 ---
 
@@ -60,6 +60,9 @@ session picks it up.
 | W2-T5 (pilot) | W1-D (2026-09-18) | `decomps/*.md` × 6 + `docs/DECOMP_FORMAT_NOTES.md`, 270 lines. Commit `c6a4247`. Five format gaps pinned to constraints — that list is the W2-T1 payload |
 | W1-T3 + W1-T7 | W1-S (2026-09-18) | `1304386`, `463534f`. `make check` passes (orchestrator re-ran: exit 0). Goldens gained a diagnostics block and nothing else; W1-T7 changed zero goldens |
 | W1-T8 | W1-V (2026-09-18) | `6be1f30`, `c3ce7d9`, `3ccaf97`. Validator now covers 11 entries. Orchestrator re-ran it: 42 rules, 11 sound and minimal, 31 flagged, 14 out of scope |
+| W2-T5 §3+§4 | `decomps/` files for its own constraints + `decomps/_shapes-seq.md` + `decomps/_gaps-seq.md` | W2-A (2026-09-18) | 2026-09-18 |
+| W2-T5 §5+§6 | `decomps/` files for its own constraints + `decomps/_shapes-ext.md` + `decomps/_gaps-ext.md` | W2-B (2026-09-18) | 2026-09-18 |
+| W2-T5 §1+§9 | `decomps/` files for its own constraints + `decomps/_shapes-perm.md` + `decomps/_gaps-perm.md` | W2-C (2026-09-18) | 2026-09-18 |
 
 ---
 
