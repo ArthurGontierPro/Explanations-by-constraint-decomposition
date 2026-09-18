@@ -64,6 +64,8 @@ session picks it up.
 | W2-T5 §5+§6 | `decomps/` files for its own constraints + `decomps/_shapes-ext.md` + `decomps/_gaps-ext.md` | W2-B (2026-09-18) | 2026-09-18 |
 | W2-T5 §1+§9 | `decomps/` files for its own constraints + `decomps/_shapes-perm.md` + `decomps/_gaps-perm.md` | W2-C (2026-09-18) | 2026-09-18 |
 
+_W2-C closed 2026-09-18 (`c0a704a`): 4 shapes, 3 new gaps, element's defect diagnosed. W2-A and W2-B still running._
+
 ---
 
 ## Handoff notes
@@ -387,3 +389,35 @@ provenance than the other ten, all read off the generator's decomposition table 
 **Newly unblocked, nobody claimed it:** W1-T7 landed mid-session, so the ground semantics can now
 be *derived* from the `ind_op` data instead of hand-typed. That would remove the hand-encoding
 exposure entirely. The rule *schemas* are still closures — a separate, still-open item.
+
+### 2026-09-18 — W2-C (W2-T5, §1 alldifferent + §9 ordering/sorting/channelling) — CLOSED
+
+Four shapes in `decomps/_shapes-perm.md`: **P1** pairwise-sum guard (`alldifferent`, 1/1 sound);
+**P2** monotone adjacent chain (`increasing`/`decreasing` 2/2, and `strictly_*` is a pure
+parameter shift, not a new shape); **P3** three-way channel via cross-variable OR-clauses
+(`element`, plus `inverse`/`inverse_in_range` newly derived onto the same detour); **P4**
+existential disjunction (`member`, mirroring `nvalue`'s second step).
+
+**Three new gaps, and they are structural rather than cosmetic.** G6: `ind_set` can only name a
+whole predefined range — no subrange, no exclusion — which blocks `all_different_except*` and
+`inverse_in_range`. G7: `rule1` only links `Global_devent ⇔ Reified_devent`, never
+`Global ⇔ Global`, so **every array-to-array channel has to hand-reinvent `element`'s
+five-`Decomp` detour** — `inverse` and `sort` both do. G8: no variable-valued index (`X_{X_i}`),
+which blocks `symmetric_all_different`'s self-inverse half and `sort`'s permutation channel.
+W2-C deliberately *reinforced* the existing G3 (variable-vs-variable comparison) rather than
+opening a duplicate, noting `maximum`/`minimum`/`arg_max`/`arg_min` hit it independently — the
+right instinct, and the gap numbering across the three sessions' files will need reconciling
+when they are consolidated.
+
+**`element`'s defect diagnosed, and it is a one-line error.** Read off the source, not run:
+`Decomp 4` composes `foralli` onto `B3 ⇔ V=t` and `forallt` onto `B2 ⇔ I=i`, but `V` and `I` are
+*scalars* — they need no quantifier at all. `B1` in the very same clause uses plain point
+substitution. The orchestrator confirmed the structure at generator l.383–387. Recorded on the
+W1-T9 row; that is where the fix belongs.
+
+**Skipped, correctly:** `all_disjoint`, `int_set_channel`, `link_set_to_booleans` (E5), and the
+float variants of `arg_max`/`arg_min` (E7) — one-liners, not specs.
+
+**Noted for the `CHRISTMAS_LIST.md` owner:** §9's `element` row says "already in
+`cata/element.tex`, 6 rules", which is accurate but reads as a coverage claim; the validated
+figure is 2 of 6. Not a contradiction — an ambiguity worth closing when that file gets an owner.
