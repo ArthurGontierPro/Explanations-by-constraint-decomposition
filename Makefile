@@ -35,7 +35,7 @@ help:
 	@echo "make check-golden   — regenerate cata/*.tex in a scratch dir and byte-diff"
 	@echo "make check-orphans  — fail if the set of orphaned cata/*.tex changed"
 	@echo "make check-warnings — census of compiler warnings (reports, never fails)"
-	@echo "make validate       — run the W0-T1 validator (3 entries; see docs/VALIDATOR.md)"
+	@echo "make validate       — run the validator (11 entries checked, 5 out of scope; docs/VALIDATOR.md)"
 	@echo "make validate-selftest — just the validator's own positive/negative controls"
 	@echo "make coverage       — MiniZinc coverage drift (advisory, W0-B)"
 	@echo "make clean          — remove $(BUILDDIR)"
@@ -145,8 +145,11 @@ check-warnings:
 # ---------------------------------------------------------------------------
 # Exit status: 0 nothing flagged, 1 something flagged, 2 the validator's own
 # self-test or cross-check failed (in which case its verdicts mean nothing).
-# Today it exits 1: all 13 in-scope rules are flagged. That is the expected
-# state until W1 fixes them, so `validate` is NOT part of `make check`.
+# Today it exits 1: of 42 rules in 11 entries, 11 are sound and minimal and 31
+# are flagged; a further 14 rules in 5 entries are out of scope because the
+# artifact is underspecified (W1-T2). That is the expected state until W1 fixes
+# them, so `validate` is NOT part of `make check`. Re-measure these numbers, do
+# not quote them.
 validate: $(BUILDDIR)/validator
 	@$(BUILDDIR)/validator . ; \
 	 s=$$?; \
