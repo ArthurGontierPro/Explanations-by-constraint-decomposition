@@ -259,6 +259,37 @@ and fel  del e de c dec ch = (*explanation by event list*)
 and fnel del e de c dec ch = (*explanation by negative event list*) 
   map (fun dee-> find (nap e dee de) c dec ch) del 
 
+(*==========================================================================
+  W1-T9 defect 1 — `allequal` rules 2-3 had the inequality inverted.
+
+  For a reified conjunction R <=> /\_j L_j, deriving that one conjunct L_k is
+  FALSE needs BOTH ~R and every other conjunct L_{j!=k}: from ~R alone nothing
+  follows about L_k, and from the siblings alone nothing follows either. rule3
+  and rule4 built that pair with EXOR when `del` is a single indexed family,
+  so each half was emitted as a rule in its own right, without the other. The
+  half carrying only the prim siblings is exactly `allequal` rule 2,
+  {forall i'!=i: X_i' < t} |- X_i >= t, which is backwards: under all-equal
+  every other variable being below t puts X_i below t too. Counterexample
+  n=m=2, X=(1,1), t=2 (validator, W1-T8).
+
+  The multi-conjunct branch two lines down already used EXAND, and so do
+  rule5/6/7 in the same situation, so this is the singleton case disagreeing
+  with every sibling rather than a deliberate reading.
+
+  MEASURED consequence of the repair (make validate, before -> after):
+  42 rules -> 35, and every rule that disappears is one the validator flagged;
+  no SOUND and MINIMAL rule is lost, the count stays 11. allequal 2 UNSOUND
+  -> gone (2 rules left, both SOUND and MINIMAL); atleastnvalues, atmostnvalues
+  and nvalues each lose 1 UNSOUND; table loses 2 of its 3 UNSOUND; among loses
+  1 out-of-scope rule. The two halves are now an AND, so a branch whose ~R half
+  has no explanation dies as a whole and is COUNTED by filter_branches (W1-T3)
+  instead of shipping as half a rule. That is what happens to allequal: ~B2/~B3
+  are not derivable from B2 \/ B3, so `allequal` honestly has no non-trivial
+  rule under this decomposition.
+
+  cata/atleastnvalues.tex and cata/atmostnvalues.tex remain byte-identical
+  (checked): both lose the same rule, so W1-T5's evidence is preserved.
+  ========================================================================*)
 (*Explenation rules*) 
 and rule1 e de c dec ch = (*Global_devent<=>Reified_devent*) 
   let re = reified_devent (decomp_event_list c) in 
@@ -284,7 +315,7 @@ and rule3 e de c dec ch = (*conjonction*)
     if sign e = dsign de
     then fre re e de c dec ch 
     else match del with
-      | dee::[] -> EXOR  (e,fnre re e de c dec ch::[find (apprim e dee de) c dec ch]) 
+      | dee::[] -> EXAND (e,fnre re e de c dec ch::[find (apprim e dee de) c dec ch]) (*W1-T9*)
       | _       -> EXAND (e,fnre re e de c dec ch::fel (subl de del) e de c dec ch) 
 
 and rule4 e de c dec ch = (*disjunction*) 
@@ -301,7 +332,7 @@ and rule4 e de c dec ch = (*disjunction*)
   else  
     if sign e = dsign de
     then match del with
-      | dee::[] -> EXOR  (e,fre re e de c dec ch::[find (napprim e dee de) c dec ch]) 
+      | dee::[] -> EXAND (e,fre re e de c dec ch::[find (napprim e dee de) c dec ch]) (*W1-T9*)
       | _       -> EXAND (e,fre re e de c dec ch::fnel (subl de del) e de c dec ch) 
     else fnre re e de c dec ch 
 
