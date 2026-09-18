@@ -30,7 +30,7 @@ _Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero 
 
 _M-1-T1 RELEASED 2026-09-18. Nothing is claimed._
 
-_W1-D RELEASED 2026-09-18. W1-S RELEASED 2026-09-18 at `b93644a`. W1-V (validator) still running — it owns `validator.ml` and `docs/VALIDATOR.md` until it reports._
+_W1-D RELEASED 2026-09-18. W1-S RELEASED 2026-09-18 at `b93644a`. W1-V RELEASED 2026-09-18 at `3578e05`. **Wave one is closed. Nothing is claimed.**_
 
 ---
 
@@ -59,6 +59,7 @@ session picks it up.
 | M-1-T1 | M-1 (2026-09-18) | `docs/GCCAT.md`, 170 lines. Commit `f82ada7`. 22 catalog pages fetched under the cap. Key claims re-verified by the orchestrator |
 | W2-T5 (pilot) | W1-D (2026-09-18) | `decomps/*.md` × 6 + `docs/DECOMP_FORMAT_NOTES.md`, 270 lines. Commit `c6a4247`. Five format gaps pinned to constraints — that list is the W2-T1 payload |
 | W1-T3 + W1-T7 | W1-S (2026-09-18) | `1304386`, `463534f`. `make check` passes (orchestrator re-ran: exit 0). Goldens gained a diagnostics block and nothing else; W1-T7 changed zero goldens |
+| W1-T8 | W1-V (2026-09-18) | `6be1f30`, `c3ce7d9`, `3ccaf97`. Validator now covers 11 entries. Orchestrator re-ran it: 42 rules, 11 sound and minimal, 31 flagged, 14 out of scope |
 
 ---
 
@@ -337,3 +338,49 @@ their tail.
 semantics could not be derived because the index modifications are closures. **That blocker is
 now removed** — they are data. The *rule schemas* are still closures, which is a different and
 still-open item. W1-V owns that file right now, so this is recorded rather than applied.
+
+### 2026-09-18 — W1-V (W1-T8, validator coverage) — CLOSED. Wave one is closed.
+
+Re-run by the orchestrator: **42 rules in 11 entries — 11 SOUND and MINIMAL, 31 flagged — plus
+14 rules in 5 entries out of scope.** Was 13 rules in 3 entries, 0 sound and minimal. Tree clean,
+nothing outside `validator.ml` and `docs/VALIDATOR.md` touched.
+
+**Why the verdicts are worth believing.** The trustworthiness machinery grew with the coverage
+rather than being outgrown by it: controls 4 → 11, covering every new atom shape and the index
+equation in both directions; both independent soundness computations ran on all 42 rules and
+**agreed on all 42**; and 19 external invariants — 12 gccat closure properties from 8 fetched
+`Purpose`/`Arg. properties` pages, plus 7 cross-entry implications from `docs/GCCAT.md` §3 — all
+hold, with a failure exiting 2 rather than being reported as a verdict. That is M-1's catalog
+read paying for itself a second time: it now guards the hand-encoding, which `docs/VALIDATOR.md`
+names as its own weakest point.
+
+**The eleven that pass.** `alldifferent` 1/1, `increasing` 2/2, `decreasing` 2/2, `allequal` 2/4,
+`element` 2/6, `gcc` 2/4. **Every one of them is in an entry W0-T1 never looked at** — the first
+three entries were chosen because they were already known to be broken, so 0/13 was never a fair
+sample of the catalog. This is the first honest measurement of it.
+
+**Three new defects, each with a counterexample — now W1-T9.** `allequal` rules 2–3 have the
+inequality inverted (`n=m=2, X=(1,1)`); `element` loses 4 of 6 rules to unsatisfiable premises
+(`∀t: V=t`, `∀i: I=i`); `gcc` rules 1–2 are vacuous because `∀p ∈ [1,n]: O_t ≥ p` means
+`O_t ≥ n`, which contradicts its companion premise.
+
+**Two caveats W1-V refused to let pass as findings, and they are the most valuable lines in its
+report.** First, `sum`'s two NOT MINIMAL verdicts are an artifact of values being drawn from
+`[1,m]`, so `N = ΣX ≥ n ≥ p` holds unconditionally — a validator whose domains included `0`
+might not flag them. Second, **SOUND and MINIMAL is a floor, not strength**: `alldifferent`'s
+rule passes and still only ever fires at `n=2`, because minimality is premise-droppability, not
+power. Anyone quoting "11 of 42" as a quality figure needs both caveats attached.
+
+**Evidence for W1-T2, which is now a measurement blocker and not a cosmetic one.** `among`,
+`range`, `roots`, `regular` reference `D_4`–`D_9` that the printer never defines and their
+non-`X` arguments appear in no atom; `cumulative` fails to parse on `t' = t - d_i` and its
+capacity appears nowhere. And the `D_k` counter is **per-decomposition**: `D_4` is the row set in
+`table.tex` and the value set in `among.tex`, so the numbering means nothing across entries.
+
+**Provenance note, recorded because it is the kind of thing that rots.** `sum.tex` is the orphan
+— no decomposition produces it — so its ground semantics came from gccat alone, which is weaker
+provenance than the other ten, all read off the generator's decomposition table (l.383–434).
+
+**Newly unblocked, nobody claimed it:** W1-T7 landed mid-session, so the ground semantics can now
+be *derived* from the `ind_op` data instead of hand-typed. That would remove the hand-encoding
+exposure entirely. The rule *schemas* are still closures — a separate, still-open item.
