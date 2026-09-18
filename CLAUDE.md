@@ -165,6 +165,10 @@ resists extension — see D-0006.
 - **Index functions are opaque closures**, so nothing can print, compare or invert them, and
   a wrong composition yields a plausible-looking wrong rule. This is D-0006's first item.
 - **`!=` is used where structural inequality is meant** (physical equality in OCaml).
+- **`var_name`'s `B` prints as the literal `"ERROR B "`** (generator l.399, l.428) — and it is
+  *printed*, not raised. No shipped entry triggers it, because every `B` there resolves to a
+  `Global_devent` first. Add a decomposition with an accumulated-state auxiliary and it will
+  appear in your `.tex` as text. W1-T10.
 - **Warning counts move when the generator changes — re-measure, never quote.** On OCaml 5.1.1,
   before W1-T3/T7: default 0, `-w +27+39` 16, `+40+41+42` 42, `+a` 91. **After** (2026-09-18,
   from `make check`): default **0**, `-w +27+39` **8**, `-w +40+41+42` **31**, `-w +a` **57**. An earlier draft of this file said "16 default

@@ -485,3 +485,45 @@ constraints, so there was nothing to give a one-line-only treatment.
 **Committed as:** every file above landed inside `b09b81c` ("Close W2-C..."), not a commit of
 this session's own — see the note above this section. Re-verify the file list against that
 commit's `--stat` if provenance matters.
+
+### 2026-09-18 — orchestrator note on W2-A's commit boundary: the fault was mine
+
+W2-A reported that its staged files were swept into `b09b81c`. That commit is **mine**, not
+W2-C's: I ran `git add -A` while two sessions were still writing into a shared checkout. The
+content is exactly as W2-A wrote it and nothing was lost, but the authorship and the commit
+boundary are wrong, and no amend can fix that without rewriting a landed commit. **From here,
+the orchestrator stages explicit paths, never `-A`, while any session is running.** W2-A also
+appended to `WORKLOG.md`, which its brief marked read-only; it did so to document exactly this,
+the append-only rule meant nothing merged badly, and the record is better for having it. Noted,
+not held against it — but the ownership line stands for the next wave.
+
+### 2026-09-18 — W2-A (W2-T5, §3 + §4) — CLOSED. Its own note is above; this is the verification.
+
+Five shapes, and the collapse is the point: `value_precede_chain`, `seq_precede_chain`,
+`lex_lesseq`, `lex2`/`strict_lex2`/`lex2_strict`, `lex_chain_*`, the orbitopes and both symmetry
+constraints are all **three-liners** — instances of two shapes. The matrix variants reuse the
+`R` row-index family the generator already has for `table`, and variable pair-counts are already
+expressible through `ind_set`'s `D2` list variant, so neither needed new machinery. W2-A
+recorded those two as **checked negatives** — "not a gap, here is why" — which is worth as much
+as a gap and is rarer.
+
+**G6 verified, with a correction: the literal `"ERROR B "` is at generator l.399 and l.428**,
+not 427. It is *printed into the output*, not raised — the same disease W1-T3 cured in the
+filter, still present in the printer. No shipped entry triggers it because their `B` always
+resolves to a `Global_devent` first; `value_precede` and `lex_less` would trigger it on day one.
+Now roadmap **W1-T10** and a `CLAUDE.md` trap.
+
+**A roadmap claim corrected.** W3-T2 said `value_precede` is "a Boolean state chain, same shape
+as the working `increasing`". Half true: same `rule4` chain mechanics, but it needs a genuine
+accumulated-state auxiliary that `increasing` does not — the exact leak D-0004 flags. Corrected
+in place. This is the second inherited claim this wave has overturned by checking it.
+
+**`sliding_sum` is blocked outright** — no rule schema sums integer-valued expressions, only
+Boolean occurrence counts (W2-A's G7), and `var_name` has no integer-valued auxiliary slot at
+all (its G8). Its spec stops at the maths, correctly, rather than inventing a derivation.
+
+**Nothing skipped:** §3 and §4 contain no set, graph, float or geometry constraints.
+
+**Gap numbering now needs reconciling.** W2-A and W2-C both numbered from G6 into different
+files and they mean different things. The consolidation into `docs/DECOMP_FORMAT_NOTES.md` is
+the orchestrator's, after W2-B lands.
