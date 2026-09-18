@@ -17,6 +17,10 @@ it touches no generator code. Do not add a third.
 | Task | Files being touched | Session | Since |
 |---|---|---|---|
 | — | — | — | — |
+| W0-T1 + W0-T2 + W0-T3 | `validator.ml` (new), `Makefile` (new), `docs/VALIDATOR.md` (new). **Read-only** on `explenation generator.ml` and `cata/**` | W0-A (orchestrated, 2026-09-18) | 2026-09-18 |
+| W0-T4 | `tools/` (new), `docs/COVERAGE.md` (new). **Read-only** on `CHRISTMAS_LIST.md` | W0-B (orchestrated, 2026-09-18) | 2026-09-18 |
+
+_Dispatched 2026-09-18 by the orchestrator session; supersedes the "wave zero has not been dispatched" note above. Two sessions, per CLAUDE.md. `WORKLOG.md` is owned by the orchestrator for this wave — W0-A and W0-B do not edit it, they report back and the orchestrator records._
 
 ---
 
