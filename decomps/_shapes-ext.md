@@ -89,8 +89,9 @@ string `"setfils"` (read off the source l.6, l.111, l.375), which is not LaTeX. 
 exists and the implementation does not.
 
 **What this shape does NOT cover — the coverage limit.** A conjunction of binary constraints on
-consecutive positions can only express languages whose membership is decided by the multiset of
-adjacent pairs, i.e. the **strictly 2-local** languages — equivalently, automata whose state is a
+consecutive positions can only express languages whose membership is decided by the *set* of
+adjacent pairs occurring in the word (plus the permitted first and last values), i.e. the
+**strictly 2-local** languages — equivalently, automata whose state is a
 function of the last symbol read. "An even number of `a`s" is regular and is not of this form.
 So EXT-2a is a complete decomposition of a *fragment* of `regular`, not of `regular`.
 
