@@ -295,9 +295,12 @@ Minimality here means no premise is droppable. It does **not** mean the rule is
 strong. `cata/alldifferent.tex`'s single rule is sound and minimal and almost
 useless: its premise is `∀i' != i: X_{i'} = t`, which under `alldifferent`
 requires `n-1` variables to share a value and is therefore unsatisfiable for
-`n >= 3`. It fires only at `n = 2`. The `∀` is plainly a `∃` that the generator
-lost, and CLAUDE.md already records that this file has one rule where it should
-have two. **A `SOUND and MINIMAL` verdict is a floor, not a certificate.**
+`n >= 3`. It fires only at `n = 2`. The useful rule is the `∃` form, which is
+strictly stronger and also sound; the validator cannot tell them apart because
+minimality is not strength. (This is *not* the same as the "one rule where it
+should have two" claim CLAUDE.md used to carry — W1-S retired that in `b93644a`;
+the count of rules is right, the strength of the one rule is what is at issue.)
+**A `SOUND and MINIMAL` verdict is a floor, not a certificate.**
 
 ### The three new defects worth naming
 
