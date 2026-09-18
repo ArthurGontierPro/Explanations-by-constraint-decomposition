@@ -63,8 +63,11 @@ session picks it up.
 | W2-T5 §3+§4 | `decomps/` files for its own constraints + `decomps/_shapes-seq.md` + `decomps/_gaps-seq.md` | W2-A (2026-09-18) | 2026-09-18 |
 | W2-T5 §5+§6 | `decomps/` files for its own constraints + `decomps/_shapes-ext.md` + `decomps/_gaps-ext.md` | W2-B (2026-09-18) | 2026-09-18 |
 | W2-T5 §1+§9 | `decomps/` files for its own constraints + `decomps/_shapes-perm.md` + `decomps/_gaps-perm.md` | W2-C (2026-09-18) | 2026-09-18 |
+| W1-T2 + W1-T9 + W1-T10 | `explenation generator.ml` + the goldens it regenerates — **rule engine, sole owner** | W3-S (2026-09-18) | 2026-09-18 |
+| W2-T5 §11 + shape consolidation + D-0011 relabelling | `decomps/**`, `docs/DECOMP_FORMAT_NOTES.md` | W3-D (2026-09-18) | 2026-09-18 |
+| `CHRISTMAS_LIST.md` repairs (4 recorded issues) | `CHRISTMAS_LIST.md` | W3-C (2026-09-18) | 2026-09-18 |
 
-_W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed. Nothing is claimed.** Gaps consolidated at `9774a62`._
+_W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed.** Gaps consolidated at `9774a62`. Wave three claimed 2026-09-18: engine fixes, spec consolidation, and the literature index — three files, three owners, no overlap._
 
 _W2-A closed 2026-09-18: 5 shapes (`decomps/_shapes-seq.md`), 3 new gaps (`decomps/_gaps-seq.md`,
 G6-G8 — numbered independently of W2-C's own G6-G8, reconciliation is the orchestrator's job at
