@@ -41,6 +41,7 @@ type ind_op =
   | OpOn     of ind_fam * ind_set             (*oni, ontin d: DISCARD the index list, replace it with one fresh index of that family ranging over the set*)
   | OpOut    of ind_fam                       (*i_out: drop the FIRST index of that family*)
   | OpForall of ind_fam * ind_set             (*foralli, foralltin d: prepend a fresh universally bound index*)
+  | OpPoint  of ind_fam * ind_set             (*pointi, pointtin d: prepend a fresh index that is RANGED BUT UNBOUND — a free parameter of the rule schema, not a quantifier (W1-T9)*)
   | OpSum    of ind_fam * ind_set             (*sumi: every index of that family becomes a primed, universally bound sibling constrained to differ from it*)
   | OpPrim   of ind_fam * ind_set             (*tprimin d: as OpSum but the sibling is not bound here*)
   | OpShift  of ind_fam * ind_symbols * int   (*iplus k, imoin k: i' = i +/- k*)
@@ -101,6 +102,7 @@ let rec apply_op op il = match op with
   | OpOn     (f,d)   -> Ind (fam_ind f,Set (fam_ind f,IN,d)::[])::[]
   | OpOut     f      -> fam_out f il
   | OpForall (f,d)   -> Ind (fam_ind f,[EXFORALL (fam_ind f);Set (fam_ind f,IN,d)])::il
+  | OpPoint  (f,d)   -> Ind (fam_ind f,[Set (fam_ind f,IN,d)])::il
   | OpSum    (f,d)   -> fam_map f (fun x -> sum_node x d) il
   | OpPrim   (f,d)   -> fam_map f (fun x -> prim_node x d) il
   | OpShift  (f,s,k) -> fam_map f (fun x -> shift_node x s k) il
@@ -114,6 +116,7 @@ let rec print_op op = match op with
   | OpOn     (f,d)   -> "on "^fam_letter f^" in "^op_set d
   | OpOut     f      -> "out "^fam_letter f
   | OpForall (f,d)   -> "forall "^fam_letter f^" in "^op_set d
+  | OpPoint  (f,d)   -> "point "^fam_letter f^" in "^op_set d
   | OpSum    (f,d)   -> "sum "^fam_letter f^"' in "^op_set d^" ("^fam_letter f^"'<>"^fam_letter f^")"
   | OpPrim   (f,d)   -> "prim "^fam_letter f^"' in "^op_set d^" ("^fam_letter f^"'<>"^fam_letter f^")"
   | OpShift  (f,s,k) -> fam_letter f^"'="^fam_letter f^op_sym s^string_of_int k
@@ -142,6 +145,7 @@ let rec print_op op = match op with
 let rec invert_op op = match op with
   | OpId               -> Some OpId
   | OpForall (f,_)     -> Some (OpOut f)
+  | OpPoint  (f,_)     -> Some (OpOut f)
   | OpShift  (f,PLUS,k)  -> Some (OpShift (f,MINUS,k))
   | OpShift  (f,MINUS,k) -> Some (OpShift (f,PLUS,k))
   | OpShiftC (f,PLUS,c,g)  -> Some (OpShiftC (f,MINUS,c,g))
@@ -687,6 +691,12 @@ let sump = OpSum (FP,D 3)
 let foralliin set = OpForall (FI,set)
 let foralltin set = OpForall (FT,set)
 let forallpin set = OpForall (FP,set)
+let pointiin set = OpPoint (FI,set)
+let pointtin set = OpPoint (FT,set)
+let pointpin set = OpPoint (FP,set)
+let pointi = OpPoint (FI,D 1)
+let pointt = OpPoint (FT,D 2)
+let pointp = OpPoint (FP,D 3)
 let foralli = OpForall (FI,D 1)
 let forallt = OpForall (FT,D 2)
 let forallp = OpForall (FP,D 3)
@@ -713,8 +723,20 @@ let cumul  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
               Decomp (3, rule5, [Decomp_devent (true , (B 2), id, oni)])]
 let gcc    = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule7, [Decomp_devent (true , (B 1), id, oni)])]
+(*W1-T9 defect 3 — `gcc` rules 1-2 were vacuous.
+  B2's ASCENDING modification was `imap [i_out;forallp]`, which prepends a
+  UNIVERSALLY bound p, so the premise printed as `forall p in [1,n]: O_t >= p`.
+  That collapses to O_t >= n, which contradicts the companion premise that the
+  other n-1 variables avoid t, and the rule could never fire (VACUOUS, W1-T8).
+  The clause B2_{t,p} <=> (#{i : X_i = t} >= p) is quantified over p at the
+  CONSTRAINT level, so an explanation built from it is a schema valid for each
+  p separately: p is a free parameter, not something the premise quantifies.
+  `pointp` emits exactly that — p with its range and no binder.
+  MEASURED: both rules go VACUOUS -> SOUND and MINIMAL, so all 4 gcc rules are
+  now sound and minimal. Only the ascending op changed, so rules 3-4, which
+  reach B2 through the DESCENDING `imap [foralli;p_out]`, are byte-unchanged.*)
 let gccn   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule6, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), imap [foralli;p_out], imap [i_out;forallp])]);
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), imap [foralli;p_out], imap [i_out;pointp])]);
               Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imoin 1, iplus 1)])]
