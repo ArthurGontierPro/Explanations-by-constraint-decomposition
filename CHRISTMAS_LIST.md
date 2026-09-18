@@ -118,6 +118,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `symmetric_all_different` | none | decomp | **E0** + `inverse` channelling |
 | `all_disjoint` | none | decomp | **E5** (set variables) |
 | `alldifferent_except_0` (alias) | — | — | as above |
+| `all_equal` | none | decomp | **E0** — added 2026-09-18, W3-C. Was the sharpest gap in this list: `cata/allequal.tex` is a shipped, generated (unvalidated) catalog entry with no row here at all. No `decomps/all_equal.md` exists to cite for the shape; the generated `.tex` shows a two-way existential/universal pattern over `X_i ≥ t`/`X_i < t`, not the pairwise-`=` dual of Shape P1 one might expect from `all_different` — read off the `.tex`, not measured against a spec, since none exists yet |
 
 ## 2. Counting and cardinality
 
@@ -139,6 +140,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `value_precede`, `value_precede_chain` | none | **native** (`value-precede.cpp`) **[G] [C]** | **E0** — MiniZinc's decomposition is a Boolean state chain (`b[i]` with `xis -> b[i+1]`, `not xis -> b[i]==b[i+1]`), structurally identical to the `increasing` entry that already works. **Good early win.** |
 | `seq_precede_chain` | none | decomp | **E0** |
 | `lex_less`, `lex_lesseq`, `lex2`, `strict_lex2`, `lex2_strict` | Chu & Stuckey, *Symmetries and lazy clause generation* (IJCAI 2011) — static symmetry breaking is LCG-compatible provided the added constraints have explaining propagators; no dedicated `lex` explanation paper found | **native** (`lex.cpp`) **[C]** | **E0** — lex is a Boolean carry chain, same shape as `value_precede` |
+| `lex_greater`, `lex_greatereq` | none — added 2026-09-18, W3-C | **native** (`lex.cpp`, same file as the `_less`/`_lesseq` pair) **[C]** | **E0** — `decomps/_shapes-seq.md`'s Shape B (Boolean state chain, `lex_less`/`lex_lesseq`) applies unchanged: MiniZinc defines `lex_greater(x,y)` as `lex_less(y,x)` and `lex_greatereq` symmetrically, an argument swap, not a new shape |
 | `lex_chain_*`, `*_orbitope` | none | decomp | **E0**, but MiniZinc's decomposition branches on instance data — one entry per variant |
 | `var_perm_sym`, `var_sqr_sym` | Chu & Stuckey 2011 (above) | **native** (`sym-break.cpp`) | **E0**/**E2** |
 
@@ -156,15 +158,15 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `table` | **Gange, Stuckey, Szymanek 2011**, *MDD propagators with explanation* (Constraints 16:407–429) — MDDs subsume table, regular, set/multiset. Also **McIlree & McCreesh, CP 2023** (best paper), *Proof logging for smart extensional constraints* — certified justifications for Smart Table | **native** (`table.cpp`) **[G] [C]** | **E2**. MiniZinc's `fzn_table_int` introduces a var row-index into a constant matrix — an `element`. The repo's own `table` entry uses a different encoding and currently emits an **unsound empty-premise rule**; that is a bug, not a missing extension. |
 | `regular`, `regular_nfa`, `regular_regexp` | Gange et al. 2011 (above); **McIlree & McCreesh CP 2023** covers Regular Language Membership | **native** (`regular.cpp`) **[C✗]** | **E2**. Note the repo already has a *different and legitimate* decomposition — transitions directly on consecutive `X` via value sets, no state variables, so explanations stay in the user's vocabulary. It only needs `D_8`/`D_9` defined in the printer and 2-D table side conditions. |
 | `mdd`, `mdd_nondet` | **Gange, Stuckey, Szymanek 2011** | **native** (`mddglobals.cpp`) **[C✗]** | **E1 + E2** |
-| `cost_regular`, `cost_mdd` | **Gange, Stuckey, Van Hentenryck, CP 2013**, *Explaining propagators for edge-valued decision diagrams* | decomp **[C✗]** | **E1 + E2 + E9** (was E3; costs accumulate — D-0011) |
+| `cost_regular`, `cost_mdd` | **Gange, Stuckey, Van Hentenryck, CP 2013**, *Explaining propagators for edge-valued decision diagrams* | decomp **[C✗]** | **E1 + E2 + E9** (was E3; costs accumulate — D-0011) *(this is now `cost_mdd`'s only row, 2026-09-18 W3-C — it duplicated a §11 row that gave a conflicting `E1 + E2` route and paired `cost_mdd` with `edit_distance`, which is not a MiniZinc 2.10.1 constraint under any spelling; that row is removed, see §11)* |
 
 ## 6. Scheduling
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
 | `cumulative` | **Schutt, Feydy, Stuckey, Wallace 2011**, *Explaining the cumulative propagator* (Constraints 16(3):250–282) — time-table filtering with window-based explanations. **Schutt, Feydy, Stuckey, CPAIOR 2013**, *Explaining time-table-edge-finding propagation* (arXiv:1208.3015) | **native** (`cumulative.cpp`, `cumulativeCalendar.cpp`) **[G] [C]** | The repo's entry is the **unary-resource special case** and names all *n* tasks; Schutt names a small window with a capacity argument. Needs **E2** (variable durations/resources: `s_i + d_i ≤ s_j` with `d_i` a var) and **E4** (the capacity/counting argument). *The other key test case.* |
-| `cumulatives`, `cumulative_opt` | as above | decomp | **E2 + E4** |
-| `disjunctive`, `_strict`, `_opt` | implied by the cumulative papers (unary is the special case) | **native** (`disjunctive.cpp`) **[G]** | **E2** — `fzn_disjunctive` is `d_i=0 \/ d_j=0 \/ s_i+d_i<=s_j \/ s_j+d_j<=s_i`, i.e. var-var linear atoms |
+| `cumulatives`, `cumulative_opt`, `cumulatives_opt` | as above | decomp | **E2 + E4** *(`cumulatives_opt` added 2026-09-18, W3-C — the `_strict`/`_opt`-style shorthand used elsewhere in this table does not compose past two suffixes, so the four-way combination was silently missing; same route as `cumulatives`, no new literature)* |
+| `disjunctive`, `_strict`, `_opt`, `disjunctive_strict_opt` | implied by the cumulative papers (unary is the special case) | **native** (`disjunctive.cpp`) **[G]** | **E2** — `fzn_disjunctive` is `d_i=0 \/ d_j=0 \/ s_i+d_i<=s_j \/ s_j+d_j<=s_i`, i.e. var-var linear atoms *(`disjunctive_strict_opt` named explicitly 2026-09-18, W3-C — the `_strict`/`_opt` shorthand reaches each suffix separately but not their four-way combination; same route)* |
 | `knapsack` | none found | decomp **[C]** | **E1 + E8 + E9** (was E3; weighted *and* integer-valued — D-0011) |
 
 ## 7. Packing and geometry
@@ -189,7 +191,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
 | `increasing`, `decreasing`, `strictly_*` | none specific | decomp | **E0** — **already correct in the repo**; `cata/increasing.tex` and `cata/decreasing.tex` are cleanly dual |
-| `element` | none found | decomp **[C]** | **E0** — already in `cata/element.tex`, 6 rules |
+| `element` | none found | decomp **[C]** | **E0** — `cata/element.tex` generates 6 rules; **2 of 6 are validated sound-and-minimal**, the rest unvalidated (corrected 2026-09-18, W3-C — the "6 rules" phrasing read as a coverage claim, which it is not; per `CLAUDE.md`, no entry may be reported correct until the validator says so) |
 | `member` | none | decomp | **E0** — `exists(i)(x[i]=y)` |
 | `maximum`, `minimum` | none found | **native** (`minimum.cpp`) **[C]** | **E2** (var-var atoms) |
 | `arg_max`, `arg_min` | none | native for bool (`bool_arg_max.cpp`) | **E2**; float variants **E7** |
@@ -201,7 +203,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
-| `range`, `roots` | none | decomp | **E5**. Note: MiniZinc's `range`/`roots` take `var set of int` and have **no library decomposition** (declared solver-native). The repo's `cata/range.tex` and `cata/roots.tex` are a *different formulation* — worth reconciling or renaming. |
+| `range`, `roots` | none | decomp | **E5**. Note: MiniZinc's `range`/`roots` take `var set of int` and have **no library decomposition** (declared solver-native). The repo's `cata/range.tex` and `cata/roots.tex` are a *different formulation* — worth reconciling or renaming. **Disambiguated 2026-09-18, W3-C:** `cata/range.tex` is Bessiere et al.'s set-variable RANGE (Generator l.423–428); gccat's `range_ctr` is an unrelated `max(X) − min(X) + 1` arithmetic constraint over an index range — see `docs/GCCAT.md` §"`range` is ambiguous across the two catalogs" (line ~165). This row names MiniZinc's `range`/`roots` globals, which match the repo's set-variable formulation, not `range_ctr`; do not read this row as a claim about gccat's `range_ctr`. |
 | `partition_set`, `disjoint`, `sum_set`, `inverse_set` | none | decomp | **E5** |
 
 ## 11. Maths and misc
@@ -213,7 +215,8 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `neural_net` | none | decomp | **E7** |
 | `write`, `writes`, `writes_seq` | none | decomp | **E2** (array update = `element` family) |
 | `*_fn` functional variants (`among_fn`, `count_fn`, `nvalue_fn`, `range_fn`, `roots_fn`, `sort_fn`, `inverse_fn`, `distribute_fn`, `global_cardinality_fn`, `global_cardinality_closed_fn`, `bin_packing_load_fn`) | — | — | not separate constraints; they call the predicate form |
-| `cost_mdd`, `edit_distance` | Gange et al. 2013 | native (`edit_distance.cpp`) | **E1 + E2** |
+
+<!-- Removed 2026-09-18, W3-C: a row `cost_mdd, edit_distance | Gange et al. 2013 | native (edit_distance.cpp) | E1 + E2` stood here, duplicating §5's `cost_mdd` row with a conflicting route. `cost_mdd` now has one authoritative row, in §5. `edit_distance` is not a MiniZinc 2.10.1 global under any spelling (confirmed: absent from tools/data/minizinc-2.10.1-globals.txt); the `edit_distance.cpp` filename may name a real Chuffed source file used in solving `cost_mdd`/`mdd` natively, but that claim is unverified here and is not re-litigated per this task's scope. If Chuffed's native support for `cost_mdd` needs recording, add it to §5's row rather than reviving this one. -->
 
 ---
 
