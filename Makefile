@@ -64,7 +64,7 @@ check-golden:
 	  if [ ! -f $(GENDIR)/cata/$$b ]; then \
 	    echo "  FAIL  $$b  (committed but NOT generated -> newly orphaned)"; fail=1; \
 	  elif cmp -s $$f $(GENDIR)/cata/$$b; then \
-	    echo "  ok    $$b  ($$(grep -o '\\frac' $$f | wc -l) \frac)"; \
+	    echo "  ok    $$b  ($$(grep -o '\\frac' $$f | wc -l) frac-occurrences)"; \
 	  else \
 	    echo "  FAIL  $$b  (byte-diff against committed output)"; \
 	    diff $$f $(GENDIR)/cata/$$b | head -20; fail=1; \
