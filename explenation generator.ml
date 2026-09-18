@@ -218,11 +218,8 @@ and rule7 e de c dec ch = (*Bool sum=c*)
 
 let rec removesame l = (*keeps one occurence of each element*)
   match l with []->[]|v::tl->if inl v tl then removesame tl else [v]@(removesame tl) 
-let rec imp l = (*detect impossibles literals*) 
-  match l with []->false | c::tl -> match c with |F|IM|FE|R -> true | _ -> imp tl 
-let rec removeimp ll = (*remove explenation with impossible literals*) 
-  match ll with []->[]|l::tl->if imp l || inl l tl then removeimp tl else [removesame l]@(removeimp tl) 
- 
+(*the branch filter that used to live here is now below the printers: W1-T3*)
+
 let concat l = (*Concaténation d'un EXAND de EXOR en EXOR de EXAND*) 
   match l with []-> [] | l1::[]-> l1 | l1::tl -> fold_left (fun l1 l2 -> flatten (map (fun x -> map (fun y -> x@y) l1) l2)) l1 tl 
 
@@ -312,23 +309,181 @@ open Printf
 let rec printfraqtex el x fic = match el with  
   | [] -> () 
   | e::tl -> fprintf fic "%s" ("$$\\frac{"^e^"}{"^printvartex x^"}$$ ");printfraqtex tl x fic 
-(*Output event explanation LateX rule from a global event and a decomposition*) 
-let explain e dec = 
-  let fic = open_out "exp.tex" in 
-  let cl = ctrs e dec in  
-  let _ = printfraqtex (map (fun l-> printetex l) (removeimp (an (EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)))))) e fic in
-  close_out fic 
+(*==========================================================================
+  W1-T3 — make failure loud.
+
+  `removeimp` used to drop every branch containing F, IM, FE or R, all four of
+  which print as "?". So "no explanation exists" and "the generator failed"
+  were the same observable: silence. They are not the same thing:
+
+    F   the constraint carrying the branch is NOT reified, so "this constraint
+        is false" is not a fact anything can explain. The branch is genuinely
+        unsatisfiable; dropping it is correct. It is now COUNTED and REPORTED.
+    R   the AND/OR traversal met a cycle and cut the branch. Cutting keeps
+        termination but loses a candidate explanation, so it is a WARNING.
+    IM  the event occurs in no further constraint: a dead end.
+    FE  a rule schema was applied to a constraint shape it does not handle.
+
+  IM and FE mean the generator could not do its job, so they now RAISE instead
+  of vanishing. Measured 2026-09-18 by instrumenting the filter over all 16
+  entries: of the 25 dropped branches, ALL 25 are F; IM, FE and R do not occur.
+  Raising therefore changes no emitted rule today.
+
+  Two further silences are reported here rather than fixed, because fixing them
+  is W1-T4 and W1-T7 and not this task:
+    - a surviving branch with no literal in it prints as an EMPTY premise, i.e.
+      a rule concluding from nothing (cata/table.tex rule 1);
+    - a literal that binds the same index name more than once makes the emitted
+      LaTeX ambiguous, so the shipped rule does not determine what it means
+      (D-0009).
+  ========================================================================*)
+exception Generator_failure of string
+
+type blocker = BNone | BF | BR | BIM | BFE
+let rec blocking_leaf l = match l with
+  | [] -> BNone
+  | c::tl -> (match c with
+      | F  -> BF
+      | R  -> BR
+      | IM -> BIM
+      | FE -> BFE
+      | T  -> blocking_leaf tl
+      | Var _ -> blocking_leaf tl)
+let rec branch_tag l = match l with
+  | [] -> []
+  | c::tl -> (match c with
+      | F -> "F" | R -> "R" | IM -> "IM" | FE -> "FE"
+      | T -> "T" | Var _ -> "lit") :: branch_tag tl
+let rec has_lit l = match l with
+  | [] -> false
+  | c::tl -> (match c with Var _ -> true | _ -> has_lit tl)
+
+(*Binders are read off the index structure, not off the LaTeX we just printed,
+  so the ambiguity report is independent of the printer (D-0009).*)
+let rec binders_modifs ml = match ml with
+  | [] -> []
+  | m::tl -> (match m with
+      | EXFORALL i -> printind_name i :: binders_modifs tl
+      | EXEXISTS i -> printind_name i :: binders_modifs tl
+      | Set _ | Rel _ | Addint _ | Addcst _ -> binders_modifs tl)
+let rec binders_indexes il = match il with
+  | [] -> []
+  | i::tl -> binders_modifs (ind_modifs_list i) @ binders_indexes tl
+let rec countocc x l = match l with [] -> 0 | y::tl -> (if x = y then 1 else 0) + countocc x tl
+let rec repeated l = match l with
+  | [] -> []
+  | x::tl -> let r = repeated tl in
+             if countocc x tl > 0 && not (mem x r) then x::r else r
+let rec branch_ambig l = match l with
+  | [] -> []
+  | c::tl -> (match c with
+      | Var v -> repeated (binders_indexes (index_list v)) @ branch_ambig tl
+      | _ -> branch_ambig tl)
+
+(*Replaces removeimp. Returns the surviving branches and a census:
+  (kept, duplicate, dropped-F, cut-R, empty-premise, ambiguous-binder).*)
+let rec filter_branches where ll = match ll with
+  | [] -> ([], (0,0,0,0,0,0))
+  | l::tl ->
+    let (kept,(nk,nd,nf,nr,nemp,nam)) = filter_branches where tl in
+    (match blocking_leaf l with
+     | BFE -> raise (Generator_failure (where^" — a rule schema was applied to a constraint shape it does not handle (FE); branch ["^String.concat "+" (branch_tag l)^"]"))
+     | BIM -> raise (Generator_failure (where^" — dead-end event: no constraint in the decomposition explains it (IM); branch ["^String.concat "+" (branch_tag l)^"]"))
+     | BR  -> (kept,(nk,nd,nf,nr+1,nemp,nam))
+     | BF  -> (kept,(nk,nd,nf+1,nr,nemp,nam))
+     | BNone ->
+       if inl l tl then (kept,(nk,nd+1,nf,nr,nemp,nam))
+       else (removesame l::kept,
+             (nk+1,nd,nf,nr,
+              nemp + (if has_lit l then 0 else 1),
+              nam  + (match branch_ambig l with [] -> 0 | _ -> 1))))
+
+(*Running census, printed at the end of a run. stdout, never stderr: the gate
+  in the Makefile fails the build if the generator writes to stderr.*)
+let gen_files  = ref 0
+let gen_events = ref 0
+let gen_rules  = ref 0
+let gen_dropF  = ref 0
+let gen_dropR  = ref 0
+let gen_dup    = ref 0
+let gen_norule = ref 0
+let gen_empty  = ref 0
+let gen_ambig  = ref 0
+let footer : string list ref = ref []
+let note s = footer := !footer @ [s]
+
+(*Output event explanation LateX rule from a global event and a decomposition*)
+let emit_event e dec fic =
+  let lbl = printvartex e in
+  let cl = ctrs e dec in
+  let tree = EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)) in
+  let (kept,(nk,nd,nf,nr,nemp,nam)) = filter_branches lbl (an tree) in
+  let _ = printfraqtex (map (fun l-> printetex l) kept) e fic in
+  gen_events := !gen_events + 1;
+  gen_rules  := !gen_rules  + nk;
+  gen_dropF  := !gen_dropF  + nf;
+  gen_dropR  := !gen_dropR  + nr;
+  gen_dup    := !gen_dup    + nd;
+  gen_empty  := !gen_empty  + nemp;
+  gen_ambig  := !gen_ambig  + nam;
+  printf "  %-30s %d candidate(s) -> %d rule(s); dropped: F %d, cycle %d, duplicate %d\n"
+    lbl (nk+nd+nf+nr) nk nf nr nd;
+  note (sprintf "%s : %d candidate(s) -> %d rule(s); dropped F %d, cycle %d, duplicate %d"
+          lbl (nk+nd+nf+nr) nk nf nr nd);
+  if nk = 0 then begin
+    gen_norule := !gen_norule + 1;
+    printf "      NO RULE EMITTED — %s\n"
+      (if nf+nr > 0
+       then "every candidate branch was blocked: this is 'no explanation exists', not a silent success"
+       else "the decomposition produced no candidate branch at all");
+    note (sprintf "  ** NO RULE EMITTED for %s: %d candidate(s), all blocked **" lbl (nf+nr))
+  end;
+  if nemp > 0 then begin
+    printf "      DEFECT: %d emitted rule(s) have an EMPTY PREMISE (conclude from nothing) — W1-T4\n" nemp;
+    note (sprintf "  ** DEFECT: %d emitted rule(s) for %s have an EMPTY premise (W1-T4) **" nemp lbl)
+  end;
+  if nam > 0 then begin
+    printf "      DEFECT: %d emitted rule(s) bind an index name twice, so the LaTeX does not determine the rule — D-0009\n" nam;
+    note (sprintf "  ** DEFECT: %d emitted rule(s) for %s bind an index name twice; the LaTeX is ambiguous (D-0009) **" nam lbl)
+  end;
+  if nr > 0 then begin
+    printf "      WARNING: %d branch(es) cut by cycle detection; a candidate explanation was lost\n" nr;
+    note (sprintf "  ** WARNING: %d branch(es) for %s cut by cycle detection **" nr lbl)
+  end
+
+(*The diagnostics are appended to the .tex as LaTeX comments, so the shipped
+  artifact itself says what it does not contain. No trailing newline is written,
+  which keeps the property the rest of the toolchain relies on.*)
+(*The footer deliberately does NOT name its own file: cata/atleastnvalues.tex and
+  cata/atmostnvalues.tex are byte-identical although their decompositions differ,
+  and that collision is W1-T5's evidence. A filename in the footer would make the
+  two files differ for a reason that has nothing to do with the bug.*)
+let write_footer fic =
+  fprintf fic "\n%%%% generator diagnostics (W1-T3)";
+  iter (fun s -> fprintf fic "\n%%%% %s" s) !footer;
+  footer := []
+
+let explain e dec =
+  printf "== exp.tex ==\n";
+  footer := [];
+  let fic = open_out "exp.tex" in
+  let _ = emit_event e dec fic in
+  let _ = write_footer fic in
+  close_out fic;
+  gen_files := !gen_files + 1
 let rec explainallaux el dec fic =
-  match el with []->() | e::tl -> 
-    let cl = ctrs e dec in  
-    let _ = printfraqtex (map (fun l-> printetex l) (removeimp (an (EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)))))) e fic in
-    let e = n e in
-    let _ = printfraqtex (map (fun l-> printetex l) (removeimp (an (EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)))))) e fic in
+  match el with []->() | e::tl ->
+    let _ = emit_event e dec fic in
+    let _ = emit_event (n e) dec fic in
     explainallaux tl dec fic
-let explainall el dec str = 
-  let fic = open_out str in 
+let explainall el dec str =
+  printf "== %s ==\n" str;
+  footer := [];
+  let fic = open_out str in
   let _ = explainallaux el dec fic in
-  close_out fic 
+  let _ = write_footer fic in
+  close_out fic;
+  gen_files := !gen_files + 1
 
 
 (*Constructors for index modification functions*) 
@@ -458,3 +613,15 @@ let _ = explainall [xac] regular "cata/regular.tex"
 let _ = explainall [xac] roots "cata/roots.tex"
 let _ = explainall [xac] range "cata/range.tex"
 let _ = explainall [x3ac] table "cata/table.tex"
+
+(*W1-T3 — the run's own census. Nothing here changes a rule; it stops the
+  generator from being silent about what it discarded.*)
+let _ =
+  printf "\n== generator census (W1-T3) ==\n";
+  printf "  files %d, events %d, rules emitted %d\n" !gen_files !gen_events !gen_rules;
+  printf "  branches dropped: %d F (constraint not reified: legitimate), %d cut by cycle detection, %d duplicate\n"
+    !gen_dropF !gen_dropR !gen_dup;
+  printf "  events with NO rule at all  : %d\n" !gen_norule;
+  printf "  rules with an EMPTY premise : %d   (W1-T4)\n" !gen_empty;
+  printf "  rules binding an index twice: %d   (D-0009, W1-T7)\n" !gen_ambig;
+  printf "  IM and FE now raise instead of printing as '?'; neither occurred in this run.\n"

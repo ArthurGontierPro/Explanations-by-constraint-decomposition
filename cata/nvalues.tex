@@ -1,1 +1,8 @@
 $$\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket~~~~N=p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}$$ $$\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket}{X_{i}=t}$$ $$\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket~~~~N=p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}$$ $$\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket~~~~X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N=p}$$ $$\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \neq p}$$ $$\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \neq p}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i}=t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0
+%% X_{i} \neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0
+%% N=p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0
+%%   ** DEFECT: 1 emitted rule(s) for N=p bind an index name twice; the LaTeX is ambiguous (D-0009) **
+%% N \neq p : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0
+%%   ** DEFECT: 2 emitted rule(s) for N \neq p bind an index name twice; the LaTeX is ambiguous (D-0009) **
