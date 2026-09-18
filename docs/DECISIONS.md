@@ -162,3 +162,31 @@ small `n` (`alldifferent`'s is all Hall sets), so entries must be labelled `comp
 `partial` individually rather than uniformly. Second, lifting from a fixed arity to a schema
 valid for all `n` is a **conjecture** step; either prove it by induction or mark the entry
 empirical. Do not let a schema validated at `n ≤ 6` be described as proved.
+
+## D-0009 — OPEN: a shipped rule needs a `VACUOUS` verdict, and the `.tex` does not determine the rule
+
+**NOT DECIDED.** Raised by W0-A's validator output on 2026-09-18; recorded here so it is not
+rediscovered, not settled — this one is the author's to close.
+
+Two findings, both from `make validate` over `table`, `atleastnvalues`, `atmostnvalues`:
+
+1. **Three shipped rules are sound only because their premises can never hold.** The validator
+   calls this `VACUOUS`. It is not the same property as soundness and it should not be reported
+   as success: a rule that cannot fire explains nothing, and counting it as correct would
+   inflate any future coverage claim. The proposal is a distinct verdict — `SOUND and MINIMAL`
+   / `VACUOUS` / `AMBIGUOUS` / `UNSOUND` — and a rule that "passes" vacuously is a defect
+   report, not a pass.
+
+2. **The emitted LaTeX is lossy.** Repeated index composition prints self-contradictory binder
+   prefixes (one premise carries `∃i, ∀i, ∀t, ∀i`), so the shipped artifact does not determine
+   which rule was meant. W0-A's validator therefore enumerates *readings* of each rule and
+   reports per-reading verdicts. That is the honest response to a lossy artifact, but it is a
+   workaround: the real fix is W1-T7, and this raises W1-T7 from a refactor to a correctness
+   prerequisite.
+
+**Bearing on D-0008** (what "complete" means per entry): a prime-implicate definition has to
+exclude vacuous implicates, or "complete" is satisfiable by rules that never fire.
+
+**Bearing on W2-T4 / D-0007** (breadth or depth): the evidence D-0007 was waiting for has
+started to arrive and it is bad — of 13 rules validated in 3 entries, **0 were sound and
+minimal**. One wave of validation on the remaining 13 entries should precede that decision.

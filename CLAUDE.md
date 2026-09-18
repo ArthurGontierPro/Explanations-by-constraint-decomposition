@@ -32,16 +32,20 @@ This is a 2020 M2 internship prototype, not a maintained tool. As of 2026-09-18:
 | `explenation generator.ml` | 460 lines, the current generator. **It builds and runs on OCaml 5.1.1 and regenerates all 15 `cata/*.tex` byte-identically** (verified 2026-09-18). No build system, but it needs none: `ocaml gen.ml` is enough. |
 | `prototypes/moulinette2.jl` | Julia, also runs, also reproduces its documented output. The earlier baseline; the OCaml is the structured one. |
 | `cata/*.tex` | 16 files, 15 generated. `sum.tex` is orphaned — nothing produces it. |
-| tests | **none** |
-| CI / gate | **none** |
+| tests | `make validate` — a validator covering **3 of 16 entries** (W0-T1, landed 2026-09-18). It flagged **all 13 rules it checked**; none earned "sound and minimal" |
+| CI / gate | `make check` — golden-file byte-diff of every generated entry, plus a warning census (W0-T2/T3, landed 2026-09-18). **It proves reproducibility, not correctness.** No CI runner |
 
 **`cata/table.tex` contains an unsound rule** — an empty premise concluding `X_i = t`.
 `atleastnvalues.tex` and `atmostnvalues.tex` are byte-identical despite different
 decompositions. These are not hypotheticals; they are shipped output. Treat every existing
 entry as unverified until the validator says otherwise.
 
-> **Until W0-T1 lands, no session may report a catalog entry as correct.** There is no gate.
-> A generated `.tex` that renders is not evidence of anything. Say "generated, unvalidated".
+> **W0-T1 landed 2026-09-18, and it narrowed rather than lifted this rule.** The validator
+> covers `table`, `atleastnvalues` and `atmostnvalues` only. It flagged all 13 rules in them
+> and **not one rule in this repo has been shown sound and minimal.** For the other 13
+> entries nothing has changed: a generated `.tex` that renders is not evidence of anything,
+> and the honest phrasing is still "generated, unvalidated". Run `make validate` before
+> calling any entry correct, and if it is not one of the three, you cannot.
 
 ---
 
@@ -139,7 +143,9 @@ resists extension — see D-0006.
 ## Traps
 
 - **`cata/*.tex` have no trailing newline**, so `wc -l` reports 0 for files with content.
-  Use `grep -c '\\frac'` to count rules.
+  **`grep -c '\\frac'` is also wrong** — every entry is a *single line*, so it returns 1 for all
+  16 regardless of content. Count rules with `grep -o '\\frac' f | wc -l` (measured 2026-09-18:
+  `grep -c` gives 1 for `table`, `nvalues` and `increasing` alike; `grep -o` gives 3, 6 and 2).
 - **`removeimp` silently discards** any branch containing `F`/`IM`/`FE`/`R`, all of which
   print as `?`. So "no explanation exists" and "the generator crashed" look identical, and
   `alldifferent.tex` has one rule where it should have two. When adding anything, expect
@@ -150,6 +156,11 @@ resists extension — see D-0006.
 - **Index functions are opaque closures**, so nothing can print, compare or invert them, and
   a wrong composition yields a plausible-looking wrong rule. This is D-0006's first item.
 - **`!=` is used where structural inequality is meant** (physical equality in OCaml).
+- **Warning counts, measured on OCaml 5.1.1 (2026-09-18):** default **0**, `-w +27+39` **16**,
+  `-w +40+41+42` **42**, `-w +a` **91**. An earlier draft of this file said "16 default
+  warnings"; 27 and 39 are off by default in 5.1.1, so the 16 only appear if you ask. The
+  two warning-39s are the `printind_name_list` non-recursion bug below. `make check` keeps
+  this census and fails if the counts move.
 - **Constructor names are ambiguous across types, and OCaml resolves them silently.**
   `ocamlc -w +40+41+42` reports **42** warnings, the sharp one being
   `I belongs to several types: ind_name var_name — The first one was selected.`
@@ -157,5 +168,5 @@ resists extension — see D-0006.
   index variable) and gets `ind_name.I` is a silent semantic bug, not a compile error.
 - **`printind_name_list` and `printiopl_list` (lines 263–264) ignore their tail** — they
   match `i::tl` and never use `tl`, so they print only the first index. The `…tex` siblings do
-  recurse, so this affects the plain-text path only. Two of the 16 default warnings point
+  recurse, so this affects the plain-text path only. Two of the 16 warnings at `-w +27+39` point
   straight at it.
