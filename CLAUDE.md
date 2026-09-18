@@ -32,7 +32,7 @@ This is a 2020 M2 internship prototype, not a maintained tool. As of 2026-09-18:
 | `explenation generator.ml` | 460 lines, the current generator. **It builds and runs on OCaml 5.1.1 and regenerates all 15 `cata/*.tex` byte-identically** (verified 2026-09-18). No build system, but it needs none: `ocaml gen.ml` is enough. |
 | `prototypes/moulinette2.jl` | Julia, also runs, also reproduces its documented output. The earlier baseline; the OCaml is the structured one. |
 | `cata/*.tex` | 16 files, 15 generated. `sum.tex` is orphaned — nothing produces it. |
-| tests | `make validate` — the validator (W0-T1 + W1-T8, 2026-09-18). **42 rules in 11 entries: 11 sound and minimal, 31 flagged. 14 more rules in 5 entries are out of scope** — `among`, `cumulative`, `range`, `regular`, `roots` are underspecified artifacts (W1-T2) |
+| tests | `make validate` — the validator. **34 rules in 11 entries: 13 sound and minimal, 21 flagged; 2 rules in 5 entries still out of scope.** The catalog got *smaller and truer* in wave three: `among`, `range`, `regular`, `roots` and `table` now emit **no rules at all**, because the generator refuses to state a rule over an index set the artifact never defines. Getting them back needs gaps G6/G7 (E2), not a patch |
 | CI / gate | `make check` — golden-file byte-diff of every generated entry, plus a warning census (W0-T2/T3, landed 2026-09-18). **It proves reproducibility, not correctness.** No CI runner |
 
 **`cata/table.tex` contains an unsound rule** — an empty premise concluding `X_i = t`.
