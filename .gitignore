@@ -1,0 +1,14 @@
+# Build output from the wave-zero Makefile (W0-A). Nothing here is a source
+# artifact: _build/ holds the scratch regeneration of cata/*.tex used by
+# `make check-golden`, the warning-census copy of the generator, and the
+# compiled validator. All of it is reproducible with `make check`.
+_build/
+
+# OCaml compilation by-products, if a target is ever built outside _build/.
+*.cmi
+*.cmo
+*.cmx
+*.cma
+*.cmxa
+*.o
+*.a

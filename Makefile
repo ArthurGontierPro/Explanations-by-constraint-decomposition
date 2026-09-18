@@ -28,7 +28,7 @@ WARNDIR  := $(BUILDDIR)/warn
 # exclusion becomes stale).
 ORPHANS := sum.tex
 
-.PHONY: check check-golden check-orphans check-warnings validate clean help
+.PHONY: check check-golden check-orphans check-warnings validate validate-selftest coverage clean help
 
 help:
 	@echo "make check          — the gate: golden-file diff + orphan check + warning census"
@@ -36,6 +36,8 @@ help:
 	@echo "make check-orphans  — fail if the set of orphaned cata/*.tex changed"
 	@echo "make check-warnings — census of compiler warnings (reports, never fails)"
 	@echo "make validate       — run the W0-T1 validator (3 entries; see docs/VALIDATOR.md)"
+	@echo "make validate-selftest — just the validator's own positive/negative controls"
+	@echo "make coverage       — MiniZinc coverage drift (advisory, W0-B)"
 	@echo "make clean          — remove $(BUILDDIR)"
 
 check: check-golden check-orphans check-warnings
@@ -140,15 +142,37 @@ check-warnings:
 # W0-T1 — the validator. Covers THREE catalog entries, not the catalog.
 # Read docs/VALIDATOR.md before believing anything it prints.
 # ---------------------------------------------------------------------------
+# Exit status: 0 nothing flagged, 1 something flagged, 2 the validator's own
+# self-test or cross-check failed (in which case its verdicts mean nothing).
+# Today it exits 1: all 13 in-scope rules are flagged. That is the expected
+# state until W1 fixes them, so `validate` is NOT part of `make check`.
 validate: $(BUILDDIR)/validator
-	@$(BUILDDIR)/validator
+	@$(BUILDDIR)/validator . ; \
+	 s=$$?; \
+	 if [ $$s -eq 2 ]; then echo "VALIDATOR IS BROKEN (self-test/cross-check failed)"; exit 2; fi; \
+	 exit 0
+
+# Just the controls: does the checker still tell good rules from bad ones?
+validate-selftest: $(BUILDDIR)/validator
+	@$(BUILDDIR)/validator --selftest
 
 $(BUILDDIR)/validator: validator.ml
 	@mkdir -p $(BUILDDIR)
-	@$(OPAMENV) ocamlfind ocamlopt -package str -linkpkg validator.ml \
-	    -o $(BUILDDIR)/validator 2>/dev/null \
-	  || $(OPAMENV) ocamlopt str.cmxa validator.ml -o $(BUILDDIR)/validator \
-	  || $(OPAMENV) ocamlc str.cma validator.ml -o $(BUILDDIR)/validator
+	@$(OPAMENV) ocamlopt -I $(BUILDDIR) validator.ml -o $(BUILDDIR)/validator
+	@rm -f validator.cmi validator.cmx validator.o
+
+# ---------------------------------------------------------------------------
+# W0-B's MiniZinc coverage classifier. Advisory only: `--check` exits 1 today
+# because there is real drift between CHRISTMAS_LIST.md and MiniZinc 2.10.1,
+# and that drift is W0-B's finding to resolve, not a reason to fail this gate.
+# Kept out of `make check` entirely and reported, not enforced.
+# ---------------------------------------------------------------------------
+coverage:
+	@echo "== MiniZinc coverage drift (advisory; never fails) =="
+	@python3 tools/mzn_coverage.py --check; \
+	 s=$$?; \
+	 if [ $$s -eq 0 ]; then echo "  -- no drift"; \
+	 else echo "  -- drift reported (exit $$s); advisory, see W0-B / docs/COVERAGE.md"; fi
 
 clean:
 	@rm -rf $(BUILDDIR) *.cmi *.cmo *.cmx *.o
