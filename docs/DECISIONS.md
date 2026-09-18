@@ -213,3 +213,18 @@ Consequences, so this is not re-argued:
 - **Coverage still means validated coverage.** Breadth does not relax W0-T1. An entry that is
   generated and unvalidated is not coverage; today that is 13 of 16 entries, and of the 3
   measured, 0 rules are sound and minimal.
+
+### 2026-09-18 — amendment to D-0009 (still OPEN): the root cause is measured
+
+W1-S landed W1-T7 and found the mechanism behind the self-contradictory binder prefixes.
+**Applying an index modification *appends* to the index's modifier list instead of rewriting
+it.** The accumulation is what prints as `∃i, ∀i, ∀t, ∀i` on a single premise. Measured with
+the new first-order operators: `OpId`, `OpForall`/`OpOut` and `OpSeq` of those round-trip under
+`invert_op`, but `OpShift`/`OpShiftC` do not — `i' = i+1` followed by `i' = i-1` yields an `i''`
+carrying *both* `Addint` modifiers rather than cancelling.
+
+So W1-T7 delivered inspectability, and inspectability alone does not fix the ambiguity: **13 of
+53 rules still bind an index name twice.** Whoever closes D-0009 needs a normalisation step —
+applying a modification must rewrite the modifier list, not extend it — and that is a separate
+piece of work from the re-encoding. Until it lands, a shipped rule still does not determine
+what it means, and the validator must keep enumerating readings.

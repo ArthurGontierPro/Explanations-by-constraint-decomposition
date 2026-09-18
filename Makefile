@@ -136,7 +136,8 @@ check-warnings:
 	    n=$$(grep -c 'Warning [0-9]' out.txt || true); \
 	    printf "  %-14s %3d warnings\n" "$${w:-(default)}" "$$n"; \
 	  done
-	@echo "  -- expected at the time of writing: default 0, +27+39 16, +40+41+42 42, +a 91"
+	@echo "  -- expected after W1-T3/T7 (2026-09-18): default 0, +27+39 8, +40+41+42 31, +a 57"
+	@echo "  -- these move whenever the generator changes; re-measure, do not quote"
 
 # ---------------------------------------------------------------------------
 # W0-T1 — the validator. Covers THREE catalog entries, not the catalog.

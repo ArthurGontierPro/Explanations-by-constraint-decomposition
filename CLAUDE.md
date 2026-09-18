@@ -146,27 +146,35 @@ resists extension — see D-0006.
   **`grep -c '\\frac'` is also wrong** — every entry is a *single line*, so it returns 1 for all
   16 regardless of content. Count rules with `grep -o '\\frac' f | wc -l` (measured 2026-09-18:
   `grep -c` gives 1 for `table`, `nvalues` and `increasing` alike; `grep -o` gives 3, 6 and 2).
-- **`removeimp` silently discards** any branch containing `F`/`IM`/`FE`/`R`, all of which
-  print as `?`. So "no explanation exists" and "the generator crashed" look identical, and
-  `alldifferent.tex` has one rule where it should have two. When adding anything, expect
-  silence rather than an error.
+- **FIXED 2026-09-18 (W1-T3), and the trap note it replaces was wrong.** `removeimp` used to
+  discard any branch containing `F`/`IM`/`FE`/`R` in silence; it is now `filter_branches`, which
+  raises on `FE`/`IM`, warns on `R` (cutting a cycle is a design choice), and counts legitimate
+  `F` discards into a diagnostics block appended to every `cata/*.tex`.
+  **The old note claimed `alldifferent.tex` "has one rule where it should have two". It should
+  have one.** Measured: instrumenting the old filter over all 16 entries found 22 dropped
+  branches, **all 22 of them `F`** — `IM`, `FE` and `R` never occurred, so nothing was ever lost
+  to the silence. `alldiff`'s decomposition is `rule1` + `rule5` *alone* (a Boolean sum ≤), and
+  `X_i = t` is simply not derivable from a ≤ direction. `element.tex`'s `I=i` is the same case.
+  **Getting that second rule requires counting across sums — that is E4 (D-0006), the research
+  item, not a bug in W1.**
 - **The printer hardcodes index sets 1–3** (`[1,n]`, `[1,m]`, `[1,n]`) and falls through to
   an undefined `D_k` for everything else. That is why `regular`, `roots`, `range` and `table`
   reference `D_4`–`D_9` that appear nowhere.
 - **Index functions are opaque closures**, so nothing can print, compare or invert them, and
   a wrong composition yields a plausible-looking wrong rule. This is D-0006's first item.
 - **`!=` is used where structural inequality is meant** (physical equality in OCaml).
-- **Warning counts, measured on OCaml 5.1.1 (2026-09-18):** default **0**, `-w +27+39` **16**,
-  `-w +40+41+42` **42**, `-w +a` **91**. An earlier draft of this file said "16 default
+- **Warning counts move when the generator changes — re-measure, never quote.** On OCaml 5.1.1,
+  before W1-T3/T7: default 0, `-w +27+39` 16, `+40+41+42` 42, `+a` 91. **After** (2026-09-18,
+  from `make check`): default **0**, `-w +27+39` **8**, `-w +40+41+42` **31**, `-w +a` **57**. An earlier draft of this file said "16 default
   warnings"; 27 and 39 are off by default in 5.1.1, so the 16 only appear if you ask. The
   two warning-39s are the `printind_name_list` non-recursion bug below. `make check` keeps
   this census and fails if the counts move.
 - **Constructor names are ambiguous across types, and OCaml resolves them silently.**
-  `ocamlc -w +40+41+42` reports **42** warnings, the sharp one being
+  `ocamlc -w +40+41+42` reports **31** warnings (was 42 before W1-T7), the sharp one being
   `I belongs to several types: ind_name var_name — The first one was selected.`
   `T` and `R` are likewise disambiguated by type. A site that means `var_name.I` (element's
   index variable) and gets `ind_name.I` is a silent semantic bug, not a compile error.
 - **`printind_name_list` and `printiopl_list` (lines 263–264) ignore their tail** — they
   match `i::tl` and never use `tl`, so they print only the first index. The `…tex` siblings do
-  recurse, so this affects the plain-text path only. Two of the 16 warnings at `-w +27+39` point
+  recurse, so this affects the plain-text path only. Two of the warnings at `-w +27+39` point
   straight at it.
