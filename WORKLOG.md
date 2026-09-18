@@ -25,6 +25,8 @@ _Dispatched 2026-09-18 by the orchestrator session; supersedes the "wave zero ha
 
 _Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero is closed. No task is claimed as of that commit._
 
+_M-1-T1 RELEASED 2026-09-18. Nothing is claimed._
+
 ---
 
 ## Cross-session requests
@@ -49,6 +51,7 @@ session picks it up.
 | — | — | — |
 | W0-T4 | W0-B (2026-09-18) | `tools/mzn_coverage.py` + vendored `tools/data/minizinc-2.10.1-globals.txt` + `docs/COVERAGE.md`. Commits `e12ccce`, `80a89a6`. Classifier runs, exits 1 on drift. Coverage and defects verified independently by the orchestrator (see handoff note) |
 | W0-T1 + W0-T2 + W0-T3 | W0-A (2026-09-18) | `Makefile`, `validator.ml`, `docs/VALIDATOR.md`, `.gitignore`. Commits `8a1a05b`, `2f42cde`, `49c826a`. `make check` exit 0, `make validate` runs, both re-run by the orchestrator. **Validator covers 3 of 16 entries; 13/13 rules flagged; 0 sound and minimal** |
+| M-1-T1 | M-1 (2026-09-18) | `docs/GCCAT.md`, 170 lines. Commit `f82ada7`. 22 catalog pages fetched under the cap. Key claims re-verified by the orchestrator |
 
 ---
 
@@ -191,3 +194,58 @@ are the two that unblock everything else, and both are the rule-engine file — 
 **one session, not two**, and they do not share a wave with E1/E2. The honest disjoint partner
 is W1-T6 (`sum.tex`) or extending the validator to a fourth entry. Do not dispatch a family
 agent: W2-T1 has not happened.
+
+### 2026-09-18 — M-1 (read the Global Constraint Catalog) — CLOSED
+
+`docs/GCCAT.md`. Beldiceanu/Carlsson/Rampon, `https://sofdem.github.io/gccat/`. 22 pages
+fetched, each mapped to an existing `cata/` entry or an open task. The by-name list is
+`gccat/sec5.html` — note the path: plain `sec5.html` is a GitHub Pages 404 that still reads
+like a page.
+
+**Verified by the orchestrator, not taken on report:** 423 constraint entries (counted as
+unique `C*.html` links in `gccat/sec5.html`, matching M-1's figure); `Cregular.html`,
+`Ctable.html`, `Cmdd.html` all HTTP 404 while `Cin_relation.html` and `Catleast_nvalue.html`
+are 200; `atleast_nvalue` carries **Extensible wrt** and `atmost_nvalue` **Contractible wrt**.
+
+**The finding to act on — independent corroboration of W1-T5.** The catalog gives
+`atleast_nvalue` and `atmost_nvalue` *opposite* closure properties. Two constraints with
+opposite closure cannot have byte-identical explanation rules, so `atleastnvalues.tex` ≡
+`atmostnvalues.tex` is a defect on catalog grounds alone — arrived at from a different
+direction than W0-A's validator, which is worth more than either alone. M-1 derives further
+that `atleast_nvalue`'s feasible `NVAL` set is downward closed, so propagation can only tighten
+`NVAL`'s **upper** bound; that names the side W0-A's counterexample ("bounds `N` from the wrong
+side", `n=m=2, p=1`) fails on. **Whoever takes W1-T5 starts here.** The generalisation is
+cheap: extensible / contractible / monotone are machine-checkable invariants over
+`validator.ml`'s hand-encoded semantics, and they check the hand-encoding itself, which
+`docs/VALIDATOR.md` names as its own exposure.
+
+**The finding that closes a door — and it is good news, not bad.** The catalog has **no
+`regular`, no `table`, no `mdd`**; its table-like entry `in_relation` carries no automaton.
+So **W3-T3 gets nothing from gccat.** That removes the temptation the brief was written
+against: there is no catalog automaton to import for `regular`, and this repo's own
+decomposition — which D-0003 argues is better *for explanation* because it invents no state
+variables — stands unchallenged.
+
+**Automata, within D-0004.** 62 catalog constraints are `automaton with counters`. M-1 layers
+the cost honestly: the signature `S_i ⇔ X_i ∈ VALUES` is already `rule1` (**E0**); the
+transition table `d[q,s]` is **E2**; the state variable is **E1**; counters and acceptance are
+**E1+E2**; an array of counters (`nvalue`, `global_cardinality`) is **E3** — the existing
+`failwith "sommes multiples"` site. Its proposed line, which respects D-0004 rather than
+working around it: **inline a state only when its state predicate is a finite disjunction over
+user literals.** `int_value_precede` passes that test; counter automata fail it. That is a
+concrete criterion, and it is a proposal, not a decision — it belongs in a decision record
+whenever someone takes E1/E2.
+
+**For D-0008 (OPEN).** A gccat entry has ~30 fields. Four would make an entry here checkable:
+**Purpose** (the ground semantics `validator.ml` hand-encodes today, which is its weakest
+point), **Arg. properties**, **Restriction/Typical** (the arity box D-0008 needs), and
+**Keywords**. Recorded in `docs/GCCAT.md` as a proposal against D-0008, not as a decision.
+
+**Reported against `CHRISTMAS_LIST.md`, file untouched** (M-1 did not own it): the index lacks
+two columns the catalog would supply — Berge-acyclicity (39 constraints) and argument
+properties — and `cata/range.tex` is Bessiere's set RANGE while gccat's `range_ctr` is an
+unrelated `max − min + 1` constraint. Add to the `all_equal` hole W0-B found: the index has
+three known gaps now, and nobody owns it.
+
+**Not read, deliberately:** the graph model / arc generators (E6, and it is the bulk of every
+entry), set entries (E5), geometry, soft and cost variants, the Prolog/XML format pages.
