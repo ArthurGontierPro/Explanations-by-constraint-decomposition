@@ -1,5 +1,9 @@
 # Decomposition shapes — extensional (§5) and scheduling (§6)
 
+> **Superseded as the shape list by `decomps/_shapes.md`** (W3-D, 2026-09-18), which states
+> each shape once across all families. This file's derivations, line numbers and defect reports
+> stand; its shape *names* and its per-family boundaries do not. EXT-1 becomes **S7**, EXT-2a merges into **S1**, EXT-2b and EXT-3 merge into **S8**, EXT-4 becomes the composition **S8 + S11**, SCH-1/2/3 become **S9**/**S10**/**S12**.
+
 Companion to the counting pilot. Each **shape** is written once, with its maths, its literals,
 its rule schemas, its index families, its E-code and its auxiliaries (D-0004). Each
 `decomps/<name>.md` then says which shape it instantiates and what differs. Gaps go to

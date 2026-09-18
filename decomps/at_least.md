@@ -1,5 +1,9 @@
 # at_least
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S2** there, shared with constraints from
+> other families.
+
 **Signature.** `at_least(int: n, array[int] of var int: x, int: v)` — `v` occurs at least `n`
 times in `x`. `n` and `v` are both parameters (par) in the standard MiniZinc global, so this
 constraint has no auxiliary decision variable to channel at all — it is strictly simpler than

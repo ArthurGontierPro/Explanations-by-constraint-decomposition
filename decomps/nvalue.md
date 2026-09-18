@@ -1,5 +1,9 @@
 # nvalue
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S3** there, shared with constraints from
+> other families.
+
 **Signature.** `nvalue(var int: n, array[int] of var int: x)` — `n` = the number of distinct
 values taken by `x`.
 

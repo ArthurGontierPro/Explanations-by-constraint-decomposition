@@ -1,5 +1,9 @@
 # at_most
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S2** there, shared with constraints from
+> other families.
+
 **Signature.** `at_most(int: n, array[int] of var int: x, int: v)` — `v` occurs at most `n`
 times in `x`. `n`, `v` par, same shape as `at_least` with the inequality flipped.
 

@@ -1,5 +1,15 @@
 # span
 
+> **Correction, W3-D 2026-09-18 — this file's "Shape D / E0" claim is withdrawn.**
+> `span`'s `S = min_i(start_i)` compares two decision variables, which is gap **G3**, the same
+> wall `decomps/maximum.md` records as "not a derivation gap, it is a missing primitive".
+> The precedent this file leaned on does not hold: `range`/`roots` (generator l.714–719) are
+> Boolean **sums** over a value-restricted family (`rule6` = `∑ ≥`, `rule7` = `∑ =`), not a
+> ∀-bound-plus-∃-tight pair, so they are no basis for a min/max constraint. `span` has **no
+> shape** and is listed among the G3-blocked constraints in `decomps/_shapes.md`. The body
+> below is left as written — its own hedge already said it should be redone rather than
+> patched, and redoing it needs the real MiniZinc signature.
+
 **Signature — hedge.** `CHRISTMAS_LIST.md` §4 gives only "none / decomp / E0" for `span`, no
 predicate signature. Read from general knowledge of MiniZinc's scheduling globals (not
 verified against a spec text, which is out of this session's scoped reading): a task with

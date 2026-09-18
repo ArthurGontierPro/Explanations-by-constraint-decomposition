@@ -1,5 +1,9 @@
 # count
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S3** there, shared with constraints from
+> other families.
+
 **Signature.** `count(array[int] of var int: x, int: v, var int: c)` — `c` = the number of
 `i` such that `x_i = v`. Per D-0003 we take `v` as a parameter (constant), matching
 `CHRISTMAS_LIST.md:125` ("E0 — this is rule5/6/7 exactly as built"); a variable `v` needs G3

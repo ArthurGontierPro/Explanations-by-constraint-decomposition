@@ -1,5 +1,9 @@
 # among
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S3** there, shared with constraints from
+> other families.
+
 **Signature.** `among(var int: n, array[int] of var int: x, set of int: s)` — `n` = the number
 of `i` such that `x_i ∈ s`. `s` a parameter set (per D-0003); `n` a decision variable.
 

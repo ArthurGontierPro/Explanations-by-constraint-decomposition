@@ -1,5 +1,9 @@
 # Shapes — AllDifferent family (§1) and Ordering/sorting/channelling (§9)
 
+> **Superseded as the shape list by `decomps/_shapes.md`** (W3-D, 2026-09-18), which states
+> each shape once across all families. This file's derivations, line numbers and defect reports
+> stand; its shape *names* and its per-family boundaries do not. P1 becomes **S2** (merged with the counting family), P2 becomes **S1**, P3 becomes **S6**, P4 becomes **S4**.
+
 Written for W2-T5 (session W2-C). Four distinct shapes cover every in-scope constraint in
 these two `CHRISTMAS_LIST.md` sections. Per-constraint files in this directory say only which
 shape applies and what differs; the derivation lives here once.

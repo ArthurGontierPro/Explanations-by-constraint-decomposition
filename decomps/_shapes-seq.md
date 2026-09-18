@@ -1,5 +1,9 @@
 # Shapes — value ordering / precedence / symmetry (§3) and sequencing / sliding (§4)
 
+> **Superseded as the shape list by `decomps/_shapes.md`** (W3-D, 2026-09-18), which states
+> each shape once across all families. This file's derivations, line numbers and defect reports
+> stand; its shape *names* and its per-family boundaries do not. Shapes A and C are merged there (A into **S1**, C into **S2**); B becomes **S5**, E becomes **S11**; **Shape D is withdrawn** — see that file's contradiction 2.
+
 One file per **distinct decomposition shape** used by the constraints in these two
 `CHRISTMAS_LIST.md` sections. Per-constraint files say only which shape they instantiate and
 what differs. Read off `explenation generator.ml` (line numbers given) and the two sections

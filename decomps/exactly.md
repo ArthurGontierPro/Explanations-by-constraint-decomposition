@@ -1,5 +1,9 @@
 # exactly
 
+> Shape reference: **`decomps/_shapes.md`** (W3-D, 2026-09-18) is the single cross-family
+> shape list. The shape derived in this file is **S2** there, shared with constraints from
+> other families.
+
 **Signature.** `exactly(int: n, array[int] of var int: x, int: v)` — `v` occurs exactly `n`
 times in `x`. `n`, `v` par. This is `count(x,v,c)` with `c` fixed to the constant `n` instead of
 left as a decision variable — so it needs no count-channel step at all, unlike `count`.
