@@ -428,8 +428,40 @@ exception Generator_failure of string
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
 let printind_name_int a = match a with 1 -> "" | 2 -> "'" | 3 -> "''" | _ -> "_{"^string_of_int a^"}"
 let printind_name i = match i with I a -> "i"^printind_name_int a | T a -> "t"^printind_name_int a | P a -> "p"^printind_name_int a | R a -> "r"^printind_name_int a
-let printind_set_int a = match a with 1 -> "\\llbracket1,n\\rrbracket" | 2 -> "\\llbracket1,m\\rrbracket" | 3 -> "\\llbracket1,n\\rrbracket" | _ -> "D_{"^string_of_int a ^"}"
-let printind_set s = match s with D a -> printind_set_int a | D2 _ -> "setfils" 
+(*==========================================================================
+  W1-T2 — an index set the printer cannot define is REFUSED, not invented.
+
+  printind_set_int defines exactly three sets: D 1 and D 3 as [1,n] and D 2 as
+  [1,m]. Everything else fell through to the string "D_{k}", and D2 to the
+  string "setfils", neither of which the artifact ever defines. That is not a
+  rendering blemish: W1-V measured it as the reason `among`, `cumulative`,
+  `range`, `regular` and `roots` — 5 entries, 14 rules — could not be validated
+  at all, because they quantify over sets the artifact never states.
+
+  Worse, and this is why the numbering cannot simply be extended: the `D_k`
+  counter is chosen PER DECOMPOSITION, so D 4 is the row set in table.tex and
+  the value set in among.tex. `D_4` therefore carries no meaning across
+  entries, and defining "D_4" once in the printer would give two different
+  entries the same name for two different sets — papering over the defect
+  rather than confronting it. Naming them properly is a property of the input
+  format, so it belongs to W2-T1/E2, not to the printer.
+
+  The roadmap's judgement, which stands: REFUSING TO EMIT IS BETTER THAN
+  PRINTING AN UNDEFINED SET. So:
+    - filter_branches drops any branch whose literals reference an undefined
+      set, and COUNTS it, exactly as W1-T3 made F-branches loud;
+    - these two printers RAISE as a backstop, so an undefined set can never
+      reach a .tex even if the filter is ever bypassed.
+  An entry all of whose branches are refused still gets its file, containing no
+  rule and a diagnostics footer that names the sets — "no rule that this
+  artifact can state" is a result, and a silent D_4 was not.
+  ========================================================================*)
+let ind_set_defined s = match s with D 1 | D 2 | D 3 -> true | D _ -> false | D2 _ -> false
+let printind_set_int a = match a with 1 -> "\\llbracket1,n\\rrbracket" | 2 -> "\\llbracket1,m\\rrbracket" | 3 -> "\\llbracket1,n\\rrbracket"
+  | _ -> raise (Generator_failure ("printind_set: index set D_"^string_of_int a^" is referenced but the printer defines no such set, and the D_k counter is per-decomposition so it cannot be defined here (W1-T2)"))
+let printind_set s = match s with
+  | D a -> printind_set_int a
+  | D2 _ -> raise (Generator_failure "printind_set: the D2 (index-list) set variant has no printer; it used to emit the literal string \"setfils\" (W1-T2, consolidated gap G7)" )
 let printind_const_int a = match a with 1 -> "" | _ -> "_{"^string_of_int a^"}"
 let printind_const c = match c with C a -> "d"^printind_const_int a
 let printind_symbols s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"=" 
@@ -561,6 +593,23 @@ let rec repeated l = match l with
   | [] -> []
   | x::tl -> let r = repeated tl in
              if countocc x tl > 0 && not (mem x r) then x::r else r
+(*W1-T2 — like binders_indexes, read off the index STRUCTURE, not the LaTeX,
+  so the refusal does not depend on the printer it protects.*)
+let rec undef_modifs ml = match ml with
+  | [] -> []
+  | m::tl -> (match m with
+      | Set (_,_,d) -> (if ind_set_defined d then [] else [op_set d]) @ undef_modifs tl
+      | Rel _ | Addint _ | Addcst _ | EXFORALL _ | EXEXISTS _ -> undef_modifs tl)
+let rec undef_indexes il = match il with
+  | [] -> []
+  | i::tl -> undef_modifs (ind_modifs_list i) @ undef_indexes tl
+let rec branch_undef l = match l with
+  | [] -> []
+  | c::tl -> (match c with
+      | Var v -> undef_indexes (index_list v) @ branch_undef tl
+      | _ -> branch_undef tl)
+let undef_seen : string list ref = ref []
+
 let rec branch_ambig l = match l with
   | [] -> []
   | c::tl -> (match c with
@@ -568,22 +617,29 @@ let rec branch_ambig l = match l with
       | _ -> branch_ambig tl)
 
 (*Replaces removeimp. Returns the surviving branches and a census:
-  (kept, duplicate, dropped-F, cut-R, empty-premise, ambiguous-binder).*)
+  (kept, duplicate, dropped-F, cut-R, empty-premise, ambiguous-binder,
+   refused-undefined-index-set).*)
 let rec filter_branches where ll = match ll with
-  | [] -> ([], (0,0,0,0,0,0))
+  | [] -> ([], (0,0,0,0,0,0,0))
   | l::tl ->
-    let (kept,(nk,nd,nf,nr,nemp,nam)) = filter_branches where tl in
+    let (kept,(nk,nd,nf,nr,nemp,nam,nu)) = filter_branches where tl in
     (match blocking_leaf l with
      | BFE -> raise (Generator_failure (where^" — a rule schema was applied to a constraint shape it does not handle (FE); branch ["^String.concat "+" (branch_tag l)^"]"))
      | BIM -> raise (Generator_failure (where^" — dead-end event: no constraint in the decomposition explains it (IM); branch ["^String.concat "+" (branch_tag l)^"]"))
-     | BR  -> (kept,(nk,nd,nf,nr+1,nemp,nam))
-     | BF  -> (kept,(nk,nd,nf+1,nr,nemp,nam))
+     | BR  -> (kept,(nk,nd,nf,nr+1,nemp,nam,nu))
+     | BF  -> (kept,(nk,nd,nf+1,nr,nemp,nam,nu))
      | BNone ->
-       if inl l tl then (kept,(nk,nd+1,nf,nr,nemp,nam))
+       (*W1-T2: refuse before anything can print an undefined set*)
+       match removesame (branch_undef l) with
+       | _::_ as us -> undef_seen := !undef_seen @ us;
+                       (kept,(nk,nd,nf,nr,nemp,nam,nu+1))
+       | [] ->
+       if inl l tl then (kept,(nk,nd+1,nf,nr,nemp,nam,nu))
        else (removesame l::kept,
              (nk+1,nd,nf,nr,
               nemp + (if has_lit l then 0 else 1),
-              nam  + (match branch_ambig l with [] -> 0 | _ -> 1))))
+              nam  + (match branch_ambig l with [] -> 0 | _ -> 1),
+              nu)))
 
 (*Running census, printed at the end of a run. stdout, never stderr: the gate
   in the Makefile fails the build if the generator writes to stderr.*)
@@ -596,6 +652,7 @@ let gen_dup    = ref 0
 let gen_norule = ref 0
 let gen_empty  = ref 0
 let gen_ambig  = ref 0
+let gen_undef  = ref 0
 let footer : string list ref = ref []
 let note s = footer := !footer @ [s]
 
@@ -604,7 +661,9 @@ let emit_event e dec fic =
   let lbl = printvartex e in
   let cl = ctrs e dec in
   let tree = EXOR (e,flatten (map (fun c-> map (fun de -> rule0 e de c dec []) (vars e (decomp_event_list c))) cl)) in
-  let (kept,(nk,nd,nf,nr,nemp,nam)) = filter_branches lbl (an tree) in
+  undef_seen := [];
+  let (kept,(nk,nd,nf,nr,nemp,nam,nu)) = filter_branches lbl (an tree) in
+  let undefs = removesame !undef_seen in
   let _ = printfraqtex (map (fun l-> printetex l) kept) e fic in
   gen_events := !gen_events + 1;
   gen_rules  := !gen_rules  + nk;
@@ -613,17 +672,26 @@ let emit_event e dec fic =
   gen_dup    := !gen_dup    + nd;
   gen_empty  := !gen_empty  + nemp;
   gen_ambig  := !gen_ambig  + nam;
-  printf "  %-30s %d candidate(s) -> %d rule(s); dropped: F %d, cycle %d, duplicate %d\n"
-    lbl (nk+nd+nf+nr) nk nf nr nd;
-  note (sprintf "%s : %d candidate(s) -> %d rule(s); dropped F %d, cycle %d, duplicate %d"
-          lbl (nk+nd+nf+nr) nk nf nr nd);
+  gen_undef  := !gen_undef  + nu;
+  printf "  %-30s %d candidate(s) -> %d rule(s); dropped: F %d, cycle %d, duplicate %d, undefined index set %d\n"
+    lbl (nk+nd+nf+nr+nu) nk nf nr nd nu;
+  note (sprintf "%s : %d candidate(s) -> %d rule(s); dropped F %d, cycle %d, duplicate %d, undefined index set %d"
+          lbl (nk+nd+nf+nr+nu) nk nf nr nd nu);
+  if nu > 0 then begin
+    printf "      REFUSED: %d branch(es) reference an index set the artifact never defines (%s) — W1-T2\n"
+      nu (String.concat ", " undefs);
+    note (sprintf "  ** REFUSED for %s: %d branch(es) reference undefined index set(s) %s; emitting them would state a rule over a set the artifact never defines (W1-T2) **"
+            lbl nu (String.concat ", " undefs))
+  end;
   if nk = 0 then begin
     gen_norule := !gen_norule + 1;
     printf "      NO RULE EMITTED — %s\n"
-      (if nf+nr > 0
+      (if nu > 0
+       then "every candidate branch quantifies over an index set this artifact cannot define; refusing is the result (W1-T2)"
+       else if nf+nr > 0
        then "every candidate branch was blocked: this is 'no explanation exists', not a silent success"
        else "the decomposition produced no candidate branch at all");
-    note (sprintf "  ** NO RULE EMITTED for %s: %d candidate(s), all blocked **" lbl (nf+nr))
+    note (sprintf "  ** NO RULE EMITTED for %s: %d candidate(s), all blocked **" lbl (nf+nr+nu))
   end;
   if nemp > 0 then begin
     printf "      DEFECT: %d emitted rule(s) have an EMPTY PREMISE (conclude from nothing) — W1-T4\n" nemp;
@@ -834,4 +902,5 @@ let _ =
   printf "  events with NO rule at all  : %d\n" !gen_norule;
   printf "  rules with an EMPTY premise : %d   (W1-T4)\n" !gen_empty;
   printf "  rules binding an index twice: %d   (D-0009, W1-T7)\n" !gen_ambig;
+  printf "  branches REFUSED, undefined index set: %d   (W1-T2)\n" !gen_undef;
   printf "  IM and FE now raise instead of printing as '?'; neither occurred in this run.\n"
