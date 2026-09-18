@@ -70,7 +70,7 @@ That exception list, grepped from `IIntConstraintFactory.java`, *is* a wish list
 | Choco constraint | throws in LCG mode | this repo |
 |---|---|---|
 | `regular` | yes | **a decomposition already exists in `cata/regular.tex`** — needs `D_8`/`D_9` defined and **E2** |
-| `costRegular`, `multiCostRegular` | yes | **E1 + E2 + E3** |
+| `costRegular`, `multiCostRegular` | yes | **E1 + E2 + E9** (was E3; costs accumulate over integers — D-0011) |
 | `mddc` | yes | **E1 + E2** |
 | `tree` | yes | **E6** — out of scope |
 | `allDifferent` under condition, `allDiffPrec` | yes | **E0**/**E2** — plausibly easy wins |
@@ -96,6 +96,8 @@ user's own vocabulary. That is a complete, small, publishable contribution.
 | **E1** | open `var_name` | admit new auxiliary integer families; the `rule1` channelling mechanism already exists (`N` in `nvalues`, `O` in `gccn`), it just isn't openable |
 | **E2** | richer side conditions | `Rel` relates two index *names*; `Addcst` does `i₃ = i₂ ± c·i` over a 1-D constant array. Need inequalities against *expressions* (`u − t`) and 2-D constant tables (`d[q,s]`) |
 | **E3** | multi-family cardinality | `rule5/6/7` handle one Boolean family and `failwith "sommes multiples"` otherwise |
+| **E8** | weighted Boolean sums | **Added 2026-09-18 (D-0011).** `rule5/6/7` count occurrences; no coefficients. Consolidated gap G11. `cumulative`'s `r_i`, `bin_packing*`. Was written as E3 in several rows below, which E3 does not mean |
+| **E9** | sums of integer-valued variables | **Added 2026-09-18 (D-0011).** Adding up values rather than counting Booleans — a fourth kind of schema, not a generalisation of `rule5/6/7`. Consolidated gaps G12+G13. `sliding_sum`, `knapsack`, `global_cardinality`'s `sum(count)`, the `cost_*` accumulators |
 | **E4** | counting / pigeonhole rule | Hall-type arguments: inference *across* several cardinality constraints, not within one |
 | **E5** | set → Boolean channelling | membership matrix `b[i,v] ↔ v ∈ S_i`; MiniZinc's `link_set_to_booleans` is literally this |
 | **E6** | graph reasoning | reachability/connectivity arguments have no finite Boolean decomposition that preserves the propagation-relevant reasoning |
@@ -121,7 +123,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
-| `global_cardinality`, `_closed`, `_low_up`, `_low_up_closed` | **Downing, Feydy, Stuckey 2012**, *Explaining flow-based propagation* (CPAIOR, LNCS 7298:146–162) — generic explaining flow propagator, explicitly replaces specialised **gcc** | decomp **[G]** | `_low_up` is **E0**. Full `global_cardinality` needs **E3**: `fzn_global_cardinality` is `forall(i)(count(xs,cover[i],count[i])) /\ length(xs) >= sum(count)` and that trailing `sum(count)` is over *integer* variables. The flow explanation needs **E4**. |
+| `global_cardinality`, `_closed`, `_low_up`, `_low_up_closed` | **Downing, Feydy, Stuckey 2012**, *Explaining flow-based propagation* (CPAIOR, LNCS 7298:146–162) — generic explaining flow propagator, explicitly replaces specialised **gcc** | decomp **[G]** | `_low_up` is **E0**. Full `global_cardinality` needs **E3**: `fzn_global_cardinality` is `forall(i)(count(xs,cover[i],count[i])) /\ length(xs) >= sum(count)` and that trailing `sum(count)` is over *integer* variables, so it is **E9**, not E3 (D-0011). The flow explanation needs **E4**. |
 | `count`, `at_least`, `at_most`, `exactly` | none specific | decomp | **E0** — this is `rule5/6/7` exactly as built |
 | `among` | none | decomp | **E0** — already in `cata/among.tex` |
 | `nvalue` | none | decomp | **E0** — already in `cata/nvalues.tex`, but the generated rule repeats binders (`∀i` twice); fix is index hygiene, not an extension |
@@ -154,7 +156,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `table` | **Gange, Stuckey, Szymanek 2011**, *MDD propagators with explanation* (Constraints 16:407–429) — MDDs subsume table, regular, set/multiset. Also **McIlree & McCreesh, CP 2023** (best paper), *Proof logging for smart extensional constraints* — certified justifications for Smart Table | **native** (`table.cpp`) **[G] [C]** | **E2**. MiniZinc's `fzn_table_int` introduces a var row-index into a constant matrix — an `element`. The repo's own `table` entry uses a different encoding and currently emits an **unsound empty-premise rule**; that is a bug, not a missing extension. |
 | `regular`, `regular_nfa`, `regular_regexp` | Gange et al. 2011 (above); **McIlree & McCreesh CP 2023** covers Regular Language Membership | **native** (`regular.cpp`) **[C✗]** | **E2**. Note the repo already has a *different and legitimate* decomposition — transitions directly on consecutive `X` via value sets, no state variables, so explanations stay in the user's vocabulary. It only needs `D_8`/`D_9` defined in the printer and 2-D table side conditions. |
 | `mdd`, `mdd_nondet` | **Gange, Stuckey, Szymanek 2011** | **native** (`mddglobals.cpp`) **[C✗]** | **E1 + E2** |
-| `cost_regular`, `cost_mdd` | **Gange, Stuckey, Van Hentenryck, CP 2013**, *Explaining propagators for edge-valued decision diagrams* | decomp **[C✗]** | **E1 + E2 + E3** (costs accumulate) |
+| `cost_regular`, `cost_mdd` | **Gange, Stuckey, Van Hentenryck, CP 2013**, *Explaining propagators for edge-valued decision diagrams* | decomp **[C✗]** | **E1 + E2 + E9** (was E3; costs accumulate — D-0011) |
 
 ## 6. Scheduling
 
@@ -163,13 +165,13 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `cumulative` | **Schutt, Feydy, Stuckey, Wallace 2011**, *Explaining the cumulative propagator* (Constraints 16(3):250–282) — time-table filtering with window-based explanations. **Schutt, Feydy, Stuckey, CPAIOR 2013**, *Explaining time-table-edge-finding propagation* (arXiv:1208.3015) | **native** (`cumulative.cpp`, `cumulativeCalendar.cpp`) **[G] [C]** | The repo's entry is the **unary-resource special case** and names all *n* tasks; Schutt names a small window with a capacity argument. Needs **E2** (variable durations/resources: `s_i + d_i ≤ s_j` with `d_i` a var) and **E4** (the capacity/counting argument). *The other key test case.* |
 | `cumulatives`, `cumulative_opt` | as above | decomp | **E2 + E4** |
 | `disjunctive`, `_strict`, `_opt` | implied by the cumulative papers (unary is the special case) | **native** (`disjunctive.cpp`) **[G]** | **E2** — `fzn_disjunctive` is `d_i=0 \/ d_j=0 \/ s_i+d_i<=s_j \/ s_j+d_j<=s_i`, i.e. var-var linear atoms |
-| `knapsack` | none found | decomp **[C]** | **E1 + E3** (weighted sums over integer vars) |
+| `knapsack` | none found | decomp **[C]** | **E1 + E8 + E9** (was E3; weighted *and* integer-valued — D-0011) |
 
 ## 7. Packing and geometry
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
-| `bin_packing`, `_capa`, `_load` | none found | decomp | **E3** (weighted sums); `_load` is the most tractable |
+| `bin_packing`, `_capa`, `_load` | none found | decomp | **E8** (was E3; weighted sums — D-0011); `_load` is the most tractable |
 | `diffn`, `diffn_k`, `diffn_nonstrict`, `diffn_nonstrict_k` | none found | decomp **[C]** | **E2** — pairwise non-overlap is a 4-way disjunction of var-var linear atoms, so actually reachable once E2 lands |
 | `geost` | none found | decomp | **out** — no schema-expressible decomposition |
 
@@ -206,7 +208,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
-| `sum_pred` | none | decomp | **E3** |
+| `sum_pred` | none | decomp | **E9** (was E3 — D-0011) |
 | `piecewise_linear`, `piecewise_linear_non_continuous` | none | decomp | **E7** |
 | `neural_net` | none | decomp | **E7** |
 | `write`, `writes`, `writes_seq` | none | decomp | **E2** (array update = `element` family) |
@@ -229,8 +231,9 @@ Ranked by constraints unlocked per unit of work:
    ~12 constraints.
 3. **E1 — open `var_name`.** `sliding_sum`, `mdd`, `cost_*`, `knapsack`. The mechanism already
    exists via `rule1`; it only needs to stop being a closed enum. ~6 constraints.
-4. **E3 — multi-family cardinality.** Removes the `failwith`. `global_cardinality`,
-   `bin_packing*`, `sum_pred`, `knapsack`. ~6 constraints.
+4. **E3 — multi-family cardinality.** Removes the `failwith`. `distribute`, and the
+   multi-family half of `global_cardinality`. **E8/E9 carry the weighted and integer-valued
+   sums that this bullet used to absorb** (`bin_packing*`, `sum_pred`, `knapsack`) — D-0011.
 5. **E4 — counting / pigeonhole.** Few constraints, but it is the only route to explanations that
    match **Downing** on `alldifferent` and **Schutt** on `cumulative`. This is the research, not
    the engineering.

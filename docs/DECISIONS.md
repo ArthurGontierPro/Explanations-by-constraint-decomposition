@@ -241,3 +241,59 @@ for the other; a spec that says "E3" today does not say which.
 Raised by W2-B while specifying §5/§6. Reported, deliberately not fixed: renumbering an E-code
 across the roadmap, the literature index and 40-odd spec files is the author's call, not a
 session's.
+
+## D-0011 — E3 keeps D-0006's meaning. Weighted sums are E8, integer-valued sums are E9
+
+**DECIDED 2026-09-18 by the orchestrator**, under the author's instruction to resolve its own
+open questions rather than queue them. Supersedes the "flagged for the author" note above it.
+
+The collision was narrower than first reported. **`CHRISTMAS_LIST.md:98` defines E3 exactly as
+D-0006 does** — multi-family cardinality, the `failwith "sommes multiples"` site. Both documents
+agree on the definition; the drift is in the *rows*, where E3 was also used for two other things.
+
+**The rule applied: an argued decision record outranks an index.** D-0006 is where the taxonomy
+was settled, so E3 keeps its meaning and the two smuggled extensions get new codes:
+
+| code | meaning | gaps | constraints |
+|---|---|---|---|
+| **E3** | multi-family cardinality (unchanged) | G4 | `distribute`, the multi-family half of `global_cardinality` |
+| **E8** | weighted Boolean sums — coefficients on a count | G11 | `cumulative`, `bin_packing*` |
+| **E9** | sums of integer-valued variables — adding values, not counting | G12, G13 | `sliding_sum`, `knapsack`, `global_cardinality`'s `sum(count)`, `cost_*` |
+
+E8 and E9 are genuinely different: a weighted Boolean sum still counts occurrences and only adds
+coefficients, while an integer-valued sum needs a schema that adds *values* and an integer
+auxiliary to hold the result — W2-A's point that this is a fourth kind of schema, not a
+generalisation of `rule5/6/7`.
+
+**Applied, not just recorded.** Seven rows of `CHRISTMAS_LIST.md` were corrected in place, each
+marked "was E3 — D-0011", and its legend gained E8 and E9. The `decomps/*.md` specs that say E3
+are `cumulative`, `knapsack`, `cost_regular`, `cost_mdd` and the `_shapes-ext`/`_gaps-ext` files;
+they are wave two's output and are corrected by their next owner rather than rewritten from
+outside, since the prose around the code has to move with it.
+
+**Why not the other way round** (redefine E3 as "any sum this encoding cannot do")? Because the
+`failwith` is a single, concrete, removable defect and the roadmap's W3-T4 row is scoped to it.
+A code that means three unrelated things is what produced this collision.
+
+## D-0012 — W3-T3 claims the 2-local fragment. Full `regular` waits for E1 + G17
+
+**DECIDED 2026-09-18 by the orchestrator**, same authority, following D-0010.
+
+W2-B established that the shipped `regular` decomposes the **strictly 2-local** languages
+completely, not the regular languages. That left W3-T3 meaning either (a) buy the 2-local
+fragment with G6+G7, or (b) buy `regular` entire with G6+G7+E1+G17.
+
+**(a).** D-0010 makes breadth the goal, and (a) is the cheaper path to more validated
+constraints: G6 is a hard prerequisite for `table` — whose three shipped rules are measured
+unsound — and G7 unblocks the fragment, `mdd`'s constant tables and the sequence family's value
+sets at the same time. (b) buys one constraint for two further extensions, and one of them,
+G17 pivot elimination, is unscoped work that touches every rule with an auxiliary.
+
+**The condition on (a), which is not optional:** the catalog entry must say *which* fragment it
+covers. An entry labelled `regular` that decomposes only 2-local languages is the kind of claim
+this project exists to stop making. W2-B's sharpened criterion — **a state may be inlined only
+when its state predicate is a clause, every disjunct a single literal** — is exactly the
+statement of that fragment, and it belongs in the entry.
+
+**Revisit (b) when** E1 lands for another reason, or when someone wants the `cost_*` family,
+which needs E1 and E9 regardless.
