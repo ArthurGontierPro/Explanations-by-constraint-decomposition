@@ -213,7 +213,8 @@ X_{i}=t, ∃i, i∈[1,n], ∀i, i∈[1,n], ∀t, t∈[1,m], ∀i, i∈[1,n]
 `i` is quantified three times, twice universally and once existentially. No
 uniform parsing policy recovers the intent, because there is no intent in the
 string — the prefix is an artifact of composing index functions that cannot be
-inspected (W1-T7 again).
+inspected. W1-T7 makes them inspectable *inside the generator*; it does not
+retro-fix the `.tex` already shipped, which is what is measured here.
 
 The validator therefore checks **every consistent reading**: each permutation of
 the bound variables, each quantifier the variable is actually written with, and

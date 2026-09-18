@@ -16,9 +16,11 @@
  * The rule under test is PARSED FROM THE SHIPPED .tex, so the artifact under
  * test is the one that ships. The ground semantics (what the decomposition
  * means) is HAND-ENCODED here, read off 'explenation generator.ml' lines
- * 383-434, because the generator's index modifications are opaque closures
- * (W1-T7) and cannot be printed, compared or inverted. docs/VALIDATOR.md states
- * exactly what that costs in trust.
+ * 383-434, because when W1-T8 began the generator's index modifications were
+ * opaque closures that could not be printed, compared or inverted. W1-T7 landed
+ * while this was running (463534f) and they are data now, so a later session can
+ * derive what is typed here; W1-T8 deliberately measured the committed artifact
+ * instead. docs/VALIDATOR.md states exactly what that costs in trust.
  *
  * TWO DEFENCES ON THE HAND-ENCODING (W1-T8, M-1's proposal). Before any rule is
  * judged, the run checks the encodings themselves:
