@@ -66,7 +66,16 @@ session picks it up.
 
 _W2-C closed 2026-09-18 (`c0a704a`): 4 shapes, 3 new gaps, element's defect diagnosed. W2-A and W2-B still running._
 
----
+_W2-A closed 2026-09-18: 5 shapes (`decomps/_shapes-seq.md`), 3 new gaps (`decomps/_gaps-seq.md`,
+G6-G8 — numbered independently of W2-C's own G6-G8, reconciliation is the orchestrator's job at
+consolidation), 17 constraint files across `CHRISTMAS_LIST.md` §3+§4. **Landed inside `b09b81c`
+("Close W2-C..."), not a W2-A commit** — this session's own `git add`+working tree edits were
+swept into that commit by the concurrent W2-C session committing from the same checkout (not a
+worktree) while this session's files were staged but not yet committed. Content is exactly what
+this session wrote; only the commit boundary/authorship line is wrong. Not fixed by amend/reset
+per this session's standing instructions against destructive git ops on someone else's commit;
+flagging for the orchestrator rather than rewriting history. See handoff note below for the
+substance.
 
 ## Handoff notes
 
@@ -421,3 +430,58 @@ float variants of `arg_max`/`arg_min` (E7) — one-liners, not specs.
 **Noted for the `CHRISTMAS_LIST.md` owner:** §9's `element` row says "already in
 `cata/element.tex`, 6 rules", which is accurate but reads as a coverage claim; the validated
 figure is 2 of 6. Not a contradiction — an ambiguity worth closing when that file gets an owner.
+
+### 2026-09-18 — W2-A (W2-T5, §3 value ordering/precedence/symmetry + §4 sequencing/sliding) — CLOSED
+
+Five shapes in `decomps/_shapes-seq.md`. **A** threshold chain (`increasing`/`decreasing`,
+already built, zero auxiliaries — the reified `B` *is* the explained literal). **B** Boolean
+state chain with a genuine auxiliary (`value_precede`, `lex_less`/`lex_lesseq`) — mechanically
+the same `rule4`/fixed-shift skeleton as A, but the chained Boolean is an accumulated fact with
+no backing `Global_devent`, which matters (see G6 below). **C** Boolean-sum cardinality, reused
+as-is from the counting-family pilot, tentatively for `alternative`. **D** min/max-over-index-set,
+reused from `range`/`roots`, for `span`. **E** integer prefix-sum sliding window
+(`sliding_sum`) — does not reduce to A-D, blocked outright (below).
+
+**Checked the roadmap's own claim and it is half right.** "`value_precede` is structurally
+identical to `increasing`" — true for the `rule4`+fixed-shift mechanics, false for the
+auxiliary count: `increasing` needs none, `value_precede`'s `b_i` is a genuine accumulated-state
+auxiliary, which is exactly the D-0004 concern `regular` was chosen to avoid. Recorded in
+`decomps/value_precede.md` as a correction, not a rejection of the E0 rating.
+
+**Three new gaps (`decomps/_gaps-seq.md`; G6-G8, numbered independently of W2-C's own G6-G8,
+reconciliation is the consolidator's job).** G6: `var_name`'s `B` constructor prints as the
+literal string `"ERROR B "`, unconditionally, in both printers (generator lines 399, 427) —
+harmless today because every existing `B` washes out to a `Global_devent` before printing, but
+live risk for Shape B's accumulated-state auxiliaries (`value_precede`, `lex_less`), which have
+no `Global_devent` to resolve back to; whether the AND/OR walk fully unfolds the recursion
+before printing is not established, not run. This sharpens D-0004 with a concrete broken-output
+mechanism rather than a stylistic one. G7: no rule schema sums integer-valued expressions, only
+Boolean occurrence counts (`rule5`-`rule7` are cardinality, not arithmetic) — blocks
+`sliding_sum` outright; sharpens `CHRISTMAS_LIST.md`'s E1 line, which could be misread as "extend
+the existing sum schemas" when it cannot be. G8: `var_name` has no constructor for an
+integer-valued auxiliary at all (`sliding_sum`'s `S_i`). Two checked negatives also recorded:
+matrix row-indexing (`lex2`, orbitopes) already has what it needs in the `R` index family used
+by `table`, and instance-dependent chain length (`lex_chain_*`) already has what it needs in
+`ind_set`'s `D2 of ind_name list` — neither is a gap, flagged only so nobody re-derives them as
+one.
+
+**`sliding_sum` gets a full spec but no rule derivation** — E1+E2 per `CHRISTMAS_LIST.md`,
+confirmed by reading the generator rather than trusting the list entry; it is one of D-0004's
+own named exceptions (auxiliary `S_i` recorded and justified, not eliminated), but the current
+encoding has no schema for it at all, so `decomps/sliding_sum.md` stops at the maths rather than
+forcing a fake `rule1`/`rule3` derivation that would silently drop the arithmetic.
+
+**Two files carry an explicit low-confidence hedge:** `span.md` and `alternative.md`. Neither
+constraint's predicate signature is given in `CHRISTMAS_LIST.md` §4, and this session's scoped
+reading (§3-§4 only, no web search) cannot independently pin them down; both decompositions are
+reconstructed from general knowledge of MiniZinc's scheduling globals and flagged as such rather
+than asserted. `alternative.md` is flagged more strongly than `span.md` — "exactly one of several
+options" has more than one standard encoding and this session cannot tell which one MiniZinc
+picked without reading past its scope.
+
+**Skipped, correctly:** none — §3 and §4 contain no sets/E5, graph/E6, float/E7 or geometry
+constraints, so there was nothing to give a one-line-only treatment.
+
+**Committed as:** every file above landed inside `b09b81c` ("Close W2-C..."), not a commit of
+this session's own — see the note above this section. Re-verify the file list against that
+commit's `--stat` if provenance matters.
