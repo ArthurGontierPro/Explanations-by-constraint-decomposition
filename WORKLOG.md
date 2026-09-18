@@ -67,7 +67,7 @@ session picks it up.
 | W2-T5 §11 + shape consolidation + D-0011 relabelling | `decomps/**`, `docs/DECOMP_FORMAT_NOTES.md` | W3-D (2026-09-18) | 2026-09-18 |
 | `CHRISTMAS_LIST.md` repairs (4 recorded issues) | `CHRISTMAS_LIST.md` | W3-C (2026-09-18) | 2026-09-18 |
 
-_W3-C RELEASED (`1e7dc67`): index coverage 113/118 → **118/118**. W3-D RELEASED (`04d800a`, `1d25c45`, `b083974`): the corpus is complete — **12 shapes + 3 modifiers cover 55 constraints**. W3-S (engine) still running._
+_W3-C RELEASED (`1e7dc67`): index coverage 113/118 → **118/118**. W3-D RELEASED (`04d800a`, `1d25c45`, `b083974`): the corpus is complete — **12 shapes + 3 modifiers cover 55 constraints**. W3-S RELEASED (`790bfa7`, `fbb95c7`, `47bb4ef`, `576c718`). **Wave three is closed. Nothing is claimed.**_
 
 _W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed.** Gaps consolidated at `9774a62`. Wave three claimed 2026-09-18: engine fixes, spec consolidation, and the literature index — three files, three owners, no overlap._
 
@@ -652,3 +652,54 @@ real requirements rather than guesses.
 `all_equal` was added on the orchestrator's mid-task request and is S4 composed twice, E0 — the
 decomposition is sound; it is the shipped rules 2–3 that invert the quantifier (W3-S is fixing
 that in the generator now).
+
+### 2026-09-18 — W3-S (W1-T2 + W1-T9 + W1-T10) — CLOSED. Wave three is closed.
+
+Re-run by the orchestrator from a clean tree: `make check` exit 0, `make validate` exit 0.
+**42 rules / 11 sound and minimal / 31 flagged / 14 unmeasurable → 34 rules / 13 sound and
+minimal / 21 flagged / 2 unmeasurable.** No sound-and-minimal rule was lost at any step, and
+`atleastnvalues.tex` ≡ `atmostnvalues.tex` was preserved at every commit — W1-T5's evidence is
+intact.
+
+**Read the headline correctly: the catalog got smaller and truer.** `among`, `range`, `regular`,
+`roots` and `table` now emit **zero rules** (verified: `grep -o '\frac' | wc -l` → 0 for each).
+They were previously emitting rules quantified over index sets the artifact never defines. The
+honest position is that those five entries need G6/G7 — E2 — before they say anything at all,
+and that is now a specified requirement rather than a mystery. Anyone quoting "34 rules" against
+the earlier "53 rules" census should quote this paragraph with it.
+
+**`allequal`'s defect was not local, which is why it cleared four other entries.** `rule3`/`rule4`
+built their pair with `EXOR` where `EXAND` belongs, so each half of a conjunction shipped as a
+rule on its own; the multi-conjunct branch two lines down, and `rule5/6/7`, already used `EXAND`.
+One fix, and UNSOUND rules also disappeared from `atleast`, `atmost`, `nvalues` and `table`.
+`allequal`'s rules 2–3 could not be *corrected* — `¬B2`/`¬B3` simply are not derivable from
+`B2 ∨ B3` — so they now die as counted blocked branches instead of shipping.
+
+**`gcc` is the first entry in this project to be fully sound and minimal: 4 of 4.** `forallp`
+printed `∀p: O_t ≥ p`, i.e. `O_t ≥ n`; but `p` is quantified at the *constraint* level, so an
+explanation drawn from it is a schema valid per `p`. W3-S added `OpPoint` — ranged but unbound —
+which prints, compares and inverts under W1-T7's first-order operators.
+
+**`element` was not fixed, and not forcing it is the best decision in this wave.** The diagnosis
+(quantifying over scalars) was right; the prescribed remedy was not — plain `id` *crashes*, and
+both principled alternatives made the verdict **worse**, 4 VACUOUS → 4 UNSOUND. Measured reason:
+the correct rule needs one binder scoping *both* premises (`∃t. V=t ∧ X_i≠t`), and both the
+printer and `validator.ml` (l.333–336) scope binders per literal. So `element` is blocked on
+**W1-T1**, now promoted, and once binders have rule-level scope the fix is two tokens, because
+`OpPoint` already exists.
+
+**W1-T4 is masked, not fixed — the row stays open.** The census reports 0 empty-premise rules
+only because W1-T2 refused that whole branch. The decomposition that produced an empty premise
+is untouched and will produce it again the moment G6 lands. W3-S flagged this itself rather than
+claiming the row.
+
+**Demonstration over assertion, worth copying.** For W1-T10 the session built a probe
+decomposition whose `B2` never resolves: the old generator exits 0 and writes
+`$$\frac{ERROR B }{X_i=t}$$` into the catalog; the new one exits 2, names the failure and writes
+no file. Zero goldens changed. `T` was fixed alongside `B` — same two lines, same defect.
+
+**Routed, small, unowned:** `validator.ml`'s out-of-scope reason strings are now stale for four
+entries (W1-T11 (a)); deriving ground semantics from `ind_op` instead of hand-typing it is
+unblocked (W1-T11 (b)); `-w +27+39` went 8 → 6 and the Makefile's expectation is updated.
+`ind_set`'s `D2` now raises rather than printing `"setfils"`, so **G7 is untouched** — refusing
+is not implementing.
