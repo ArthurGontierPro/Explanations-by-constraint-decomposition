@@ -64,7 +64,7 @@ session picks it up.
 | W2-T5 §5+§6 | `decomps/` files for its own constraints + `decomps/_shapes-ext.md` + `decomps/_gaps-ext.md` | W2-B (2026-09-18) | 2026-09-18 |
 | W2-T5 §1+§9 | `decomps/` files for its own constraints + `decomps/_shapes-perm.md` + `decomps/_gaps-perm.md` | W2-C (2026-09-18) | 2026-09-18 |
 
-_W2-C closed 2026-09-18 (`c0a704a`): 4 shapes, 3 new gaps, element's defect diagnosed. W2-A and W2-B still running._
+_W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed. Nothing is claimed.** Gaps consolidated at `9774a62`._
 
 _W2-A closed 2026-09-18: 5 shapes (`decomps/_shapes-seq.md`), 3 new gaps (`decomps/_gaps-seq.md`,
 G6-G8 — numbered independently of W2-C's own G6-G8, reconciliation is the orchestrator's job at
@@ -527,3 +527,46 @@ all (its G8). Its spec stops at the maths, correctly, rather than inventing a de
 **Gap numbering now needs reconciling.** W2-A and W2-C both numbered from G6 into different
 files and they mean different things. The consolidation into `docs/DECOMP_FORMAT_NOTES.md` is
 the orchestrator's, after W2-B lands.
+
+### 2026-09-18 — W2-B (W2-T5, §5 extensional + §6 scheduling) — CLOSED. Wave two is closed.
+
+Eight shapes, 15 constraints, nothing out of scope in either family. The three findings below
+are the most consequential of the whole wave, and none of them is a spec.
+
+**1. The shipped `regular` is not a decomposition of `regular`.** Read off generator l.713 (not
+measured): it is a complete, auxiliary-free decomposition of the **strictly 2-local** languages
+— a consecutive-pair chain cannot express "an even number of `a`s". This does not challenge
+D-0003, which decides where decompositions come from, and nothing measured bears on it because
+`docs/VALIDATOR.md` puts `regular` out of scope. But it splits W3-T3 into two plans that the
+roadmap's one line was hiding: G6+G7 buys a *complete method for the 2-local fragment*, which is
+genuinely the smallest complete contribution available; `regular` entire additionally needs E1
+and G17, and at that point `mdd` is nearly free and the contribution is no longer small.
+**Either is defensible; claiming the first while describing the second is not.** Recorded on the
+W3-T3 row.
+
+**2. M-1's criterion survives in direction, not as written.** "Inline a state only when its state
+predicate is a finite disjunction over user literals" draws no line at all: over finite domains
+*every* predicate over `X_1..X_{i-1}` is a finite disjunction — its full DNF — so general
+`regular` and `mdd` pass it. Sharpened to **"the state predicate must be a clause, every disjunct
+a single literal"**, it separates cleanly: `increasing`, `int_value_precede` and strictly-2-local
+`regular` pass; general `regular`, `mdd` and all counter automata fail. It then characterises
+exactly the fragment this repo's decompositions cover, which is the best evidence it is the right
+criterion. M-1's counter half needed no repair. **This is the wave checking the previous wave's
+proposal instead of inheriting it.**
+
+**3. E2 is two extensions, not one.** G6 (a 2-D constant table read as a *function*, `t = T[r,i]`)
+and G7 (a value set *indexed by another index*, `t' ∈ D(t)`). D-0006's E2 line names only G6, and
+cites `regular` as its constraint — but `regular` needs G7. Without G6 there is no correct
+`table` at all: its three shipped rules are measured UNSOUND, and the cause is a free `r` index
+on the `X` literal itself (l.720–722 plus `x3ac`).
+
+**Also:** `cata/cumulative.tex` is `disjunctive` — `rule1` + `rule3` + `rule5` over one
+unweighted family with an implicit bound of 1, confirmed by the orchestrator at l.680–682. Real
+`cumulative` needs G11/G15 to be *expressible* and E4 to be *good*. §5's wall is expressiveness;
+§6's is rule quality; **a frozen format solves only the first.**
+
+**One stale finding, and it is the failure mode `CLAUDE.md` warns about.** W2-B reported that
+`CLAUDE.md` still tells readers to count rules with `grep -c '\frac'`. It does not — that was
+corrected at `b93644a`, before wave two was claimed (`CLAUDE.md` l.148–150 now gives the `grep -o`
+form and the measured counts). A finding taken from a document state that predates the fix, which
+is exactly the trap the "Verify before you report" section describes. No harm done; worth naming.

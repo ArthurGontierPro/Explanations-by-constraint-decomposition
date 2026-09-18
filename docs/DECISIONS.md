@@ -228,3 +228,16 @@ So W1-T7 delivered inspectability, and inspectability alone does not fix the amb
 applying a modification must rewrite the modifier list, not extend it — and that is a separate
 piece of work from the re-encoding. Until it lands, a shipped rule still does not determine
 what it means, and the validator must keep enumerating readings.
+
+### 2026-09-18 — flagged for the author: the E-code taxonomy collides with itself
+
+Not a decision, a collision that needs one. **D-0006 defines E3 as multi-family cardinality**
+(the `failwith "sommes multiples"` site). **`CHRISTMAS_LIST.md` §6 uses E3 for weighted sums**
+(`cumulative`'s `r_i`, `knapsack`) — consolidated gap G11. These are different extensions,
+neither is a superset of the other, and the code is load-bearing in both documents and in every
+`decomps/*.md` written since. Whoever closes this picks one meaning for E3 and issues a new code
+for the other; a spec that says "E3" today does not say which.
+
+Raised by W2-B while specifying §5/§6. Reported, deliberately not fixed: renumbering an E-code
+across the roadmap, the literature index and 40-odd spec files is the author's call, not a
+session's.

@@ -61,7 +61,7 @@ Goal: the decomposition format stops changing, so content work can fan out.
 
 | ID | Task | Status | Notes |
 |---|---|---|---|
-| W2-T1 | Write down the decomposition format and freeze it | TODO | **This is the gate that makes family-per-agent honest.** Before it, every content session is blocked on machinery it also wants to change |
+| W2-T1 | Write down the decomposition format and freeze it | TODO | **This is the gate that makes family-per-agent honest.** Before it, every content session is blocked on machinery it also wants to change | **Its input now exists (2026-09-18): `docs/DECOMP_FORMAT_NOTES.md` carries G1–G17 plus two checked negatives, from 7 families across 4 sessions.** Two things to settle that are not gaps: the E3 collision (multi-family cardinality in D-0006, weighted sums in `CHRISTMAS_LIST.md` §6) and whether `D2` gets a printer |
 | W2-T2 | E1: open `var_name` for auxiliary integer families | TODO | **D-0006.** Mechanism already exists via `rule1` (`N`, `O`). Rule-engine file |
 | W2-T3 | E2: richer side conditions — inequalities against expressions, 2-D constant tables | TODO | **D-0006.** Biggest single unlock. Finishes `regular` (W1-T2). Rule-engine file — **not** concurrent with W2-T2 |
 | W2-T4 | Close D-0007 (breadth or depth) with validator output in hand | DONE | **CLOSED EARLY 2026-09-18 by the author, not by this row: D-0010 decides breadth.** W1-T8's measurement is still worth having, but it is no longer what gates the decision |
@@ -76,7 +76,7 @@ format and a working validator; each decomposition is its own file, so sessions 
 |---|---|---|---|
 | W3-T1 | Counting family: `count`, `at_least`, `at_most`, `exactly`, `among`, `nvalue` | TODO | Mostly E0 |
 | W3-T2 | Sequencing family: `value_precede`, `seq_precede_chain`, `sliding_among`, `lex*` | TODO | Mostly E0. **Corrected 2026-09-18 (W2-A): "same shape as `increasing`" is only half true.** Same `rule4` chain mechanics, but `value_precede` needs a genuine accumulated-state auxiliary that `increasing` does not — precisely the leak D-0004 flags. `lex_less` is the same story and also hits G3 |
-| W3-T3 | Extensional family: `regular`, `table`, `mdd` | TODO | Needs W2-T3. **`regular` is on Choco's LCG-unsupported list and this repo already has a decomposition for it** — smallest complete contribution available |
+| W3-T3 | Extensional family: `regular`, `table`, `mdd` | TODO | Needs W2-T3. **`regular` is on Choco's LCG-unsupported list and this repo already has a decomposition for it** — smallest complete contribution available. **Corrected 2026-09-18 (W2-B, read off generator l.713, not measured): the shipped decomposition is a complete auxiliary-free decomposition of the strictly 2-local languages, not of the regular languages** — a consecutive-pair chain cannot express "an even number of `a`s". So this row hides two different plans: (a) G6+G7 delivers a *complete method for the 2-local fragment*, genuinely small; (b) `regular` entire additionally needs E1 and G17, at which point `mdd` comes nearly free and it is no longer a small contribution. Pick one before claiming it |
 | W3-T4 | E3: multi-family cardinality | TODO | Removes `failwith "sommes multiples"`. Unblocks `global_cardinality`, `knapsack`, `bin_packing*` |
 
 ## W4 — the experiment
