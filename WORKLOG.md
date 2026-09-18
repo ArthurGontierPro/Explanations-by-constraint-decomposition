@@ -67,6 +67,8 @@ session picks it up.
 | W2-T5 §11 + shape consolidation + D-0011 relabelling | `decomps/**`, `docs/DECOMP_FORMAT_NOTES.md` | W3-D (2026-09-18) | 2026-09-18 |
 | `CHRISTMAS_LIST.md` repairs (4 recorded issues) | `CHRISTMAS_LIST.md` | W3-C (2026-09-18) | 2026-09-18 |
 
+_W3-C RELEASED 2026-09-18 (`1e7dc67`): index coverage 113/118 → **118/118**, verified. W3-S and W3-D still running._
+
 _W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed.** Gaps consolidated at `9774a62`. Wave three claimed 2026-09-18: engine fixes, spec consolidation, and the literature index — three files, three owners, no overlap._
 
 _W2-A closed 2026-09-18: 5 shapes (`decomps/_shapes-seq.md`), 3 new gaps (`decomps/_gaps-seq.md`,
@@ -573,3 +575,34 @@ unweighted family with an implicit bound of 1, confirmed by the orchestrator at 
 corrected at `b93644a`, before wave two was claimed (`CLAUDE.md` l.148–150 now gives the `grep -o`
 form and the measured counts). A finding taken from a document state that predates the fix, which
 is exactly the trap the "Verify before you report" section describes. No harm done; worth naming.
+
+### 2026-09-18 — W3-C (`CHRISTMAS_LIST.md` repairs) — CLOSED
+
+**The index now covers 118 of 118 globals** — re-run by the orchestrator: `covered 118 (100.0%)`,
+`missing 0`, `no duplicate names`, against 113/118 with 5 missing and one duplicate before. Every
+repaired row carries a `2026-09-18, W3-C` marker so a reader can tell a repair from the original
+research session's work.
+
+Fixed: the missing `all_equal` row (literature "none" — **not invented**, which is the right answer
+for most of the 118); `lex_greater`/`lex_greatereq` added as argument-swapped `lex_less` instances
+citing the wave-two shapes; the duplicate `cost_mdd` reconciled to §5's row under D-0011, with the
+stale §11 row removed behind a comment marker rather than silently deleted; `cumulatives_opt` and
+`disjunctive_strict_opt` named explicitly, since the `_strict`/`_opt` shorthand does not compose
+past two suffixes and was silently dropping four-way combinations. The `element` row now states
+**2 of 6 validated** instead of "6 rules", which read as coverage; the `range`/`roots` row now
+disambiguates itself from gccat's unrelated `range_ctr`.
+
+**W3-C corrected its own brief, and it was right.** I wrote that `decomps/` specs the `all_equal`
+family. It does not — `ls decomps/ | grep equal` returns nothing, confirmed. Wave two's §1 session
+wrote `all_different.md` and missed `all_equal` entirely, so a **shipped** catalog entry has no
+spec in the corpus. W3-C said so in the row rather than citing a file that does not exist. Routed
+to W3-D mid-task, because its headline is "N shapes covering M constraints" and M was short by one.
+
+**Left flagged and correct as written:** `alldifferent_except_0` still reports as "named, not a
+2.10.1 global" — it is marked `(alias)` and `docs/COVERAGE.md` already calls that defensible;
+likewise the three rows with no E-code (`geost` is "out", the `*_fn` row covers 11 functional
+variants). `--check` still exits 1 for these, which is the tool being honest, not a regression.
+
+**New, small, unowned:** `tools/mzn_coverage.py` predates D-0011 and does not recognise **E8**/
+**E9**, so it parses the `(was E3; …)` trailing text as a literal E3. The traceability text is
+worth keeping; the classifier should learn the two new codes. Nobody owns `tools/`.
