@@ -402,6 +402,28 @@ let rule0 e de c dec ch = (*Global_devent<=>Reified_devent*)
   then  fre re e de c dec ch
   else fnre re e de c dec ch
 
+(*==========================================================================
+  W1-T10 — the printers used to emit the literal STRING "ERROR B "/"ERROR T "
+  into the .tex instead of failing. That is W1-T3's disease in the printer: a
+  generator failure and a generated artifact were the same observable, and a
+  reader of cata/*.tex could not tell an explanation from an error message.
+
+  `B` is an auxiliary of the decomposition. Reaching a printer with one means
+  the AND/OR traversal handed it an inner reified variable that no
+  Global_devent ever turned back into a solver literal, so there is no rule to
+  print. `T` is the name of the placeholder Reified_devent that
+  `reified_devent` returns for a constraint carrying none; fre/fnre already
+  intercept it as Lit T / Lit F, so a `T` literal reaching a printer means that
+  interception was bypassed.
+
+  MEASURED 2026-09-18: raising changes no shipped entry. All 16 regenerate
+  byte-identically (make check), because every `B` in today's decompositions
+  resolves to a Global_devent first. The first decomposition with an
+  accumulated-state auxiliary — `value_precede`, `lex_less` — hits it, and now
+  gets a named failure instead of "ERROR B " in its catalog entry.
+  ========================================================================*)
+exception Generator_failure of string
+
 (*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
 let printind_name_int a = match a with 1 -> "" | 2 -> "'" | 3 -> "''" | _ -> "_{"^string_of_int a^"}"
@@ -431,8 +453,8 @@ let printglobal_event e =
   printind_name_list left^printcons e^printind_name (ind_name right)^printiopl_list (index_list e)
 let printevent_var v = match name v with 
   | X -> "   X"^printglobal_event v
-  | B i -> "ERROR B " 
-  | T -> "ERROR T " 
+  | B i -> raise (Generator_failure ("printevent_var: auxiliary B"^string_of_int i^" reached the printer — no Global_devent turned it back into a solver literal, so there is no rule to print (W1-T10)"))
+  | T -> raise (Generator_failure "printevent_var: the placeholder reified name T reached the printer; fre/fnre should have intercepted it as Lit T / Lit F (W1-T10)") 
   | I -> "   I"^printcons v^printi (hd (index_list v)) 
   | V -> "   V"^printcons v^printi (hd (index_list v)) 
   | N -> "   N"^printcons v^printi (hd (index_list v)) 
@@ -460,8 +482,8 @@ let printglobal_eventtex e =
   "_{"^printind_name_list left^"}"^printconstex e^printind_name (ind_name right)^""^printiopl_listtex (index_list e)
 let printvartex v = match name v with 
   | X -> "X"^printglobal_eventtex v
-  | B i -> "ERROR B " 
-  | T -> "ERROR T " 
+  | B i -> raise (Generator_failure ("printvartex: auxiliary B"^string_of_int i^" reached the printer — no Global_devent turned it back into a solver literal, so there is no rule to print (W1-T10)"))
+  | T -> raise (Generator_failure "printvartex: the placeholder reified name T reached the printer; fre/fnre should have intercepted it as Lit T / Lit F (W1-T10)") 
   | I -> "I"^printconstex v^printitex (hd (index_list v)) 
   | V -> "V"^printconstex v^printitex (hd (index_list v)) 
   | N -> "N"^printconstex v^printitex (hd (index_list v)) 
@@ -503,7 +525,6 @@ let rec printfraqtex el x fic = match el with
       LaTeX ambiguous, so the shipped rule does not determine what it means
       (D-0009).
   ========================================================================*)
-exception Generator_failure of string
 
 type blocker = BNone | BF | BR | BIM | BFE
 let rec blocking_leaf l = match l with
