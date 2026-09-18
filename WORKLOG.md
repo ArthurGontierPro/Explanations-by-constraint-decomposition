@@ -22,6 +22,8 @@ it touches no generator code. Do not add a third.
 
 _Dispatched 2026-09-18 by the orchestrator session; supersedes the "wave zero has not been dispatched" note above. Two sessions, per CLAUDE.md. `WORKLOG.md` is owned by the orchestrator for this wave — W0-A and W0-B do not edit it, they report back and the orchestrator records._
 
+_Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero is closed. No task is claimed as of that commit._
+
 ---
 
 ## Cross-session requests
@@ -35,6 +37,7 @@ session picks it up.
 | **No session may report a catalog entry as correct until W0-T1 lands.** There is no gate. A `.tex` that renders is not evidence. The honest phrasing is "generated, unvalidated" | `cata/**` | design session 2026-09-18 | standing, until W0-T1 |
 | **Check the roadmap row before reporting a finding.** In review of `~/baguette` two warnings were written against defects the roadmap had already closed, taken from a document that predated the fixes. Stale context is confident | — | design session 2026-09-18 | standing |
 | Add a `coverage` target running `python3 tools/mzn_coverage.py --check`. Keep it out of `make check`'s hard failure path — it exits 1 today on live drift, which is a fact about the catalog, not a broken build | `Makefile` | W0-B via orchestrator 2026-09-18 | routed to W0-A 2026-09-18 |
+| **NARROWED, not lifted: the "no entry is correct" rule survives W0-T1.** The validator covers `table`, `atleastnvalues`, `atmostnvalues` only, and flagged every rule in them. The other 13 entries are still "generated, unvalidated", and **no rule in this repo has been shown sound and minimal** | `cata/**` | orchestrator 2026-09-18 | standing, supersedes the row above it |
 
 ---
 
@@ -44,6 +47,7 @@ session picks it up.
 |---|---|---|
 | — | — | — |
 | W0-T4 | W0-B (2026-09-18) | `tools/mzn_coverage.py` + vendored `tools/data/minizinc-2.10.1-globals.txt` + `docs/COVERAGE.md`. Commits `e12ccce`, `80a89a6`. Classifier runs, exits 1 on drift. Coverage and defects verified independently by the orchestrator (see handoff note) |
+| W0-T1 + W0-T2 + W0-T3 | W0-A (2026-09-18) | `Makefile`, `validator.ml`, `docs/VALIDATOR.md`, `.gitignore`. Commits `8a1a05b`, `2f42cde`, `49c826a`. `make check` exit 0, `make validate` runs, both re-run by the orchestrator. **Validator covers 3 of 16 entries; 13/13 rules flagged; 0 sound and minimal** |
 
 ---
 
@@ -135,3 +139,54 @@ which independently confirms `CHRISTMAS_LIST.md`'s "118" claim for 2.10.1; 113 o
 **Deliberately not automated:** the literature column (not script-derivable; no web search was
 done, per `CLAUDE.md`), the solver column beyond a coarse native/decomp split, and whether a
 stated E-route is *correct* — the tool only extracts the codes.
+
+### 2026-09-18 — W0-A (W0-T1/T2/T3, validator and gate) — CLOSED. Wave zero is closed.
+
+`make check` (gate, exit 0), `make validate` (validator), `make validate-selftest`,
+`make coverage` (advisory, never fails — it exits 1 on live drift and that is a fact about the
+catalog, not a broken build). Orchestrator re-ran `check` and `validate` from a clean tree and
+reproduced both.
+
+**What the validator actually covers — read this before quoting it.** Three entries: `table`,
+`atleastnvalues`, `atmostnvalues`. Rules are *parsed from the shipped `.tex`*, which is the
+right call — the artifact under test is the one that ships. Only the ground semantics of the
+three decompositions is hand-encoded, three one-line predicates read off the generator source
+(l.410–417, l.429–431), because W1-T7 has not landed and closures cannot be inspected.
+Soundness is computed two independent ways (D-0005's full store sweep, and a singleton-store
+reduction justified by anti-monotonicity of every premise literal) and the run asserts the two
+agree; they agreed on all 13 rules. Four hand-written controls run first — sound+minimal,
+redundant premise, unsound, vacuous — and all four behave, so the flags are not a stuck checker
+saying "no" to everything.
+
+**Result: 13 rules checked, 13 flagged, 0 sound and minimal.** The acceptance test in D-0005 is
+met, twice over:
+
+- `table.tex` — **all three rules unsound under every reading**, not only the empty-premise one.
+  That is worse than W1-T4 records.
+- `atleast` / `atmost` — the byte-identical text gets **different verdicts** (rule 3: AMBIGUOUS
+  vs VACUOUS). Sharper still: rule 4's only non-vacuous reading is unsound in both, but the
+  counterexamples differ in kind — against at-least it fails at `n=m=2, p=1` (the bound runs the
+  wrong way), against at-most only at `p > m` (right direction, wrong bound). **That asymmetry
+  is what the byte-identity was hiding**, and it is where W1-T5 should start.
+
+**Unanticipated, and it changes a roadmap row: the emitted `.tex` does not determine the rule.**
+Repeated index composition prints self-contradictory binder prefixes (`∃i, ∀i, ∀t, ∀i` on a
+single premise), so the validator must enumerate *readings*. Recorded as **D-0009 (OPEN)**,
+together with the proposal that `VACUOUS` become a first-class verdict — three shipped rules are
+sound only because their premises can never hold, and counting those as passes would inflate any
+coverage claim. This promotes W1-T7 from refactor to correctness prerequisite.
+
+**Corrections to this repo's own documents, all re-measured by the orchestrator before applying:**
+
+- `grep -c '\frac'` **does not count rules** — every entry is a single line, so it returns 1 for
+  all 16. Use `grep -o '\frac' f | wc -l`. `CLAUDE.md`'s Traps section said the wrong thing.
+- Warnings on OCaml 5.1.1: default **0**, `-w +27+39` **16**, `-w +40+41+42` **42**, `-w +a`
+  **91**. The "16 default warnings" figure in `CLAUDE.md` and in the design session's own
+  handoff note was wrong — 27 and 39 are off by default in 5.1.1. `make check` now keeps the
+  census and fails if it moves.
+
+**Next wave, for whoever picks it up.** W1-T3 (make failure loud) and W1-T7 (indices as data)
+are the two that unblock everything else, and both are the rule-engine file — so they are
+**one session, not two**, and they do not share a wave with E1/E2. The honest disjoint partner
+is W1-T6 (`sum.tex`) or extending the validator to a fourth entry. Do not dispatch a family
+agent: W2-T1 has not happened.
