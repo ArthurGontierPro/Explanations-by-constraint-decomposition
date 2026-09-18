@@ -23,6 +23,21 @@ this is true.
 | W0-T3 | Golden files: regenerate every `cata/*.tex` and byte-diff against committed output | DONE | **DONE 2026-09-18 (W0-A).** All 15 entries plus `exp.tex` reproduce byte-for-byte; `sum.tex` excluded explicitly and `check-orphans` fails if that set changes. **Correction: `grep -c '\\frac'` does not count rules** — entries are single-line; use `grep -o '\\frac' f | wc -l`. — was: **Mostly already true** — verified 2026-09-18 that the generator reproduces all 15 files byte-for-byte, and `exp.tex` too. So this row is: wire `ocaml gen.ml && diff -r` into `make check`, and delete or regenerate the orphaned `sum.tex` (W1-T6), which is the only diff. Note the files have no trailing newline — count rules with `grep -c '\\frac'` |
 | W0-T4 | Automate the `CHRISTMAS_LIST.md` coverage classification so it reruns per MiniZinc release | DONE | **DONE 2026-09-18 (W0-B).** `tools/mzn_coverage.py`, `docs/COVERAGE.md`, vendored 2.10.1 snapshot (no MiniZinc on this machine). Found: no `all_equal` row despite a shipped `cata/allequal.tex`; conflicting `cost_mdd` routes; 5 uncovered globals. — was: **Genuinely disjoint from W0-T1/T2** — touches no generator code. This is the honest parallel task for wave zero. A prototype classifier was written on 2026-09-18 and is not committed |
 
+## M-1 — steal from the Global Constraint Catalog
+
+Outside the W-numbering on purpose: it is prior art to read, not a wave of the build. Nothing
+here blocks W1, and W1 does not block it. Requested by the author 2026-09-18.
+
+Beldiceanu, Carlsson and Rampon's *Global Constraint Catalog* is the field's other catalog —
+~400 constraints, each with a structured entry, and for many of them a **counter-automaton**.
+`CHRISTMAS_LIST.md` does not mention it once (measured: `grep -i -c 'beldiceanu\|gccat'` → 0),
+which is a real hole in the literature index. Online at `https://sofdem.github.io/gccat/`,
+entry pages `gccat/C<name>.html`.
+
+| ID | Task | Status | Notes |
+|---|---|---|---|
+| M-1-T1 | Read a bounded slice of the catalog and write `docs/GCCAT.md`: what this project should take, what it must not, mapped onto existing task IDs and E-codes | TODO | **Hard context cap — the catalog is thousands of pages and `CLAUDE.md` says the literature is the expensive context here.** Prioritise the 16 constraints already in `cata/` plus the W3 shortlist. **D-0003 applies in full: decompositions are authored here for explanation quality. A proposal to import the catalog's decompositions wholesale is the MiniZinc proposal again and was already rejected once** |
+
 ## W1 — the generator tells the truth
 
 Goal: every existing entry is either validated or reported as failing. No new constraints yet.
