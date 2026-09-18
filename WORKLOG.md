@@ -67,7 +67,7 @@ session picks it up.
 | W2-T5 §11 + shape consolidation + D-0011 relabelling | `decomps/**`, `docs/DECOMP_FORMAT_NOTES.md` | W3-D (2026-09-18) | 2026-09-18 |
 | `CHRISTMAS_LIST.md` repairs (4 recorded issues) | `CHRISTMAS_LIST.md` | W3-C (2026-09-18) | 2026-09-18 |
 
-_W3-C RELEASED 2026-09-18 (`1e7dc67`): index coverage 113/118 → **118/118**, verified. W3-S and W3-D still running._
+_W3-C RELEASED (`1e7dc67`): index coverage 113/118 → **118/118**. W3-D RELEASED (`04d800a`, `1d25c45`, `b083974`): the corpus is complete — **12 shapes + 3 modifiers cover 55 constraints**. W3-S (engine) still running._
 
 _W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed.** Gaps consolidated at `9774a62`. Wave three claimed 2026-09-18: engine fixes, spec consolidation, and the literature index — three files, three owners, no overlap._
 
@@ -606,3 +606,49 @@ variants). `--check` still exits 1 for these, which is the tool being honest, no
 **New, small, unowned:** `tools/mzn_coverage.py` predates D-0011 and does not recognise **E8**/
 **E9**, so it parses the `(was E3; …)` trailing text as a literal E3. The traceability text is
 worth keeping; the classifier should learn the two new codes. Nobody owns `tools/`.
+
+### 2026-09-18 — W3-D (§11, cross-family consolidation, D-0011 relabelling) — CLOSED
+
+**The coverage story now has a number: `decomps/_shapes.md` — 12 shapes plus 3 modifiers cover
+55 in-scope constraints**, per-shape counts tabulated so it is auditable. Five more (`maximum`,
+`minimum`, `arg_max`, `arg_min`, `span`) have no shape at all: **G3 blocks them before one can be
+written.** "118 globals" is a list; "12 shapes" is a claim that can be defended or refuted, and
+it is the right unit for D-0010.
+
+**The merge that matters most:** `all_different` and `at_least`/`at_most`/`exactly` are **one
+shape**, differing only in the threshold and in whether the counted value is a parameter or an
+index family. Consequence, and it is the kind of thing only consolidation finds: **G1 (no bare
+integer threshold) is one defect, not two.** Also merged: the monotone chain across three
+families (one generator construct, l.689 and l.713, differing only in `imap`s), EXT-3 into
+EXT-2b, the two accumulator shapes into one, and `all_equal` into S4 rather than a 13th shape.
+
+**Rejections are the better half of the work.** S7 vs S8 kept apart because S8 recurses with the
+state as a pivot — *that difference is G17*. S9 vs S10 kept apart because a weighted sum is a
+missing schema, not a parameter — the exact distinction D-0011 was written to protect. S1 vs S5
+kept apart because S5's Boolean has no `Global_devent` behind it, which is the whole of W1-T10.
+Two conventions were declared openly rather than assumed: `{rule3,rule4}` is one family by De
+Morgan with free sign bits, and `{rule5,rule6,rule7}` is one comparator-parameterised family.
+
+**Three contradictions between sessions, caught exactly as intended.** (1) `span.md` claimed a
+min/max shape at E0 while `maximum.md` said the same thing is impossible — the second is right,
+`span` is G3-blocked. (2) The cause is a **misreading of the generator**: `_shapes-seq.md` read
+`rule6`/`rule7` as ∀/∃, but they are `∑ ≥ c` and `∑ = c` — confirmed by the orchestrator at the
+definitions, l.339/353/367, which carry the comments `Bool sum<=c`, `Bool sum=>c`, `Bool sum=c`.
+So `range`/`roots` are sum shapes and were never a precedent for min/max. (3) `lex_chain.md`
+still asserted the `D2` escape hatch that the wave-two consolidation withdrew. Correction notes
+added to the affected specs; **no wave-two prose was rewritten**, which is the right instinct.
+
+**D-0011 applied per site, as judgement not sed:** `cumulative` → E8 (one sum per time point,
+the `failwith` is never reached); `knapsack` → E1+E3+E8+E9, the only constraint in the corpus
+needing all three sum codes; `cost_regular`/`cost_mdd` → E1+E2+E9; the ext shape and gap files
+relabelled and their "contradiction to report" paragraphs marked resolved rather than left open.
+
+**One new gap, G18** — `∀j ≠ I` where `I` is a *decision variable* (`write`, `writes`,
+`writes_seq`). G8 covers a constant exclusion and G14 a variable-determined summation extent;
+neither covers this. **Everything else in §11 landed on existing gaps: the gap list converged
+before the corpus ran out**, which is the strongest sign so far that W2-T1 can freeze against
+real requirements rather than guesses.
+
+`all_equal` was added on the orchestrator's mid-task request and is S4 composed twice, E0 — the
+decomposition is sound; it is the shipped rules 2–3 that invert the quantifier (W3-S is fixing
+that in the generator now).
