@@ -15,11 +15,42 @@ type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*)
 type consistancy = AC | BC 
 (*event types*) 
 type index = Ind of ind_name*ind_modifs list
+(*==========================================================================
+  W1-T7 — index modifications are DATA, not closures.
+
+  A decomp_event used to carry two `index list -> index list` OCaml closures,
+  one for the descending traversal and one for the ascending one. A closure
+  cannot be printed, compared or inverted, so nothing could say what a
+  decomposition means without running it, a wrong composition produced a
+  plausible-looking wrong rule with no way to notice, and validator.ml had to
+  hand-encode the ground semantics of every entry instead of deriving it
+  (docs/VALIDATOR.md). D-0009 sharpens this: the emitted .tex is itself lossy.
+
+  `ind_op` is the first-order replacement. Every combinator the decompositions
+  used is one constructor, `apply_op` is the interpreter, and because the type
+  is first-order, structural equality compares two modifications and
+  `invert_op` inverts the ones that have an inverse.
+
+  A family is a letter, not a numbered index: `i_out` drops the first index
+  named i, i', i''..., so the number never mattered and keeping it in the data
+  would have made equal modifications compare unequal.
+  ========================================================================*)
+type ind_fam = FI | FT | FP | FR
+type ind_op =
+  | OpId                                                     (*id*)
+  | OpOn     of ind_fam * ind_set             (*oni, ontin d: DISCARD the index list, replace it with one fresh index of that family ranging over the set*)
+  | OpOut    of ind_fam                       (*i_out: drop the FIRST index of that family*)
+  | OpForall of ind_fam * ind_set             (*foralli, foralltin d: prepend a fresh universally bound index*)
+  | OpSum    of ind_fam * ind_set             (*sumi: every index of that family becomes a primed, universally bound sibling constrained to differ from it*)
+  | OpPrim   of ind_fam * ind_set             (*tprimin d: as OpSum but the sibling is not bound here*)
+  | OpShift  of ind_fam * ind_symbols * int   (*iplus k, imoin k: i' = i +/- k*)
+  | OpShiftC of ind_fam * ind_symbols * ind_const * ind_fam  (*tplusci c: t' = t +/- c_i*)
+  | OpSeq    of ind_op list                   (*imap: applied RIGHT TO LEFT, exactly as imap composed its closures*)
 type event = | Global_event of bool*var_name*index list*consistancy
              | Decomp_event of bool*var_name*index list
-type decomp_event = | Global_devent  of bool*var_name*(index list->index list)*(index list->index list)*consistancy
-                    | Decomp_devent  of bool*var_name*(index list->index list)*(index list->index list)
-                    | Reified_devent of bool*var_name*(index list->index list)*(index list->index list)
+type decomp_event = | Global_devent  of bool*var_name*ind_op*ind_op*consistancy
+                    | Decomp_devent  of bool*var_name*ind_op*ind_op
+                    | Reified_devent of bool*var_name*ind_op*ind_op
 (*explanation tree*) 
 type leaf = Var of event | T | F | IM | R | FE 
 type tree = | Lit of leaf 
@@ -49,48 +80,148 @@ let decomp_event_list c = match c with Decomp (_,_,l) -> l
 let prim i = match i with I a -> I (a+1) | T a -> T (a+1) | P a -> P (a+1) | R a -> R (a+1) 
 
 
-let id  x = x(*identity function*) 
+(*W1-T7 — the interpreter, the printer, the inverse.*)
+let fam_ind (f:ind_fam) : ind_name = match f with FI -> I 1 | FT -> T 1 | FP -> P 1 | FR -> R 1
+let fam_of (i:ind_name) : ind_fam = match i with I _ -> FI | T _ -> FT | P _ -> FP | R _ -> FR
+let fam_letter (f:ind_fam) = match f with FI -> "i" | FT -> "t" | FP -> "p" | FR -> "r"
+let rec fam_find f il = match il with
+  | [] -> failwith ("Index "^fam_letter f^" has left the building")
+  | i::tl -> if fam_of (ind_name i) = f then i else fam_find f tl
+let rec fam_map f g il = match il with
+  | [] -> [] | i::tl -> if fam_of (ind_name i) = f then g i::fam_map f g tl else i::fam_map f g tl
+let rec fam_out f il = match il with
+  | [] -> [] | i::tl -> if fam_of (ind_name i) = f then tl else i::fam_out f tl
+(*the index nodes the old closures built, unchanged*)
+let sum_node i d  = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i),IN,d); Rel (prim (ind_name i), NEQ, ind_name i)]@ind_modifs_list i)
+let prim_node i d = Ind (prim (ind_name i), [Set (prim (ind_name i),IN,d); Rel (prim (ind_name i), NEQ, ind_name i)]@ind_modifs_list i)
+let shift_node i sym k   = Ind (prim (ind_name i), [Addint (prim (ind_name i), ind_name i, sym, k)]@ind_modifs_list i)
+let shiftc_node i sym c j= Ind (prim (ind_name i), [Addcst (prim (ind_name i), ind_name i, sym, c, ind_name j)]@ind_modifs_list i)
+let rec apply_op op il = match op with
+  | OpId             -> il
+  | OpOn     (f,d)   -> Ind (fam_ind f,Set (fam_ind f,IN,d)::[])::[]
+  | OpOut     f      -> fam_out f il
+  | OpForall (f,d)   -> Ind (fam_ind f,[EXFORALL (fam_ind f);Set (fam_ind f,IN,d)])::il
+  | OpSum    (f,d)   -> fam_map f (fun x -> sum_node x d) il
+  | OpPrim   (f,d)   -> fam_map f (fun x -> prim_node x d) il
+  | OpShift  (f,s,k) -> fam_map f (fun x -> shift_node x s k) il
+  | OpShiftC (f,s,c,g) -> fam_map f (fun x -> shiftc_node x s c (fam_find g il)) il
+  | OpSeq     l      -> fold_right (fun o acc -> apply_op o acc) l il
+
+let op_sym s = match s with PLUS->"+"|MINUS->"-"|IN->" in "|NEQ->"<>"|LEQ->"<="|GEQ->">="|EQ->"="
+let op_set s = match s with D a -> "D"^string_of_int a | D2 _ -> "D(list)"
+let rec print_op op = match op with
+  | OpId             -> "id"
+  | OpOn     (f,d)   -> "on "^fam_letter f^" in "^op_set d
+  | OpOut     f      -> "out "^fam_letter f
+  | OpForall (f,d)   -> "forall "^fam_letter f^" in "^op_set d
+  | OpSum    (f,d)   -> "sum "^fam_letter f^"' in "^op_set d^" ("^fam_letter f^"'<>"^fam_letter f^")"
+  | OpPrim   (f,d)   -> "prim "^fam_letter f^"' in "^op_set d^" ("^fam_letter f^"'<>"^fam_letter f^")"
+  | OpShift  (f,s,k) -> fam_letter f^"'="^fam_letter f^op_sym s^string_of_int k
+  | OpShiftC (f,s,_,g) -> fam_letter f^"'="^fam_letter f^op_sym s^"d_"^fam_letter g
+  | OpSeq     l      -> "("^String.concat " o " (map print_op l)^")"
+
+(*Partial inverse, on the TERM. OpOn and OpOut destroy information and
+  OpSum/OpPrim are not injective, so None is the honest answer for them.
+  Composition inverts in reverse order, matching OpSeq's right-to-left
+  application.
+
+  What "inverse" does and does not mean here, MEASURED 2026-09-18 by applying
+  op then invert_op op to [Ind (I 1,[]); Ind (T 1,[])] and comparing:
+
+    OpId, OpForall/OpOut, OpSeq of those   round-trip EXACTLY, back = input.
+    OpShift, OpShiftC                      do NOT. i'=i+1 then i'=i-1 yields
+                                           i'' carrying BOTH Addint modifiers.
+
+  The shift case is inverse in meaning (i''=i) but not on the representation,
+  because applying a modification APPENDS to the index's modifier list instead
+  of rewriting the index. That accumulation is the same mechanism that makes a
+  premise carry a self-contradictory binder prefix in the emitted LaTeX
+  (D-0009), so it is recorded here rather than papered over. Accordingly the
+  run report says "declared inverse", which is a statement about the two terms,
+  not a claim that the index lists round-trip.*)
+let rec invert_op op = match op with
+  | OpId               -> Some OpId
+  | OpForall (f,_)     -> Some (OpOut f)
+  | OpShift  (f,PLUS,k)  -> Some (OpShift (f,MINUS,k))
+  | OpShift  (f,MINUS,k) -> Some (OpShift (f,PLUS,k))
+  | OpShiftC (f,PLUS,c,g)  -> Some (OpShiftC (f,MINUS,c,g))
+  | OpShiftC (f,MINUS,c,g) -> Some (OpShiftC (f,PLUS,c,g))
+  | OpSeq l            -> invert_seq (rev l)
+  | _                  -> None
+and invert_seq l = match l with
+  | [] -> Some (OpSeq [])
+  | o::tl -> (match invert_op o with
+      | None -> None
+      | Some a -> (match invert_seq tl with
+          | Some (OpSeq b) -> Some (OpSeq (a::b))
+          | _ -> None))
+
+let id = OpId(*identity index modification*)
+
+(*W1-T7's payoff, exercised rather than merely available: every run prints the
+  decomposition each catalog entry was generated from, which was impossible
+  while the modifications were closures. `invert_op` is applied to each
+  ascending modification and the result COMPARED with the descending one — the
+  two are meant to be a descending/ascending pair, so "propagate inverts
+  update" is a property that can now be stated per devent instead of assumed.*)
+let print_var_name (v:var_name) = match v with
+  | X -> "X" | B i -> "B"^string_of_int i | T -> "T" | I -> "I" | V -> "V" | N -> "N" | O -> "O"
+let print_devent de =
+  let u = index_update de in
+  let g = index_propagate de in
+  Printf.printf "      %-7s %-4s  update %-30s propagate %-30s %s\n"
+    (match de with Global_devent _ -> "global" | Reified_devent _ -> "reified" | Decomp_devent _ -> "decomp")
+    ((if dsign de then "" else "!")^print_var_name (dname de))
+    (print_op u) (print_op g)
+    (match invert_op g with
+     | Some iv -> if iv = u then "propagate is the declared inverse of update"
+                  else "inverse of propagate is "^print_op iv^", NOT the update"
+     | None -> "propagate is not invertible")
+let print_decomp dec =
+  Printf.printf "    decomposition (W1-T7), %d atomic constraint(s):\n" (length dec);
+  iter (fun c -> Printf.printf "    ctr %d\n" (decomp_ctr_id c);
+                 iter print_devent (decomp_event_list c)) dec
 let n   e = match e with(*negation of event x*) 
   | Global_event (b,n,l,c)-> Global_event (not b,n,l,c)
   | Decomp_event (b,n,l) -> Decomp_event (not b,n,l)
 (*apply index modification functions on an event*) 
 let ap  e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(index_propagate de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,apply_op (index_propagate de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(index_propagate de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,apply_op (index_propagate de) (apply_op (index_update dep) (index_list e)))
 (*apply index modification functions with negation*) 
 let nap e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,apply_op (index_propagate de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(index_propagate de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,apply_op (index_propagate de) (apply_op (index_update dep) (index_list e)))
 (*apply index modification functions with particularities for sum, bigvee and bigwedge*)
-let addexists de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXEXISTS i::il)|_->failwith "missing index set exist")::ill)
-let addforall de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXFORALL i::il)|_->failwith "missing index set forall")::ill)
-let addprim   de = (fun ill -> (match ((index_propagate de) []) with Ind (i,il)::[]->Ind (prim i,EXFORALL (prim i)::Rel (prim i,NEQ,i)::Set (prim i,IN,match il with Set (_,_,d)::[]->d|_->failwith "missing index set" )::il)|_->failwith "missing index set prim")::ill)
+let addexists de = (fun ill -> (match (apply_op (index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXEXISTS i::il)|_->failwith "missing index set exist")::ill)
+let addforall de = (fun ill -> (match (apply_op (index_propagate de) []) with Ind (i,il)::[]->Ind (i,EXFORALL i::il)|_->failwith "missing index set forall")::ill)
+let addprim   de = (fun ill -> (match (apply_op (index_propagate de) []) with Ind (i,il)::[]->Ind (prim i,EXFORALL (prim i)::Rel (prim i,NEQ,i)::Set (prim i,IN,match il with Set (_,_,d)::[]->d|_->failwith "missing index set" )::il)|_->failwith "missing index set prim")::ill)
 let apexists e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addexists de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addexists de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addexists de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addexists de) (apply_op (index_update dep) (index_list e)))
 let apforall e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addforall de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addforall de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addforall de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addforall de) (apply_op (index_update dep) (index_list e)))
 let apprim e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addprim de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (b,n,(addprim de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addprim de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (b,n,(addprim de) (apply_op (index_update dep) (index_list e)))
 let napexists e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addexists de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addexists de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addexists de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addexists de) (apply_op (index_update dep) (index_list e)))
 let napforall e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addforall de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addforall de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addforall de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addforall de) (apply_op (index_update dep) (index_list e)))
 let napprim e de dep = match de with
-  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addprim de) ((index_update dep) (index_list e)),c)
+  | Global_devent  (b,n,_,_,c) -> Global_event (not b,n,(addprim de) (apply_op (index_update dep) (index_list e)),c)
   | Decomp_devent  (b,n,_,_)
-  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addprim de) ((index_update dep) (index_list e)))
+  | Reified_devent (b,n,_,_)   -> Decomp_event (not b,n,(addprim de) (apply_op (index_update dep) (index_list e)))
 
 (*Utilitary functions*) 
 let rec invars e del = (* devent in decomp ctr list? *) 
@@ -465,6 +596,7 @@ let write_footer fic =
 
 let explain e dec =
   printf "== exp.tex ==\n";
+  print_decomp dec;
   footer := [];
   let fic = open_out "exp.tex" in
   let _ = emit_event e dec fic in
@@ -478,6 +610,7 @@ let rec explainallaux el dec fic =
     explainallaux tl dec fic
 let explainall el dec str =
   printf "== %s ==\n" str;
+  print_decomp dec;
   footer := [];
   let fic = open_out str in
   let _ = explainallaux el dec fic in
@@ -486,53 +619,56 @@ let explainall el dec str =
   gen_files := !gen_files + 1
 
 
-(*Constructors for index modification functions*) 
-let iprim i = Ind (prim (ind_name i), ind_modifs_list i) 
-let iprimneqi i = Ind (prim (ind_name i), Rel (prim (ind_name i),NEQ,ind_name i)::ind_modifs_list i) 
-let addint i sym int = Ind (prim (ind_name i), [Addint (prim (ind_name i), ind_name i, sym, int)]@ind_modifs_list i) 
-let addcst i sym cst i2 = Ind (prim (ind_name i), [Addcst (prim (ind_name i), ind_name i, sym, cst, ind_name i2)]@ind_modifs_list i) 
-let rec uniqueset i set iml = match iml with [] -> [Set (i,IN,set)] | Set (j,_,d)::tl -> if i!=j||set!=d then uniqueset i set tl else [] | _ -> []
-let sum i d = Ind (prim (ind_name i), [EXFORALL (prim (ind_name i)); Set (prim (ind_name i),IN,d); Rel (prim (ind_name i), NEQ, ind_name i)]@ind_modifs_list i) 
-(*Index finders applyers and removals*)
-let rec iii il = match il with [] -> failwith "Index i has left the building" | i::tl -> match i with Ind (I _,_) -> i | _ -> iii tl
-let rec ttt il = match il with [] -> failwith "Index t has left the building" | i::tl -> match i with Ind (T _,_) -> i | _ -> ttt tl
-let rec ppp il = match il with [] -> failwith "Index p has left the building" | i::tl -> match i with Ind (P _,_) -> i | _ -> ppp tl
-let rec iap f il = match il with [] -> [] | i::tl -> match i with Ind (I _,_) -> f i::iap f tl | _ -> i::iap f tl
-let rec tap f il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> f i::tap f tl | _ -> i::tap f tl
-let rec pap f il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> f i::pap f tl | _ -> i::pap f tl
-let rec i_out il = match il with [] -> [] | i::tl -> match i with Ind (I _,_) -> tl | _ -> i::i_out tl
-let rec t_out il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> tl | _ -> i::t_out tl
-let rec p_out il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> tl | _ -> i::p_out tl
-let oni il = Ind (I 1,Set (I 1,IN,D 1)::[])::[]
-let ont il = Ind (T 1,Set (T 1,IN,D 2)::[])::[]
-let onp il = Ind (P 1,Set (P 1,IN,D 3)::[])::[]
-let onr il = Ind (R 1,Set (R 1,IN,D 4)::[])::[]
-let oniin set = fun il -> Ind (I 1,Set (I 1,IN,set)::[])::[]
-let ontin set = fun il -> Ind (T 1,Set (T 1,IN,set)::[])::[]
-let onpin set = fun il -> Ind (P 1,Set (P 1,IN,set)::[])::[]
-let onrin set = fun il -> Ind (R 1,Set (R 1,IN,set)::[])::[]
+(*W1-T7 — the decompositions' vocabulary, now VALUES of type ind_op rather
+  than closures. Every name below kept its meaning and its spelling, so the
+  decomposition table at the bottom of this file is untouched; only what the
+  names denote changed, from a function nothing could inspect to a term that
+  print_op prints, (=) compares and invert_op inverts.
 
-(*Index modification functions*)
-let sumiin set = iap (function x -> sum x set) 
-let sumtin set = tap (function x -> sum x set) 
-let sumpin set = pap (function x -> sum x set) 
-let sumi = iap (function x -> sum x (D 1)) 
-let sumt = tap (function x -> sum x (D 2)) 
-let sump = pap (function x -> sum x (D 3)) 
-let foralliin set = function il -> Ind (I 1,[EXFORALL (I 1);Set (I 1,IN,set)])::il 
-let foralltin set = function il -> Ind (T 1,[EXFORALL (T 1);Set (T 1,IN,set)])::il 
-let forallpin set = function il -> Ind (P 1,[EXFORALL (P 1);Set (P 1,IN,set)])::il 
-let foralli = function il -> Ind (I 1,[EXFORALL (I 1);Set (I 1,IN,D 1)])::il 
-let forallt = function il -> Ind (T 1,[EXFORALL (T 1);Set (T 1,IN,D 2)])::il 
-let forallp = function il -> Ind (P 1,[EXFORALL (P 1);Set (P 1,IN,D 3)])::il 
-let iplus int = iap (function x -> addint x PLUS int)
-let imoin int = iap (function x -> addint x MINUS int)
-let tplus int = tap (function x -> addint x PLUS int)
-let tmoin int = tap (function x -> addint x MINUS int)
-let tplusci c = function il -> tap (function x -> addcst x PLUS c (iii il)) il
-let tmoinci c = function il -> tap (function x -> addcst x MINUS c (iii il)) il
-let tprimin d = tap (function x -> Ind (prim (ind_name x), [Set (prim (ind_name x),IN,d); Rel (prim (ind_name x), NEQ, ind_name x)]@ind_modifs_list x))
-let rec imap l = match l with []->failwith "empty im list" | f::[] -> (fun il -> f il) | f::tl -> (fun il -> f ((imap tl) il))
+  The closure builders these used to be defined in terms of (iap/tap/pap,
+  i_out/t_out/p_out, iii/ttt/ppp, sum, addint, addcst) moved next to apply_op
+  as fam_map/fam_out/fam_find and the *_node builders, and they build exactly
+  the same index nodes: this is a re-encoding, not a change of meaning, and the
+  golden-file gate is what says so.
+
+  uniqueset, iprim and iprimneqi were dead before this change and are gone. Of
+  the vocabulary below, the decompositions use id, oni, ont, onr, ontin, i_out,
+  t_out, p_out, foralli, forallt, forallp, iplus, imoin, tplusci, tmoinci,
+  tprimin and imap; the rest are kept because they are the format's vocabulary,
+  which W2-T1 has to freeze.*)
+let oni = OpOn (FI,D 1)
+let ont = OpOn (FT,D 2)
+let onp = OpOn (FP,D 3)
+let onr = OpOn (FR,D 4)
+let oniin set = OpOn (FI,set)
+let ontin set = OpOn (FT,set)
+let onpin set = OpOn (FP,set)
+let onrin set = OpOn (FR,set)
+let i_out = OpOut FI
+let t_out = OpOut FT
+let p_out = OpOut FP
+let sumiin set = OpSum (FI,set)
+let sumtin set = OpSum (FT,set)
+let sumpin set = OpSum (FP,set)
+let sumi = OpSum (FI,D 1)
+let sumt = OpSum (FT,D 2)
+let sump = OpSum (FP,D 3)
+let foralliin set = OpForall (FI,set)
+let foralltin set = OpForall (FT,set)
+let forallpin set = OpForall (FP,set)
+let foralli = OpForall (FI,D 1)
+let forallt = OpForall (FT,D 2)
+let forallp = OpForall (FP,D 3)
+let iplus int = OpShift (FI,PLUS,int)
+let imoin int = OpShift (FI,MINUS,int)
+let tplus int = OpShift (FT,PLUS,int)
+let tmoin int = OpShift (FT,MINUS,int)
+let tplusci c = OpShiftC (FT,PLUS,c,FI)
+let tmoinci c = OpShiftC (FT,MINUS,c,FI)
+let tprimin d = OpPrim (FT,d)
+(*imap composed right to left and OpSeq is applied right to left, so this is a
+  change of representation and nothing else. The empty case still fails loudly.*)
+let imap l = match l with []->failwith "empty im list" | _ -> OpSeq l
 
 (*Decompositions*) 
 let alleq  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
