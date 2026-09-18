@@ -220,7 +220,10 @@ derivable from it — closer in character to E4/E6 than to E1/E2.
 **Instantiated by:** `cost_regular`, `cost_mdd`.
 
 Adds `C_{i+1} = C_i + c[q,t]` and a final `C_{n+1} ≤ K` (or a bound on a user variable).
-`CHRISTMAS_LIST.md` §5 prices it E1+E2+E3; this session's reading adds that the accumulator is
+`CHRISTMAS_LIST.md` §5 priced it E1+E2+E3; **per D-0011 the third code is E9** (sums of
+integer-valued variables, gaps G12 + G13) — not E3, which keeps D-0006's multi-family-cardinality
+meaning, and not E8, which is coefficients on a Boolean count. This session's reading adds that
+the accumulator is
 the first thing in either section that needs **arithmetic on variable *values*** rather than on
 *indices*. Every arithmetic construct in the format (`Addint`, `Addcst`, `OpShift`, `OpShiftC`)
 operates on `ind_name`s inside an index list. Fails the sharpened inlining criterion, so the
@@ -279,7 +282,9 @@ decomposition choices:
 
 `CHRISTMAS_LIST.md` §6 prices `cumulative` as E2 + E4. This session's reading is that the
 weighting in (1) is a *third* requirement that neither E2 nor E4 as written in D-0006 covers;
-see `_gaps-ext.md`, including a contradiction in how `E3` is used.
+**D-0011 gives it its own code, E8** (gap G11). The contradiction this file reported in how `E3`
+was used is resolved there, not outstanding — see `_gaps-ext.md`. SCH-2 needs **E8 and not E3**:
+one sum per (machine, time point), so the `failwith "sommes multiples"` site is never reached.
 
 ---
 
@@ -291,7 +296,10 @@ see `_gaps-ext.md`, including a contradiction in how `E3` is used.
 integer-valued (not Boolean) summands. Every part of this is outside the Boolean-sum schemas:
 two families in one reasoning step is the `failwith "sommes multiples pas encore implémentés"`
 site (source l.320/334/348), the weights are SCH-2's (1), and integer summands have no encoding
-at all. `CHRISTMAS_LIST.md` §6 gives E1 + E3.
+at all. `CHRISTMAS_LIST.md` §6 gave E1 + E3; **per D-0011 that is E1 + E3 + E8 + E9** — and
+SCH-3 is the only shape in the corpus that needs all three sum codes at once, because it is the
+only one with *several* sums (E3), *coefficients* (E8) and *integer summands* (E9)
+simultaneously. See `decomps/knapsack.md`.
 
 ---
 

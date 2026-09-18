@@ -61,13 +61,14 @@ cited to `docs/VALIDATOR.md`. This session ran no code and measured nothing itse
 
 ## What the rule schemas cannot compute
 
-- **X5 — weighted Boolean sums.** `cumulative`, `cumulatives`, `bin_packing`-shaped entries.
-  `∑_i r_i · B2_{i,t} ≤ C` — `rule5`/`rule6`/`rule7` sum one Boolean family with unit
-  coefficients. This is *not* the `failwith "sommes multiples"` wall: one family, one sum,
-  coefficients. **Contradiction to report, not to fix:** D-0006's table defines **E3** as
-  "multi-family cardinality (removes `failwith \"sommes multiples\"`)", i.e. several sums, while
-  `CHRISTMAS_LIST.md` §6 assigns `knapsack` "E1 + E3 (**weighted** sums over integer vars)". The
-  two readings of E3 are different extensions and W2-T1 should not assume one covers the other.
+- **X5 (= G11) — weighted Boolean sums. Extension E8.** `cumulative`, `cumulatives`,
+  `bin_packing`-shaped entries. `∑_i r_i · B2_{i,t} ≤ C` — `rule5`/`rule6`/`rule7` sum one
+  Boolean family with unit coefficients. This is *not* the `failwith "sommes multiples"` wall:
+  one family, one sum, coefficients. **The contradiction this bullet reported is resolved, not
+  outstanding.** **D-0011** (2026-09-18) keeps D-0006's **E3** = multi-family cardinality, gives
+  weighted Boolean sums the new code **E8**, and gives sums of integer-valued variables the new
+  code **E9** (X9's accumulator, and `sliding_sum`'s gaps G12 + G13). So X5 is E8; `knapsack`'s
+  old "E1 + E3" becomes E1 + E3 + E8 + E9, because it hits all three independently.
 
 - **X6 — summing over an index set that a decision variable determines.** `cumulatives`. The
   sum at machine `k` runs over `{ i : M_i = k }`. `ind_set` and every `ind_op` are static; there
@@ -94,8 +95,9 @@ cited to `docs/VALIDATOR.md`. This session ran no code and measured nothing itse
   format one, and it belongs in W2-T1's payload because the format's answer to "may I introduce
   an auxiliary?" depends on it.
 
-- **X9 — arithmetic exists on indices, never on variable values.** `cost_regular`, `cost_mdd`,
-  `knapsack`, and `cumulative` with variable durations. `Addint`, `Addcst`, `OpShift`,
+- **X9 (= G15) — arithmetic exists on indices, never on variable values.** `cost_regular`,
+  `cost_mdd`, `knapsack`, and `cumulative` with variable durations. The cost accumulator's own
+  extension code is **E9** per **D-0011**, not E3. `Addint`, `Addcst`, `OpShift`,
   `OpShiftC` all rewrite `ind_name`s inside an index list. `cumulative` already *uses* index
   arithmetic to stand in for value arithmetic — `t' = t − d_i` — and `docs/VALIDATOR.md` l.330
   **measures** the consequence: `UNPARSED: index equation offset: t'=t-d_{i}`, i.e. `d_i` is an

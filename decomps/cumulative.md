@@ -15,13 +15,14 @@ for its measured status (`docs/VALIDATOR.md` l.330: not checkable).
 
 **Three requirements separate SCH-1 from SCH-2, and they are distinct extensions.**
 
-1. **Weights on the summands (gap X5).** `rule5`/`rule6`/`rule7` sum one Boolean family with unit
-   coefficients (source l.308–350). `r_i · B2_{i,t}` has no encoding. This is *not* the
-   `failwith "sommes multiples"` wall — that is several sums; this is one sum with coefficients.
-   **Contradiction to report, not to fix:** D-0006's table defines **E3** as "multi-family
-   cardinality (removes `failwith \"sommes multiples\"`)" while `CHRISTMAS_LIST.md` §6 assigns
-   `knapsack` "E1 + E3 (**weighted** sums over integer vars)". Two different extensions are
-   being called E3.
+1. **Weights on the summands — extension E8, gap G11.** `rule5`/`rule6`/`rule7` sum one Boolean
+   family with unit coefficients (source l.308–350). `r_i · B2_{i,t}` has no encoding. This is
+   *not* the `failwith "sommes multiples"` wall — that is several sums, which is **E3**; this is
+   one sum with coefficients, which **D-0011 names E8**. The contradiction this file reported in
+   wave two (D-0006 calling E3 multi-family cardinality while `CHRISTMAS_LIST.md` §6 called
+   `knapsack`'s weighted sums E3) is **resolved**, not outstanding: E3 keeps D-0006's meaning and
+   the weighted sum becomes E8. `cumulative` needs **E8 and not E3** — there is one sum per time
+   point, so the `failwith` site is never reached.
 2. **The capacity must reach the page (gap X4 = G1).** `docs/VALIDATOR.md` l.330 states it
    mechanically: the capacity "appears in no atom". In the counting family G1 loses a threshold;
    here it loses the distinction between `cumulative` and `disjunctive`, which is why this entry

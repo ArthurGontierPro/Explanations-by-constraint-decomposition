@@ -83,6 +83,7 @@ generator.ml`, with line numbers, or off `docs/VALIDATOR.md`'s measurements.
 | G15 | **no arithmetic relating variable values to indices** — this is the measured `UNPARSED: t'=t-d_i` | `cumulative` (variable durations), `cost_regular` | ext X9 |
 | G16 | **`ind_fam` is a closed 4-element enum** and §5/§6 exhaust it; `EXT-2b` alone needs `i, t, q, q'` | `regular` general form | ext X7 |
 | G17 | **no pivot-elimination pass**, so an auxiliary cannot be removed from a finished rule. This is *why* D-0004 currently costs coverage rather than only rule length | every shape with a genuine auxiliary | ext X8 |
+| G18 | **quantification over an index set with a variable-determined exclusion**, `∀j ≠ I` for `I` a decision variable. G8 covers a *constant* exclusion and G14 a variable-determined *summation* extent; neither covers a universally quantified channel with a variable-determined hole | `write`, `writes`, `writes_seq` | new, §11 (W3-D) |
 
 **G3 (variable-vs-variable comparison) is reinforced, not duplicated.** Two families hit it
 independently of the counting pilot: `maximum`/`minimum`/`arg_max`/`arg_min` (perm) and
@@ -111,3 +112,21 @@ independently of the counting pilot: `maximum`/`minimum`/`arg_max`/`arg_min` (pe
 2. **`B` prints as the literal `"ERROR B "`** (generator l.399, l.428) — a bug, not a format
    gap, so it is roadmap **W1-T10** rather than a `G` number. It is listed here only because any
    shape with an accumulated-state auxiliary (`value_precede`, `lex_less`) meets it immediately.
+
+## Wave three addendum — §11 (W3-D, 2026-09-18)
+
+`CHRISTMAS_LIST.md` §11 ("maths and misc") was the last in-scope family. It added **one** gap,
+**G18** above, from `write`/`writes`/`writes_seq`. Everything else in §11 landed on gaps the
+first ten sections had already produced, which is itself the useful result — the gap list
+converged before the corpus ran out:
+
+- `sum_pred` — G11 (weights), G12 + G13 (integer-valued summands), and G14 under the reading in
+  which a variable selects the summed index set. Nothing new.
+- `edit_distance` — G16 (`ind_fam` exhausted, here by *two position families* rather than by two
+  automaton-state families, which is independent evidence for G16), G12 + G13, G17, and G3
+  *avoided* via the two reification grids. Nothing new.
+- `piecewise_linear*`, `neural_net` — E7, declared out of scope; no gap recorded.
+- the `*_fn` variants — not separate constraints; no gap recorded.
+
+Nothing above was measured by this session; all of it is read off `explenation generator.ml`
+and `CHRISTMAS_LIST.md` §11.
