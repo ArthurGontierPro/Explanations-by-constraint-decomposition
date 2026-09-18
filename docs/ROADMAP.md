@@ -51,6 +51,7 @@ Goal: every existing entry is either validated or reported as failing. No new co
 | W1-T5 | Diagnose `atleastnvalues.tex` ≡ `atmostnvalues.tex` | TODO | Different decompositions (`rule6` vs `rule5`, reified sign flipped) produce byte-identical output. One of them is wrong. **W0-A 2026-09-18 split them: the identical text gets different verdicts (AMBIGUOUS vs VACUOUS on rule 3), and rule 4's only firing reading is unsound in both — but for different reasons.** Against at-least it fails at `n=m=2, p=1` (bounds `N` from the wrong side); against at-most only at `p > m`. Start from that asymmetry |
 | W1-T6 | Delete or regenerate the orphaned `cata/sum.tex` | TODO | Nothing in `main` produces it |
 | W1-T7 | Structural: index modifications as data, not closures | TODO | Prerequisite for printing, comparing and inverting them, and for W0-T1 to validate against anything. **Rule-engine file — does not share a wave with E1/E2**. **Strengthened by W0-A 2026-09-18: it is not only that the closures cannot be compared — the emitted `.tex` is itself lossy.** Repeated index composition prints self-contradictory binder prefixes (`∃i, ∀i, ∀t, ∀i` on one premise), so a shipped rule does not determine what it means; the validator has to check every reading. Until this lands, no validator can cover the catalog rather than three hand-encoded entries |
+| W1-T8 | Extend `validator.ml` from 3 entries to all 16 | TODO | **Added 2026-09-18.** The measurement D-0007 wanted and D-0010 still needs: breadth means *validated* breadth, and 13 entries have never been checked. Separate file from the rule engine, so it runs concurrently with W1-T3/T7. Ground semantics is hand-encoded per entry — gccat's **Purpose** field is a cross-check source (`docs/GCCAT.md`) |
 
 ## W2 — freeze the input format
 
@@ -61,7 +62,8 @@ Goal: the decomposition format stops changing, so content work can fan out.
 | W2-T1 | Write down the decomposition format and freeze it | TODO | **This is the gate that makes family-per-agent honest.** Before it, every content session is blocked on machinery it also wants to change |
 | W2-T2 | E1: open `var_name` for auxiliary integer families | TODO | **D-0006.** Mechanism already exists via `rule1` (`N`, `O`). Rule-engine file |
 | W2-T3 | E2: richer side conditions — inequalities against expressions, 2-D constant tables | TODO | **D-0006.** Biggest single unlock. Finishes `regular` (W1-T2). Rule-engine file — **not** concurrent with W2-T2 |
-| W2-T4 | Close D-0007 (breadth or depth) with validator output in hand | TODO | Evidence to bring: what fraction of W1's entries survive validation, and how far `cumulative`/`alldifferent` sit from their published baselines |
+| W2-T4 | Close D-0007 (breadth or depth) with validator output in hand | DONE | **CLOSED EARLY 2026-09-18 by the author, not by this row: D-0010 decides breadth.** W1-T8's measurement is still worth having, but it is no longer what gates the decision |
+| W2-T5 | Decomposition spec corpus: one format-independent file per MiniZinc global, stating the decomposition as maths, the literals it needs and its E-code | TODO | **Added 2026-09-18, and it is the honest parallel axis before the freeze.** Writing a decomposition as maths touches no engine code, so it does not collide the way D-0006 warns about — and **it is the input to W2-T1**: you cannot freeze a format without knowing what it must express. Order families by E-code, E0 first. Per D-0003 these are authored here, not imported |
 
 ## W3 — fan out by constraint family
 

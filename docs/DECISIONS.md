@@ -190,3 +190,26 @@ exclude vacuous implicates, or "complete" is satisfiable by rules that never fir
 **Bearing on W2-T4 / D-0007** (breadth or depth): the evidence D-0007 was waiting for has
 started to arrive and it is bad — of 13 rules validated in 3 entries, **0 were sound and
 minimal**. One wave of validation on the remaining 13 entries should precede that decision.
+
+## D-0010 — CLOSES D-0007: breadth. All 118 MiniZinc globals is the goal
+
+**DECIDED by the author, 2026-09-18**, in these words: *"we still want all minizinc constraints
+this is our main goal."* D-0007 is closed; it was deferred to the W2 gate, and the author closed
+it earlier and from the top instead.
+
+Consequences, so this is not re-argued:
+
+- **W4 is demoted, not cancelled.** Reaching Downing's Hall-set `alldifferent` or Schutt's
+  `cumulative` explanation (W4-T2, W4-T3) is no longer the measure of success. A sound, weak,
+  *user-vocabulary* rule for 118 constraints beats a publication-grade rule for two. E4 stays on
+  the roadmap as research, off the critical path.
+- **The critical path is E1 → E2 → E3**, in the rule engine, sequentially. That is what stands
+  between the current tool and the automaton, sequence and cardinality families, which are most
+  of the 118. D-0006 already says these do not share a wave.
+- **The Global Constraint Catalog is an example, not a template** (author, same message). M-1
+  read it for inspiration and it earned its keep — argument properties corroborated W1-T5 — but
+  MiniZinc's 118 globals remain the target list, per D-0003. `docs/GCCAT.md` is reference, not a
+  specification to conform to.
+- **Coverage still means validated coverage.** Breadth does not relax W0-T1. An entry that is
+  generated and unvalidated is not coverage; today that is 13 of 16 entries, and of the 3
+  measured, 0 rules are sound and minimal.
