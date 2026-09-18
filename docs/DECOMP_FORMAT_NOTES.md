@@ -57,3 +57,57 @@ repeats.
   `ind_modifs`/the rule schemas. Recorded here so W2-T1 doesn't mistake it for a format
   requirement, and recorded in `decomps/among.md` so whoever revises `among`'s decomposition
   sees it.
+
+---
+
+# Consolidated gap list, wave two (2026-09-18)
+
+G1–G5 above come from the counting-family pilot. Three sessions then specified six more
+families into their own `decomps/_gaps-{seq,perm,ext}.md`, each numbering from G6 in its own
+file. **This section is the reconciled numbering and supersedes those three files' numbers**
+(their prose stays where it is; only the labels move). Every gap names the constraint that hit
+it. Nothing here was measured by running code — all of it is read off `explenation
+generator.ml`, with line numbers, or off `docs/VALIDATOR.md`'s measurements.
+
+| # | gap | hit by | was |
+|---|---|---|---|
+| G6 | **2-D constant table read as a function**, `t = T[r,i]`. `Addcst` is 1-D | `table` | ext X1 |
+| G7 | **value set indexed by another index**, `t' ∈ D(t)`. `ind_set`'s `D2 of ind_name list` is the right hook and no decomposition uses it | `regular`, `mdd` | ext X2 |
+| G8 | **`ind_set` names only whole predefined ranges** — no subrange, no exclusion | `all_different_except*`, `inverse_in_range` | perm G6 |
+| G9 | **no `Global ⇔ Global` channel schema**; `rule1` is fixed to `Global ⇔ Reified`, so every array-to-array channel re-derives `element`'s five-`Decomp` detour | `inverse`, `sort`, `arg_sort` | perm G7 |
+| G10 | **no variable in index position**, `X_{X_i}` | `symmetric_all_different`, `sort` | perm G8 |
+| G11 | **no weighted Boolean sum** — `rule5/6/7` count occurrences, with no coefficients | `cumulative`, `knapsack` | ext X5 |
+| G12 | **no schema sums integer *values*** rather than counting Booleans. This is a fourth kind of schema, not a generalisation of the three | `sliding_sum` | seq G7 |
+| G13 | **`var_name` has no integer-valued auxiliary** — every constructor but `X` is read as Boolean or index-like | `sliding_sum` | seq G8 |
+| G14 | **no summation over a variable-determined index set** | `cumulatives` | ext X6 |
+| G15 | **no arithmetic relating variable values to indices** — this is the measured `UNPARSED: t'=t-d_i` | `cumulative` (variable durations), `cost_regular` | ext X9 |
+| G16 | **`ind_fam` is a closed 4-element enum** and §5/§6 exhaust it; `EXT-2b` alone needs `i, t, q, q'` | `regular` general form | ext X7 |
+| G17 | **no pivot-elimination pass**, so an auxiliary cannot be removed from a finished rule. This is *why* D-0004 currently costs coverage rather than only rule length | every shape with a genuine auxiliary | ext X8 |
+
+**G3 (variable-vs-variable comparison) is reinforced, not duplicated.** Two families hit it
+independently of the counting pilot: `maximum`/`minimum`/`arg_max`/`arg_min` (perm) and
+`lex_less` (seq). Three independent families make it load-bearing.
+
+## Checked negatives — recorded so nobody re-derives them as gaps
+
+- **Row/matrix indexing is NOT a gap.** The `R of int` index family, already used by `table`,
+  covers a second row-like dimension for `lex2`, the orbitopes and `var_sqr_sym`. (W2-A)
+- **Instance-dependent chain length IS a gap after all — this one was reconciled, not accepted.**
+  W2-A recorded `D2 of ind_name list` as a working escape hatch for variable-length chains
+  (`lex_chain_*`, `value_precede_chain`, `seq_precede_chain`) and therefore as a checked
+  negative. W2-C and W2-B, working separately, both found that **`D2`'s printer emits the
+  literal string `"setfils"`** — `printind_set`, generator l.375, confirmed by the orchestrator.
+  So `D2` exists in the type, is used by nothing, and would print garbage into the `.tex` if
+  used. It is the right hook for G7, and it is not usable until it has a printer. **W2-A's
+  checked negative is withdrawn; treat variable-length chains as blocked on the same missing
+  printer as G7.**
+
+## Two things the freeze must settle that are not gaps
+
+1. **The E-code taxonomy collides with itself.** D-0006 defines **E3** as *multi-family
+   cardinality* (the `failwith "sommes multiples"` site); `CHRISTMAS_LIST.md` §6 uses **E3** for
+   *weighted sums* (G11). These are different extensions and the code is load-bearing in both
+   documents. The author should pick one meaning and the other gap should get a new code.
+2. **`B` prints as the literal `"ERROR B "`** (generator l.399, l.428) — a bug, not a format
+   gap, so it is roadmap **W1-T10** rather than a `G` number. It is listed here only because any
+   shape with an accumulated-state auxiliary (`value_precede`, `lex_less`) meets it immediately.
