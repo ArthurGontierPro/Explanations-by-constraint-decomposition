@@ -30,6 +30,8 @@ _Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero 
 
 _M-1-T1 RELEASED 2026-09-18. Nothing is claimed._
 
+_W1-D RELEASED 2026-09-18. W1-S (engine) and W1-V (validator) still running._
+
 ---
 
 ## Cross-session requests
@@ -55,6 +57,7 @@ session picks it up.
 | W0-T4 | W0-B (2026-09-18) | `tools/mzn_coverage.py` + vendored `tools/data/minizinc-2.10.1-globals.txt` + `docs/COVERAGE.md`. Commits `e12ccce`, `80a89a6`. Classifier runs, exits 1 on drift. Coverage and defects verified independently by the orchestrator (see handoff note) |
 | W0-T1 + W0-T2 + W0-T3 | W0-A (2026-09-18) | `Makefile`, `validator.ml`, `docs/VALIDATOR.md`, `.gitignore`. Commits `8a1a05b`, `2f42cde`, `49c826a`. `make check` exit 0, `make validate` runs, both re-run by the orchestrator. **Validator covers 3 of 16 entries; 13/13 rules flagged; 0 sound and minimal** |
 | M-1-T1 | M-1 (2026-09-18) | `docs/GCCAT.md`, 170 lines. Commit `f82ada7`. 22 catalog pages fetched under the cap. Key claims re-verified by the orchestrator |
+| W2-T5 (pilot) | W1-D (2026-09-18) | `decomps/*.md` × 6 + `docs/DECOMP_FORMAT_NOTES.md`, 270 lines. Commit `c6a4247`. Five format gaps pinned to constraints — that list is the W2-T1 payload |
 
 ---
 
@@ -252,3 +255,34 @@ three known gaps now, and nobody owns it.
 
 **Not read, deliberately:** the graph model / arc generators (E6, and it is the bulk of every
 entry), set entries (E5), geometry, soft and cost variants, the Prolog/XML format pages.
+
+### 2026-09-18 — W1-D (W2-T5 pilot, counting family) — CLOSED
+
+`decomps/{count,at_least,at_most,exactly,among,nvalue}.md` + `docs/DECOMP_FORMAT_NOTES.md`.
+All six are **E0** — no engine extension needed — and `among` and `nvalue` already exist in the
+generator. The pilot's value is not the six specs, it is the gap list.
+
+**The five gaps, which are the input to W2-T1.** G1: no way to print a bare integer threshold,
+so `at_least`/`at_most`/`exactly` would generate rules that never mention their own `n` — the
+same silence as `alldifferent.tex`'s implicit "1". G2: `var_name` is a closed enum with no
+letter for a constraint's own parameter, so `count`'s count variable has to borrow `N`/`O`.
+G3: only variable-vs-domain-value comparisons exist, never variable-vs-variable, which blocks
+treating `count`/`among`'s value argument as a decision variable. G4: `rule5/6/7` hard-fail on
+more than one summed Boolean family — the `failwith "sommes multiples"` site, and the wall in
+front of `global_cardinality`. G5 is a bug, not a gap, see below.
+
+**G5, verified by the orchestrator with one correction.** `cata/among.tex` never explains its
+own count variable: every conclusion is `X_i = t` or `X_i ≠ t`, none is about `N`. Confirmed.
+**W1-D reported "all four rules"; there are three** (`grep -o '\frac' | wc -l` → 3). The
+finding stands, the count did not. Note also that `among.tex` quantifies over `D_4`, an index
+set defined nowhere — so it is caught by W1-T2 as well, which W1-D did not mention.
+
+**The honest reading of "all six are buildable today with zero extension":** true of the
+schemas, and misleading as a coverage claim. Three of the six would emit rules missing their
+own threshold (G1) and `among`'s count-variable branch generates nothing at all (G5). E0 means
+the engine will not refuse them; it does not mean the output would be right. Breadth means
+validated breadth (D-0010).
+
+**For whoever takes W2-T1:** the pilot did its job — one family, six constraints, five concrete
+gaps, each pinned to the constraint that hit it. The same shape scales one family per session
+*after* the freeze. Do not fan out families before it.
