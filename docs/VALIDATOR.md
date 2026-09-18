@@ -22,10 +22,15 @@ and says nothing about whether a rule is true.
 | controls | 11, all behaving |
 | runtime | 4.5 s (measured, `time ./_build/validator .`) |
 
-W1-T8 measured the committed `cata/*.tex` **as they stand on commit `8d1ac98`**,
-deliberately without regenerating them: W1-S is changing the generator
+W1-T8 measured the committed `cata/*.tex` **as they stand**, deliberately
+without regenerating them: another session was changing the generator
 concurrently, and the value of these numbers is that they predate the engine
 fixes. Nothing in `cata/` or in the generator was touched.
+
+Precisely: the rule text measured is byte-identical to `8d1ac98` for all 16
+entries (verified per file by stripping `%%` comments and comparing the `\frac`
+text). W1-T3 landed in between and appended `%% generator diagnostics` comment
+lines to `cata/*.tex`; they contain no `\frac` and the parser ignores them.
 
 ---
 
@@ -60,14 +65,22 @@ generator produces it, so its semantics has **no source in this repo** and was
 taken from gccat alone. That is a weaker provenance than the other ten and its
 verdicts should be read accordingly.
 
-**Why it could not be derived.** The decomposition in `explenation generator.ml`
-carries its index modifications as two OCaml closures per `devent`
-(`index_update`, `index_propagate`). A closure cannot be printed, compared or
-inverted, so there is no way to read a decomposition's meaning out of the
+**Why it was not derived — and what changed under this session.** The
+decomposition in `explenation generator.ml` carried its index modifications as
+two OCaml closures per `devent`. A closure cannot be printed, compared or
+inverted, so there was no way to read a decomposition's meaning out of the
 program without executing it against a semantics it does not have. That is
-exactly **W1-T7**, which the roadmap already names as a prerequisite for this
-task. W1-T7 is not done and this session may not restructure the generator, so
-the ground semantics was transcribed by hand instead.
+**W1-T7**, which the roadmap names as a prerequisite for this task, and it was
+not done when W1-T8 began.
+
+**W1-T7 landed while W1-T8 was running** (commit `463534f`, "index modifications
+as data, not closures": the closures are now an `ind_op` datatype with an
+explicit inverter). W1-T8 did not consume it — its brief was to measure the
+committed artifact while the generator was moving, and it may not touch the
+generator. So the hand-encoding stands, and **the follow-up is now unblocked**:
+the ground semantics can be derived from the `ind_op` data instead of typed
+beside it. Whoever picks that up should treat the eleven predicates here as the
+thing to reproduce, not to trust.
 
 ### Two defences on the hand-encoding (W1-T8)
 
@@ -103,8 +116,9 @@ transcription error in one is caught by its neighbours.
 
 **What is still exposed.** Both defences check the encodings against each other
 and against the catalog; neither checks them against the generator's
-decomposition, which remains unreadable until W1-T7. **Nobody should treat a
-`SOUND and MINIMAL` verdict from this tool as final until W1-T7 lands.**
+decomposition. **Nobody should treat a `SOUND and MINIMAL` verdict from this
+tool as final until the ground semantics is derived from the generator's now-
+inspectable `ind_op` data rather than transcribed beside it.**
 
 There is a second, smaller cost: `cata/table.tex` refers to an index set `D_4`
 that the printer never defines. The validator reads `D_4` as the table's row set,

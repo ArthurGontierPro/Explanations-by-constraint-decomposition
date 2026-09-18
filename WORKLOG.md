@@ -30,7 +30,7 @@ _Both rows RELEASED 2026-09-18: W0-B at `ceb8627`, W0-A at `6f6204e`. Wave zero 
 
 _M-1-T1 RELEASED 2026-09-18. Nothing is claimed._
 
-_W1-D RELEASED 2026-09-18. W1-S (engine) and W1-V (validator) still running._
+_W1-D RELEASED 2026-09-18. W1-S RELEASED 2026-09-18 at `b93644a`. W1-V (validator) still running — it owns `validator.ml` and `docs/VALIDATOR.md` until it reports._
 
 ---
 
@@ -58,6 +58,7 @@ session picks it up.
 | W0-T1 + W0-T2 + W0-T3 | W0-A (2026-09-18) | `Makefile`, `validator.ml`, `docs/VALIDATOR.md`, `.gitignore`. Commits `8a1a05b`, `2f42cde`, `49c826a`. `make check` exit 0, `make validate` runs, both re-run by the orchestrator. **Validator covers 3 of 16 entries; 13/13 rules flagged; 0 sound and minimal** |
 | M-1-T1 | M-1 (2026-09-18) | `docs/GCCAT.md`, 170 lines. Commit `f82ada7`. 22 catalog pages fetched under the cap. Key claims re-verified by the orchestrator |
 | W2-T5 (pilot) | W1-D (2026-09-18) | `decomps/*.md` × 6 + `docs/DECOMP_FORMAT_NOTES.md`, 270 lines. Commit `c6a4247`. Five format gaps pinned to constraints — that list is the W2-T1 payload |
+| W1-T3 + W1-T7 | W1-S (2026-09-18) | `1304386`, `463534f`. `make check` passes (orchestrator re-ran: exit 0). Goldens gained a diagnostics block and nothing else; W1-T7 changed zero goldens |
 
 ---
 
@@ -286,3 +287,53 @@ validated breadth (D-0010).
 **For whoever takes W2-T1:** the pilot did its job — one family, six constraints, five concrete
 gaps, each pinned to the constraint that hit it. The same shape scales one family per session
 *after* the freeze. Do not fan out families before it.
+
+### 2026-09-18 — W1-S (W1-T3 + W1-T7, the engine spine) — CLOSED
+
+Both landed. `make check` passes; the orchestrator re-ran it (exit 0) and inspected the diffs.
+
+**W1-T3.** `removeimp`/`imp` → `filter_branches`: raises `Generator_failure` on `FE`/`IM`, warns
+on `R` (cutting a cycle is a design choice, not a failure), counts legitimate `F` discards. Every
+`cata/*.tex` now carries an appended diagnostics block — **the goldens' rule text is byte-identical
+to before**, verified: the only diff is the appended `%%` comments. The footer deliberately omits
+its own filename so `atleastnvalues.tex` and `atmostnvalues.tex` stay byte-identical, preserving
+W1-T5's evidence. Census: 16 files, 43 events, 53 rules, 2 events with no rule, 1 empty premise,
+13 ambiguous rules.
+
+**W1-T7.** First-order `ind_op`, 9 constructors, replacing the two closures per `decomp_event`;
+`apply_op` interprets, `print_op` prints, `(=)` compares, `invert_op` inverts what is invertible.
+Modifications name an index *family* (`FI|FT|FP|FR`) because the numeral never mattered. Every
+combinator kept its name, so the decomposition table itself is untouched. **Zero goldens changed** —
+byte-for-byte reproduction across a re-encoding of the whole index machinery is the strongest
+evidence available that the re-encoding is faithful, and it is worth more than any test this repo
+has.
+
+**The finding that corrects this project's own documentation, and it is the important one.**
+`alldifferent.tex` has one rule **and should**. CLAUDE.md and the W1-T3 row both said it had one
+where it should have two, and that was wrong. Two independent measurements: instrumenting the old
+filter across all 16 entries found **22 dropped branches, all 22 of them `F`** — `IM`/`FE`/`R`
+never occurred, so the silence never hid anything; and the decomposition is `rule1` + `rule5`
+*alone*, a Boolean sum ≤, from which `X_i = t` is not derivable at all. The orchestrator confirmed
+the decomposition by reading the table (generator l.678–679). `element.tex`'s `I=i` is the same
+case. **The missing direction is E4 — counting across sums — so this belongs to W4-T2, not to W1.**
+Corrected in `CLAUDE.md`, the W1-T3 row and the W4-T2 row at `b93644a`.
+
+**Second finding: W1-T7 does not close D-0009.** Applying a modification *appends* to the index's
+modifier list instead of rewriting it, so `OpShift`/`OpShiftC` fail to round-trip under
+`invert_op` (`i'=i+1` then `i'=i-1` yields an `i''` carrying both `Addint` modifiers). That
+accumulation is the mechanism behind the self-contradictory binder prefixes, and **13 of 53 rules
+still bind an index name twice.** Recorded as a dated amendment to D-0009. The normalisation step
+is separate work and nobody has claimed it.
+
+**Warning census moved because the code moved:** default 0, `-w +27+39` **8** (was 16),
+`+40+41+42` **31** (was 42), `+a` **57** (was 91). Both `CLAUDE.md` and the Makefile now say
+re-measure rather than quote. `uniqueset`, the worst `!=`-for-structural-inequality site, is gone —
+it was dead code, deleted rather than fixed. `printind_name_list`/`printiopl_list` still ignore
+their tail.
+
+**Left deliberately:** W1-T1, W1-T2, W1-T4, W1-T5, W1-T6, E1, E2.
+
+**Outstanding, for the next session that owns `docs/VALIDATOR.md`:** it states that ground
+semantics could not be derived because the index modifications are closures. **That blocker is
+now removed** — they are data. The *rule schemas* are still closures, which is a different and
+still-open item. W1-V owns that file right now, so this is recorded rather than applied.

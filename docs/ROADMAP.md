@@ -82,7 +82,7 @@ format and a working validator; each decomposition is its own file, so sessions 
 | ID | Task | Status | Notes |
 |---|---|---|---|
 | W4-T1 | **E4: counting / pigeonhole reasoning across cardinality constraints** | TODO | **D-0006.** The research, not the engineering. Strengthen `rule5/6/7` to reason *across* sums rather than within one |
-| W4-T2 | Target `alldifferent`: can the method reach the Hall-set explanation? | TODO | Published baseline: Downing, Feydy, Stuckey 2012. **Budget this as an experiment, not as a constraint.** A clean negative is a result |
+| W4-T2 | Target `alldifferent`: can the method reach the Hall-set explanation? | TODO | Published baseline: Downing, Feydy, Stuckey 2012. **Budget this as an experiment, not as a constraint.** A clean negative is a result. **Sharpened 2026-09-18 (W1-S, verified): `alldifferent.tex`'s single rule is correct, not a dropped one.** `alldiff` is `rule1` + `rule5` alone, and `X_i = t` is not derivable from a Boolean sum's ≤ direction — so the missing rule *is* E4, counting across sums. W4-T2 is therefore "add pigeonhole reasoning", not "fix a silent discard" |
 | W4-T3 | Target `cumulative`: can the method reach the window/capacity explanation? | TODO | Published baseline: Schutt et al. 2011. Current entry is the unary-resource special case and names all *n* tasks |
 | W4-T4 | Close D-0008 (what "complete" means per entry) | TODO | Needs W4-T2's outcome |
 
