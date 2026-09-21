@@ -100,17 +100,16 @@ readable; none of them stops it.
 
 **`encodable today, not encoded`**
 
-**A caveat on the value itself, measured rather than assumed.** The orchestrator records
-this as a new status defined in `catalog/README.md` and `catalog/TEMPLATE.md`. As of this
-commit it is **not in either file**: `catalog/README.md`'s status legend still lists six
-values, the last being `nothing generated — blocked on G<n>` with "the gap number is
-required, not optional", and `grep -rn 'encodable today' catalog/` finds the phrase only in
-prose — `catalog/strictly_increasing.md:184` and `catalog/strictly_decreasing.md:186` ("a
-state the legend has no word for"), `catalog/value_precede.md:26`, and this slice's
-[`member.md`](member.md). R5's own shipped Status row for `strictly_increasing` reads
-`**nothing generated** — and **no status-legend value fits**`. So this entry uses the value
-the orchestrator directs and records that **the legend entry defining it has not landed**.
-Reported, not fixed: `catalog/README.md` is not this session's.
+**A note on the value, re-measured after it landed.** `catalog/README.md`'s status legend
+now defines `encodable today, not encoded` — a seventh row, added 2026-09-21 at
+`catalog/README.md:66`: "The current format can already express the decomposition, but
+nothing in the generator does it, so **there is no gap to name**. Use this rather than
+inventing a G-number to satisfy the row above." That is exactly this entry's position.
+**`catalog/TEMPLATE.md` does not yet carry it** (measured: `grep -c 'encodable today'
+catalog/TEMPLATE.md` → 0), and R5's own `catalog/strictly_increasing.md` and
+`catalog/strictly_decreasing.md` Status rows still read `**nothing generated** — and **no
+status-legend value fits**`, which the legend has now overtaken. Both are routed under
+`## Cross-session requests` in `WORKLOG.md`; neither file is this session's.
 
 **Why this entry qualifies, and it turns on a letter.** Earlier drafting of this slice
 treated `inverse` as blocked-with-a-cost, on the reading that `var_name` has no letter for a
@@ -206,9 +205,11 @@ would land on the value-set gap and the subrange gap instead.
   `Global_devent (true, O, …)` at **829** — together the evidence that a second user array
   is encodable today under a borrowed letter; `:834-838` → `elem`, the existence proof that
   S6 is writable.
-- `grep -rn 'encodable today' catalog/` and `sed -n '/^## Status legend/,/^## /p'
-  catalog/README.md` → the new status value is used in prose in four entries and is **not**
-  in the legend. That is a run, not a reading.
+- `grep -n 'encodable today, not encoded' catalog/README.md catalog/TEMPLATE.md` and
+  `grep -m1 '^| \*\*Status\*\*' catalog/strictly_increasing.md` → the legend carries the
+  value at `README.md:66` (7 rows now), `TEMPLATE.md` does not, and R5's rows predate it.
+  **Re-measured after `19e0af1` landed the legend mid-session**; an earlier draft of this
+  entry said the value was defined nowhere, which was true when written and is not now.
 - `docs/DECOMP_FORMAT_NOTES.md:76-77` read → G8, G9 and the "was" column that translates
   `decomps/inverse.md`'s local numbers.
 - **The G2 observation is reasoning over the source, labelled as such in place.** Nothing
@@ -226,9 +227,9 @@ would land on the value-set gap and the subrange gap instead.
 3. **`catalog/inverse_fn.md` resolves to this file and quotes its Status row as
    `not reviewed`.** That quotation is stale as of this commit. Recorded under
    `## Cross-session requests` in `WORKLOG.md`; `inverse_fn.md` is not this session's.
-4. **`encodable today, not encoded` is used by this entry and is not defined in
-   `catalog/README.md`'s legend or in `catalog/TEMPLATE.md`.** Measured 2026-09-21; see
-   Status.
+4. **`encodable today, not encoded` is defined in `catalog/README.md:66` and not in
+   `catalog/TEMPLATE.md`** (measured 2026-09-21, after the legend landed mid-session), and
+   R5's two `strictly_*` Status rows still say no value fits. See Status.
 5. **`decomps/write.md`'s G2 paragraph says a second user array "would print as a Boolean
    auxiliary".** With `B of int` it does not print at all — `printvartex` raises (l.517) —
    and `O` is an available alternative the paragraph does not mention. Both halves matter

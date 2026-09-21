@@ -110,16 +110,16 @@ read off the gap statement and the type definitions (`Global_event` at l.50 carr
 **`nothing generated — blocked on G3`** for the var-target signature. D-0012 requires the
 fragment to be named, and here it changes the status, not just the prose.
 
-**A caveat on the first value, measured rather than assumed.** The orchestrator records
-`encodable today, not encoded` as newly defined in `catalog/README.md` and
-`catalog/TEMPLATE.md`. As of this commit it is **in neither**: the legend still lists six
-values, ending at `nothing generated — blocked on G<n>` with "the gap number is required,
-not optional", and `grep -rn 'encodable today' catalog/` finds the phrase only in prose —
-`catalog/strictly_increasing.md:184`, `catalog/strictly_decreasing.md:186`,
-`catalog/value_precede.md:26`, and this slice. R5's own shipped Status row for
-`strictly_increasing` still reads `**nothing generated** — and **no status-legend value
-fits**`. This entry uses the value the orchestrator directs and records that the definition
-has not landed. Reported, not fixed: `catalog/README.md` is not this session's.
+**A note on the value, re-measured after it landed.** `catalog/README.md`'s status legend
+now defines `encodable today, not encoded` — a seventh row, added 2026-09-21 at
+`catalog/README.md:66`: "The current format can already express the decomposition, but
+nothing in the generator does it, so **there is no gap to name**. Use this rather than
+inventing a G-number to satisfy the row above." That is exactly this entry's position for the parameter-target fragment.
+**`catalog/TEMPLATE.md` does not yet carry it** (measured: `grep -c 'encodable today'
+catalog/TEMPLATE.md` → 0), and R5's own `catalog/strictly_increasing.md` and
+`catalog/strictly_decreasing.md` Status rows still read `**nothing generated** — and **no
+status-legend value fits**`, which the legend has now overtaken. Both are routed under
+`## Cross-session requests` in `WORKLOG.md`; neither file is this session's.
 
 **An earlier draft of this entry filed the whole constraint under
 `nothing generated — blocked on G3` and argued the legend had a hole.** The hole was real;
@@ -187,17 +187,17 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
   `decomps/_shapes-perm.md:104-112` (P4) and `decomps/_shapes.md` (S4) read → the shape.
 - `docs/DECOMP_FORMAT_NOTES.md:34` read → G3 and its explicit anticipation of
   variable-valued targets.
-- `catalog/README.md` status legend read, and `grep -rn 'encodable today' catalog/` run →
-  six legend values, the new one absent from the legend and present in four entries' prose.
-  That is the evidence for the Status caveat, and the grep is a run.
+- `grep -n 'encodable today, not encoded' catalog/README.md catalog/TEMPLATE.md` →
+  **seven** legend values now, the new one at `README.md:66`; `TEMPLATE.md` has none.
+  Re-measured after the legend landed mid-session; an earlier draft said it was defined
+  nowhere, which was true when written.
 - **The sketched `let member = …` in Status is a sketch and was not compiled**, and the
   fragment argument is reasoning over the source, labelled as such in place.
 
 **Discrepancies noted, not fixed (this session does not own those files).**
 
-1. **`encodable today, not encoded` is used by this entry and is defined in neither
-   `catalog/README.md`'s legend nor `catalog/TEMPLATE.md`.** Measured 2026-09-21. The value
-   is the right one — it is exactly this entry's position, and `catalog/strictly_increasing.md`
-   and `catalog/strictly_decreasing.md` reached it independently — but until the legend
-   carries it, four entries use a status the format does not define, which is the same kind
-   of defect as an artifact quantifying over an undefined `D_k`.
+1. **`encodable today, not encoded` is now defined at `catalog/README.md:66` and still not
+   in `catalog/TEMPLATE.md`.** Measured 2026-09-21, after `19e0af1` landed the legend row
+   mid-session. `catalog/strictly_increasing.md` and `catalog/strictly_decreasing.md`, which
+   reached this state independently and named it, still carry `**nothing generated** — and
+   **no status-legend value fits**` and are now overtaken by the legend.
