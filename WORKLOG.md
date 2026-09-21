@@ -846,3 +846,54 @@ at `eef1d74`, two recorded as rows.**
    `SOUND and MINIMAL` verdict. Both are reported in the entry, which is the honest treatment:
    the rule is sound under every reading the validator enumerated, and the LaTeX still does not
    determine which reading is meant.
+
+### 2026-09-21 — C2 (source the published explanation rules) — CLOSED
+
+`catalog/_literature/{README,alldifferent,cumulative,gcc}.md` (`3ba4139`). Nothing outside
+`catalog/_literature/` was touched. **C1's `catalog/` entries can now replace their
+`pending C2` fields**; each file is laid out to answer the template's *Published explanation*
+and *Calibration* sections directly.
+
+**Access note for whoever sources the next paper.** All three papers are on
+`people.eng.unimelb.edu.au/pstuckey/papers/`, and `curl` to that host is blocked by a WAF
+(Incapsula returns an HTML challenge with a `.pdf` name — check `file`, not the exit code).
+`WebFetch` gets through; its summariser cannot read a PDF and says so, but it **saves the
+binary** to the session's tool-results directory, and `pdftotext` in raw mode on that file
+gives clean text. Six fetches sourced all three papers. `cumulative.pdf` was a URL guess from
+the group's naming pattern and hit the Constraints accepted manuscript.
+
+**Three results.**
+
+1. **Citation correction.** The Hall-set `alldifferent` explanation is in Downing, Feydy,
+   Stuckey, *Explaining alldifferent*, ACSC 2012 (CRPIT 122) — **not** the CPAIOR 2012
+   *Explaining flow-based propagation*, which the brief named. `CHRISTMAS_LIST.md:116` had it
+   right; the CPAIOR paper touches `alldifferent` only as a `gcc` flow network (its Example 4).
+2. **Two of the three published explanations are structurally out of reach for this method,
+   and that is a result, not a gap.** `alldifferent`'s bounds- and domain-consistent rules and
+   the whole of the `gcc` flow rule are quantified over objects that exist only during a
+   propagation — a union-find Hall interval, an SCC of the residual graph of a matching. There
+   is no index-set expression for "the arcs crossing an SCC". **E4 is necessary but not
+   sufficient** for the flow explanation: counting across sums buys the cardinality literals
+   `[c_j <= 1]`, not the cut. `cumulative` is the *opposite* case and the better target — the
+   paper's own TimeD decomposition (§5.1) is a `rule1` reified equivalence feeding a Boolean
+   sum ≤, which is exactly this generator's shape, and the paper states that TimeD and the
+   global propagator have **the same propagation strength**.
+3. **None of the three papers proves any explanation minimal, and one says outright it does
+   not.** Measured: the `alldifferent` paper contains the word "minimal" exactly once, about an
+   algorithm. Schutt et al. leave two minimality questions explicitly open (which time point,
+   which subset `Ω′`). Downing et al. 2012 call the flow rule "the base explanation" and point
+   at lifting methods for a stronger one. So the catalog's *Calibration* verdicts should not
+   expect the published rules to be minimal in the validator's sense — the comparison axis is
+   the papers' own implication-strength order, which `cumulative.md` quotes.
+
+**One thing a calibration entry can use immediately.** `cata/alldifferent.tex`'s single rule
+has premise `X_{i'}=t` universally quantified over all `i' ≠ i`; Downing §4's is the single
+literal `[x_h = v]`. Sound, strictly weaker for every `n > 2`, coincident at `n = 2`. That is
+D-0013's "weaker than published", with a citable counterpart.
+
+**Not sourced, deliberately:** the typeset Springer/CRPIT versions (all three read as author
+preprints — noted in each file, with the pagination caveat); the upper-bound/symmetric forms
+of the `alldifferent` bounds rule and the `cumulative` filtering rules, which the papers
+themselves omit as "analogous"; Katsirelos 2008 and Rochart 2005, the `gcc`-specific
+ancestors. Nothing was blocked — these were budget choices, and each file says so in its own
+"What was not sourced".
