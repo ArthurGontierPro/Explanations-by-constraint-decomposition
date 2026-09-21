@@ -15,7 +15,7 @@ counting across sums (E4), not a ≤-direction sum. Nothing to add.
 Shape P1, guarded: the sum in step 2 must range over `t ∈ [1,m] \ {v_0}` instead of the full
 value domain, where `v_0` is the excepted value (fixed at `0` for the `_0` variant, a parameter
 for the general one). **E0** in spirit — same two rule schemas, no new schema — but **blocked
-by gap G6**: `ind_set` (generator line 6: `type ind_set = D of int | D2 of ind_name list`) has
+by gap **G8** (this said G6 until 2026-09-21; G6 is the 2-D constant table, G8 is this)**: `ind_set` (generator line 6: `type ind_set = D of int | D2 of ind_name list`) has
 no constructor for "a named range minus one point". `D2` looks promising (a list of index
 names) but is unused by any shipped decomposition and the printer (`printind_set`, line 375)
 doesn't handle it beyond `"setfils"` — a placeholder string, not real output. So this
