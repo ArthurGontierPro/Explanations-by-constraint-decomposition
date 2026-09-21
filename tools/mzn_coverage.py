@@ -45,7 +45,10 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 FAMILY_HEADING = re.compile(r"^##\s+(\d+)\.\s+(.*)$")
 OTHER_HEADING = re.compile(r"^##\s+(?!\d+\.)")
 BACKTICKED = re.compile(r"`([^`]+)`")
-ECODE = re.compile(r"\bE([0-7])\b")
+ECODE = re.compile(r"\bE([0-9])\b")   # E8/E9 added by D-0011, 2026-09-18
+# D-0011 relabelled rows keep a "(was E3; ...)" note for traceability.  That is
+# prose about the OLD code and must not be parsed as a route.
+WAS_NOTE = re.compile(r"\(was\s+E[0-9][^)]*\)", re.I)
 
 
 # --------------------------------------------------------------------------
@@ -212,7 +215,7 @@ def parse_list(path):
             r.raw_names = cols[0]
             r.names, r.patterns = expand_names(BACKTICKED.findall(cols[0]))
             r.lit, r.solver, r.route = cols[1], cols[2], cols[3]
-            r.ecodes = set("E" + d for d in ECODE.findall(cols[3]))
+            r.ecodes = set("E" + d for d in ECODE.findall(WAS_NOTE.sub("", cols[3])))
             r.flags = []
             if "(alias)" in cols[0]:
                 r.flags.append("alias")
@@ -302,7 +305,11 @@ def classify(release_globals, rows):
         codes = ecode_rows_by_global.get(n)
         g_ecodes["+".join(codes) if codes else "(none given)"] += 1
 
+    ranking = rank_globals(covered, rows, ecode_rows_by_global)
+
     return {
+        "ranking": ranking,
+        "ranking_counts": OrderedDict((k, len(v)) for k, v in ranking.items()),
         "release_count": len(release),
         "row_count": len(rows),
         "listed_name_count": len(listed_names),
@@ -322,11 +329,66 @@ def classify(release_globals, rows):
     }
 
 
+OUT_OF_SCOPE_CODES = ("E5", "E6", "E7")   # sets, graph, floats -- docs/ROADMAP.md
+# ROADMAP.md puts three FAMILIES out of scope as well, and those rows do not all
+# carry an out-of-scope E-code: geometry and packing are coded E2/E8 but are out
+# all the same.  Section match, so the two agree.
+OUT_OF_SCOPE_SECTIONS = re.compile(
+    r"Packing and geometry|Graph and reachability|Set constraints", re.I)
+
+# Tiers, best case first.  The ordering is an argument, not a preference:
+# a constraint with no published explanation whose solvers only decompose it is
+# where a derived schema is the ONLY schema; one with both a paper and a native
+# explaining propagator is a calibration target, not a contribution.
+TIERS = OrderedDict((
+    ("A no-literature + solver-decomposes", "nothing published, no native explaining propagator"),
+    ("B no-literature + solver-native",     "nothing published, but a solver already explains it"),
+    ("C literature + solver-decomposes",    "published, and solvers would decompose it anyway"),
+    ("D literature + solver-native",        "published AND native: calibration only"),
+    ("- unclassified",                      "the list leaves literature or solver blank"),
+    ("- out of scope",                      "sets, graph, geometry, floats -- see docs/ROADMAP.md"),
+))
+
+
+def rank_globals(covered, rows, ecode_rows_by_global):
+    """Rank each covered release global by how much a derived schema would add.
+
+    Mechanical, from two columns the list already carries.  It ranks the SIZE OF
+    THE GAP, not the difficulty and not the scientific interest: a tier-A entry
+    is one where nobody has published an explanation and no solver implements
+    one, so a generated schema is the only schema there is.
+    """
+    out = OrderedDict((k, []) for k in TIERS)
+    for name in sorted(covered):
+        idxs = covered[name]
+        r = rows[idxs[0]]
+        codes = ecode_rows_by_global.get(name) or []
+        entry = {"global": name, "ecodes": codes, "section": r.section,
+                 "line": r.line, "literature": has_literature(r.lit),
+                 "solver": classify_solver(r.solver)}
+        if (any(c in OUT_OF_SCOPE_CODES for c in codes)
+                or OUT_OF_SCOPE_SECTIONS.search(r.section or "")):
+            out["- out of scope"].append(entry)
+            continue
+        lit, solv = entry["literature"], entry["solver"]
+        if lit == "none" and solv == "decomp":
+            out["A no-literature + solver-decomposes"].append(entry)
+        elif lit == "none" and solv == "native":
+            out["B no-literature + solver-native"].append(entry)
+        elif lit == "cited" and solv == "decomp":
+            out["C literature + solver-decomposes"].append(entry)
+        elif lit == "cited" and solv == "native":
+            out["D literature + solver-native"].append(entry)
+        else:
+            out["- unclassified"].append(entry)
+    return out
+
+
 # --------------------------------------------------------------------------
 # reporting
 # --------------------------------------------------------------------------
 
-def render(result, provenance):
+def render(result, provenance, full_rank=False):
     L = []
     w = L.append
     w("MiniZinc coverage of CHRISTMAS_LIST.md")
@@ -391,6 +453,26 @@ def render(result, provenance):
     w("not and cannot check what is cited)")
     for k, v in result["literature_rows"].items():
         w("  %-12s %3d" % (k, v))
+    w("")
+    w("Priority ranking -- where a DERIVED schema adds the most")
+    w("It ranks the size of the gap, not difficulty and not interest.  Tier A is")
+    w("where a generated schema would be the only schema in existence.")
+    for k in result["ranking"]:
+        w("  %-38s %3d   (%s)" % (k, len(result["ranking"][k]), TIERS[k]))
+    w("")
+    show = list(result["ranking"].items()) if full_rank else \
+        [(k, v) for k, v in result["ranking"].items() if k.startswith("A ")]
+    for k, entries in show:
+        w("  %s" % k)
+        if not entries:
+            w("    (none)")
+        for e in entries:
+            w("    %-34s %-10s §%s:%d" % (e["global"],
+                                          "+".join(e["ecodes"]) or "(no code)",
+                                          e["section"], e["line"]))
+        w("")
+    if not full_rank:
+        w("  (--rank prints every tier)")
     return "\n".join(L)
 
 
@@ -415,6 +497,8 @@ def main(argv=None):
     ap.add_argument("--json", metavar="FILE", help="also write the result as JSON")
     ap.add_argument("--emit-snapshot", action="store_true",
                     help="print the parsed global names, one per line, and exit")
+    ap.add_argument("--rank", action="store_true",
+                    help="print every priority tier in full, not just tier A")
     ap.add_argument("--check", action="store_true",
                     help="exit 1 if there is drift or a structural defect")
     args = ap.parse_args(argv)
@@ -448,7 +532,7 @@ def main(argv=None):
     result = classify(names, rows)
     provenance = {"source": source, "version": version, "version_how": how,
                   "list": args.list, "live": live}
-    print(render(result, provenance))
+    print(render(result, provenance, full_rank=args.rank))
 
     if args.json:
         with open(args.json, "w", encoding="utf-8") as fh:

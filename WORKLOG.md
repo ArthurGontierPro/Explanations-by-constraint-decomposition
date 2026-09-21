@@ -704,3 +704,31 @@ entries (W1-T11 (a)); deriving ground semantics from `ind_op` instead of hand-ty
 unblocked (W1-T11 (b)); `-w +27+39` went 8 → 6 and the Makefile's expectation is updated.
 `ind_set`'s `D2` now raises rather than printing `"setfils"`, so **G7 is untouched** — refusing
 is not implementing.
+
+### 2026-09-21 — orchestrator: priority ranking in the coverage tool — CLOSED
+
+`tools/mzn_coverage.py` + `docs/COVERAGE.md`. Claimed and released by the orchestrator; nothing
+else was running.
+
+Prompted by a question from the author: `table` has published explanations (Gange/Stuckey/
+Szymanek 2011, McIlree/McCreesh 2023) **and** a native propagator, so why derive one? The right
+answer is that `table` is a calibration target, not a contribution — and that the list already
+holds the two columns needed to say that mechanically, for all 118.
+
+**Measured, 2026-09-21:** tier A (no literature **and** solver only decomposes) = **36**;
+B (no literature, native) = 8; C (literature, decomp) = 9; D (literature **and** native) = 19;
+unclassified 11; out of scope 35.
+
+**Tier A is this project's argument as a number:** for 36 constraints a generated schema would
+be the only schema in existence. Tier D — `table`, `regular`, `alldifferent`, `cumulative` —
+is where the interesting constraints are and where the method proves itself rather than pays
+off. **This cuts against the current queue:** D-0012 puts `regular` first, and `regular` is
+tier D.
+
+Scope rules were wrong on the first run and are now aligned with `docs/ROADMAP.md`: geometry and
+packing rows carry E2/E8, not E5/E6/E7, so a code-only filter ranked `diffn*`, `bin_packing*` and
+`geost` as tier A. Section match added; tier A went 44 → 36.
+
+Fixed in passing (W1-T11(a), the `tools/` half): the E-code regex stopped at `E7` and could not
+see **E8**/**E9** from D-0011, and it read the `(was E3; …)` traceability notes as live routes.
+**The validator's stale out-of-scope reason strings are a different file and still open.**

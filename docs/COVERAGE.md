@@ -201,3 +201,40 @@ only**, see "What it deliberately does not automate" above.
    `python3 tools/mzn_coverage.py --share <dir> --emit-snapshot > tools/data/minizinc-<ver>-globals.txt`
    and **write the provenance header by hand** (source path, sha256, date, and the words
    "NOT a live parse"). The tool picks the lexicographically newest snapshot by default.
+
+---
+
+## Priority ranking (added 2026-09-21)
+
+`python3 tools/mzn_coverage.py` now ends with a ranking, and `--rank` prints every tier
+instead of tier A alone. It is also in `--json`, under `result.ranking` and
+`result.ranking_counts`.
+
+**What it ranks, and what it does not.** It crosses two columns the list already carries —
+literature present/absent, and solver native/decomposes — to estimate **the size of the gap a
+derived schema would fill**. It says nothing about difficulty, elegance or scientific interest,
+and it cannot: those are not in the list.
+
+| tier | meaning | count, 2026-09-21 |
+|---|---|---|
+| **A** | no literature **and** solvers only decompose it | **36** |
+| B | no literature, but a solver explains it natively | 8 |
+| C | literature exists, and solvers decompose it anyway | 9 |
+| D | literature **and** a native explaining propagator | 19 |
+| – | unclassified: the list leaves a column blank | 11 |
+| – | out of scope: sets, graph, geometry, floats | 35 |
+
+**Tier A is the argument for this project in one number.** For those 36 constraints there is no
+published explanation *and* no solver that explains them natively — so a generated schema would
+be the only schema in existence. Tier D is the opposite: `table`, `regular`, `alldifferent`,
+`cumulative` sit there, and for them the method is a **calibration target**, not a contribution.
+That is worth keeping in view, because D is where the interesting constraints live and A is
+where the value is.
+
+Two scope rules, so the tiers agree with `docs/ROADMAP.md`: a row is out of scope if its route
+carries E5/E6/E7, **or** if it is in the Packing-and-geometry, Graph-and-reachability or
+Set-constraints section — geometry rows are coded E2/E8 and would otherwise rank as tier A.
+
+Also fixed here: the E-code regex stopped at `E7` and so could not see **E8**/**E9** (D-0011),
+and it parsed the `(was E3; …)` traceability notes as live routes. Both corrected; the notes are
+stripped before the route is read.
