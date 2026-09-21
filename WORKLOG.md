@@ -74,6 +74,8 @@ session picks it up.
 | Catalog: the five silent entries | `catalog/{among,range,regular,roots,sum}.md` | E1 (2026-09-21) | 2026-09-21 |
 | Catalog: the seven rule-bearing entries | `catalog/{allequal,atleastnvalues,atmostnvalues,nvalues,increasing,decreasing,element}.md` | E2 (2026-09-21) | 2026-09-21 |
 | Catalog: the 118-row index + its generator | `catalog/INDEX.md`, `tools/catalog_index.py` | E3 (2026-09-21) | 2026-09-21 |
+| Catalog: stub every global that has no entry | `tools/catalog_stub.py`, the generated `catalog/<name>.md` stubs, `tools/catalog_index.py` | S-A (2026-09-21) | 2026-09-21 |
+| Catalog: the problematic-constraints register | `catalog/PROBLEMATIC.md` | S-C (2026-09-21) | 2026-09-21 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
