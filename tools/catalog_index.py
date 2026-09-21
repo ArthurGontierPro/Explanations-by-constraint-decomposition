@@ -532,6 +532,9 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
     w("  \"blocking gap\" column is only populated by grepping an *existing*")
     w("  entry for the phrase \"blocked on G<n>\"; a missing entry always shows")
     w("  — in that column even if a gap is already known informally.")
+    w("  **And a stub never states one**, by design -- attributing a gap is a")
+    w("  judgement -- so the column is empty for every one of them, whatever")
+    w("  may already be known informally.")
     w("")
     return "\n".join(L)
 

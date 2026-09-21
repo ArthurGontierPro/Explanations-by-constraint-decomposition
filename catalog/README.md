@@ -19,6 +19,13 @@ an honest status — including `nothing generated, blocked on G6`, which is a co
 not a hole. 118 of 118 entries with a known status is a checkable target and
 `tools/mzn_coverage.py` measures the denominator.
 
+**Today 118 files exist and 12 of them are that.** The other 106 are *stubs* (below): a file
+per global, machine-filled, with `not reviewed` where the status would be. `not reviewed` is
+not one of the six statuses and is not meant to look like one — it is the absence of a
+status. So the coverage claim above is a **target**, and the number that measures progress
+towards it is the *reviewed* count, never the file count. `catalog/INDEX.md` prints both and
+refuses to print the file count on its own.
+
 **It never claims complete *enumeration*.** An entry lists the rules this method generated
 for the events the generator was asked to explain. It does **not** list every valid
 explanation of the constraint. That set is exponential for some entries even at fixed arity,
@@ -118,14 +125,44 @@ README.md          this file
 _literature/       sourced published rule shapes (owned by the literature sessions)
 ```
 
+## Stubs
+
+A **stub** is a `catalog/<name>.md` that `python3 tools/catalog_stub.py` wrote, so that every
+release global has a file and the catalog's denominator stops being a promise. It is not a
+small entry; it is an entry with no findings in it, and it says so at the top:
+
+```
+> **AUTO-STUB — NOT REVIEWED.**
+```
+
+That banner is load-bearing three times over. It tells a reader the file is machine output;
+`tools/catalog_index.py` greps for it to report `(12 reviewed, 106 stubs)` instead of a bare
+`118 / 118`; and `tools/catalog_stub.py` refuses to write over any `catalog/*.md` that lacks
+it, so a stub someone has reviewed and de-marked is safe from the next run.
+
+**What a stub may state**, each field naming its own source: the priority tier from
+`tools/mzn_coverage.py --rank`; the literature, solver and E-route cells of the constraint's
+`CHRISTMAS_LIST.md` row, quoted verbatim with the line number; the name's line in
+`tools/data/minizinc-*-globals.txt`; a link to `decomps/<name>.md` if that spec exists; and
+the `cata/<name>.tex` rule count, from the literal `\frac` (never `grep -c` — CLAUDE.md,
+"Traps"), or `no generator entry`.
+
+**What a stub must never state:** a status, a blocking gap, a calibration verdict, an
+extension it "probably" needs, or anything about a paper's content. All of those are review
+work. A stub that guessed one would be indistinguishable, six months later, from a finding —
+which is the whole reason the reviewed/stub distinction exists.
+
+**Upgrading a stub** is editing it in place: the headings are already `TEMPLATE.md`'s, in
+order, so a field gets replaced rather than the file restructured. Delete the banner when the
+entry is genuinely reviewed — that is what moves it from the stub column to the reviewed one,
+and what makes the generator leave it alone.
+
 ## Coverage so far
 
-| | |
-|---|---|
-| entries written | 3 of 118 |
-| tier D | `alldifferent`, `cumulative` |
-| tier C | `gcc` (`global_cardinality`) |
-| calibrated (W3-T5) | 3 of 3 — `alldifferent` **weaker**, `cumulative` **out of reach** (by gaps G11 + G15), `gcc` **out of reach** (structurally) |
+**118 of 118 files — 12 reviewed, 106 stubs.** Do not quote the first number without the
+split; see "Stubs" above for why.
 
-Chosen because they are the only tier-D/tier-C constraints for which the generator currently
-emits anything at all.
+`catalog/INDEX.md` is generated (`python3 tools/catalog_index.py`) and carries the current
+split per tier and per constraint, alongside the generated-rule and validated counts. This
+section deliberately keeps no second copy of those numbers: the one in the repo that is
+recomputed on every run is the one to read.
