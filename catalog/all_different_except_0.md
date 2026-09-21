@@ -75,14 +75,14 @@ excluded value is the constant `0` rather than a parameter, so the summed value 
 
 **And that difference buys nothing here.** `ind_set` is `D of int | D2 of ind_name list`
 (`explenation generator.ml:6`); `ind_set_defined` (`:459`) admits `D 1`, `D 2`, `D 3` and
-`printind_set_int` (`:460`) prints them as `[1,m]`, `[1,n]`, `[1,n]`. There is no fourth
+`printind_set_int` (`:460`) prints them as `[1,n]`, `[1,m]`, `[1,n]`. There is no fourth
 constructor and no fourth defined set, so a *constant* exclusion is as unnameable as a
 parameter one — **G8 is indifferent to whether the hole is known at authoring time**, because
 the blocker is the absence of a set-former, not the absence of a value. This is worth stating
 because `_except_0` is the variant one would expect to be the easy special case, and it is not.
 
-A second reason it is not easier: with the value domain written `[1,m]`, `0` is not even in the
-range the printer names — so the "hole" would have to be punched in a range that does not
+A second reason it is not easier: the value range the printer names is `D 2`, printed `[1,m]`
+(`:460`), and `0` is not in it — so the "hole" would have to be punched in a range that does not
 contain it, or the range respelled. Neither is expressible. **This paragraph is read off
 `:460`, not measured.**
 
