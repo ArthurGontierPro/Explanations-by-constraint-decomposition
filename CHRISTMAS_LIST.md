@@ -118,7 +118,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `symmetric_all_different` | none | decomp | **E0** + `inverse` channelling |
 | `all_disjoint` | none | decomp | **E5** (set variables) |
 | `alldifferent_except_0` (alias) | — | — | as above |
-| `all_equal` | none | decomp | **E0** — added 2026-09-18, W3-C. Was the sharpest gap in this list: `cata/allequal.tex` is a shipped, generated (unvalidated) catalog entry with no row here at all. No `decomps/all_equal.md` exists to cite for the shape; the generated `.tex` shows a two-way existential/universal pattern over `X_i ≥ t`/`X_i < t`, not the pairwise-`=` dual of Shape P1 one might expect from `all_different` — read off the `.tex`, not measured against a spec, since none exists yet |
+| `all_equal` | none | decomp | **E0** — added 2026-09-18, W3-C. Was the sharpest gap in this list: `cata/allequal.tex` is a shipped, generated (unvalidated) catalog entry with no row here at all. (`decomps/all_equal.md` was written later the same day by W3-D; cite it) for the shape; the generated `.tex` shows a two-way existential/universal pattern over `X_i ≥ t`/`X_i < t`, not the pairwise-`=` dual of Shape P1 one might expect from `all_different` — read off the `.tex`, not measured against a spec, since none exists yet |
 
 ## 2. Counting and cardinality
 
@@ -190,7 +190,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 
 | constraint | Lit. | Solver | Decomposition route |
 |---|---|---|---|
-| `increasing`, `decreasing`, `strictly_*` | none specific | decomp | **E0** — **already correct in the repo**; `cata/increasing.tex` and `cata/decreasing.tex` are cleanly dual |
+| `increasing`, `decreasing`, `strictly_*` | none specific | decomp | **E0** — `cata/increasing.tex` and `cata/decreasing.tex` are cleanly dual and each is **validated sound and minimal, 2/2** (2026-09-21). Wording fixed the same day: this row said "already correct", which `catalog/README.md` forbids |
 | `element` | none found | decomp **[C]** | **E0** — `cata/element.tex` generates 6 rules; **2 of 6 are validated sound-and-minimal**, the rest unvalidated (corrected 2026-09-18, W3-C — the "6 rules" phrasing read as a coverage claim, which it is not; per `CLAUDE.md`, no entry may be reported correct until the validator says so) |
 | `member` | none | decomp | **E0** — `exists(i)(x[i]=y)` |
 | `maximum`, `minimum` | none found | **native** (`minimum.cpp`) **[C]** | **E2** (var-var atoms) |

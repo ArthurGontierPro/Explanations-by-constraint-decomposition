@@ -160,7 +160,10 @@ resists extension — see D-0006.
   `grep -ho 'dropped F [0-9]*' cata/*.tex | awk '{s+=$3} END{print s}'`), and that number *is*
   reproducible. The finding is unaffected: `IM`, `FE` and `R` never occurred, so nothing was
   ever lost to the silence. `alldiff`'s decomposition (l.808–809) is `rule1` + `rule5` *alone* (a Boolean sum ≤), and
-  `X_i = t` is simply not derivable from a ≤ direction. `element.tex`'s `I=i` is the same case.
+  `X_i = t` is simply not derivable from a ≤ direction. **`element.tex`'s missing `I=i` rule is
+  NOT the same case** — corrected 2026-09-21 (E2, verified): `elem` (l.834–838) is `rule1`×3 +
+  `rule4`×2 with **no Boolean sum anywhere**, so "counting across sums" cannot be its route.
+  Its cause is the scalar-quantifier defect and per-literal binder scope (W1-T1).
   **Getting that second rule requires counting across sums — that is E4 (D-0006), the research
   item, not a bug in W1.**
 - **The printer hardcodes index sets 1–3** (`[1,n]`, `[1,m]`, `[1,n]`) and falls through to
