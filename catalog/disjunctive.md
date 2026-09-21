@@ -232,9 +232,22 @@ Three limits on that sentence, all of them load-bearing:
 
 1. **It is a reading of two texts side by side, not a measurement.** `catalog/_literature/`'s
    TimeD display (`QUOTED`) set beside `explenation generator.ml:810-812`. C2 tags the
-   structural match `COMPARISON`; nothing here upgrades that tag, and the direction of the
-   duration shift cannot be read off the source at all, because the index functions are opaque
-   closures (D-0006's first item).
+   structural match `COMPARISON` and nothing here upgrades that tag.
+
+   **One thing `catalog/cumulative.md` says at this point is no longer true, and this entry
+   states the corrected version.** That entry adds that "the *direction* of the duration shift
+   cannot be read off the source at all, because the index functions are opaque closures
+   (D-0006's first item)". **W1-T7 replaced the closures with first-order data**
+   (`explenation generator.ml:19-37`, the type `ind_op` at `:39-49`, `invert_op` at `:145`,
+   `print_op` used by `print_devent` at `:173-183`). Measured by reading the aliases: step 2's
+   descending op is `tplusci (C 1) = OpShiftC (FT, PLUS, C 1, FI)` (`:796`) and its ascending
+   op is `tmoinci (C 1) = OpShiftC (FT, MINUS, C 1, FI)` (`:797`). **The direction is in the
+   data and is readable**: the symbol is `PLUS`/`MINUS` in the constructor, and the printed
+   rules agree — `t' = t + d_i` in rule 2, `t' = t − d_i` in rule 1.
+
+   What remains true is the *substantive* half of the caution: our `B1` is `X_i ≥ t` where
+   TimeD's is `⟦s_i ≤ t⟧`, so the polarity differs and the negated conjunct swaps with it.
+   That is a difference in the decomposition, not an unreadable one.
 2. **"Same propagation strength" is about TimeD in general**, at any `r` and `c`. The paper
    does not separately state the unary case, and this entry does not claim it does.
 3. **The paper's *global* §6 explanations stay out of reach, structurally.** Their premises are
@@ -292,6 +305,13 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
   C2's `QUOTED` TimeD display and the generator source. It is not a measurement.
 
 **Discrepancies noted, not fixed (this session does not own those files).**
+
+0. **The "index functions are opaque closures" trap is stale**, in `CLAUDE.md`'s Traps section
+   and in `catalog/cumulative.md:244`. W1-T7 made them first-order `ind_op` data with an
+   interpreter, a printer and an inverter (`explenation generator.ml:19-49`, `:145`, `:173-183`),
+   and the generator's own comment there says so. The consequence for this entry is in
+   Calibration, limit 1: the duration shift's direction *is* readable, off `:796-797`.
+   D-0006's first item is the record that should be revisited, not this entry.
 
 1. **Stale line numbers.** `decomps/_shapes-ext.md:240` and `decomps/_shapes.md:234` both cite
    the `cumul` value at "l.680–682"; `decomps/disjunctive.md:8` says "l.810–812", which is
