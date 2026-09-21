@@ -15,7 +15,8 @@ One entry per MiniZinc global constraint, gathering three sources side by side:
 ## What the catalog claims
 
 **It claims complete *coverage*.** Every one of the 118 MiniZinc globals gets an entry with
-an honest status — including `nothing generated, blocked on G6`, which is a complete entry,
+an honest status — including `nothing generated, blocked on G6` and `encodable today, not
+encoded`, both of which are complete entries,
 not a hole. 118 of 118 entries with a known status is a checkable target and
 `tools/mzn_coverage.py` measures the denominator.
 
@@ -62,6 +63,7 @@ dropped without losing soundness. It does not mean the rule is useful:
 | `not validatable` | rules exist in `cata/` but the validator reports the entry out of scope, with a machine-printed reason (an undefined `D_k`, an unparsed index equation, an argument that appears in no atom) |
 | `generated, unvalidated` | rules exist and no verdict has been obtained. Distinct from `not validatable`: nobody has looked |
 | `nothing generated — blocked on G<n>` | no decomposition is encodable, or the generator emits no rule. The gap number is required, not optional |
+| `encodable today, not encoded` | **added 2026-09-21.** The current format can already express the decomposition, but nothing in the generator does it, so **there is no gap to name**. Use this rather than inventing a G-number to satisfy the row above. First cases, found by R5: `strictly_increasing` / `strictly_decreasing`, a pure parameter shift on the validated `increasing` / `decreasing` pair — `tplus`/`tmoin` already exist and the `Addint` printer case is already exercised |
 
 The verdict vocabulary itself (`SOUND and MINIMAL`, `UNSOUND`, `AMBIGUOUS`, `VACUOUS`,
 `UNSOUND(firing)`, `NOT MINIMAL`) is defined in `docs/VALIDATOR.md`, "Quantifier ambiguity".
