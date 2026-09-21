@@ -798,3 +798,51 @@ comparison so the eventual result confirms or contradicts something.
    including C1/C2 at `88d1c24`) are appended to the 3-column table under `## Completed`, not
    to the one under `## Active claims`. Left alone rather than reflowed, per the append-only
    rule.
+
+### 2026-09-21 — C1 (catalog format + first three entries) — CLOSED
+
+`catalog/{TEMPLATE,README,alldifferent,cumulative,gcc}.md` (`235323f`, `2d17538`, `9fde8db`).
+C2 is still sourcing `catalog/_literature/`; every entry's *Rule shape* and *Calibration* field
+is `pending C2`, and **no published rule shape was written from memory** — the one thing that
+mattered most in that brief.
+
+**The format decision worth keeping.** Beyond the field list I gave it, C1 added a mandatory
+**Scope of this entry** section stating the finite question the entry answers — which events,
+over which decomposition — and showing the *empty* answers beside the non-empty ones. Its
+reasoning: the banner and the legend are boilerplate a reader skips, so the "these are not all
+the explanations" guarantee has to be concrete per entry. That is right, and it is exactly the
+distinction the D-0008 note draws between complete *coverage* and complete *enumeration*.
+`catalog/README.md` says dropping that section makes an entry wrong. Keep it.
+
+**Status lines, from C1's own `make validate` run** (reproducing the recorded figures): 
+`alldifferent` validated 1/1 sound and minimal, with the entry stating in place that one rule is
+*correct* and that it fires only at `n=2`; `gcc` validated 4/4, still the only fully validated
+entry; `cumulative` **not validatable**, and its entry leads with "`cata/cumulative.tex` is
+really `disjunctive`".
+
+**Six contradictions found in other sessions' files. Orchestrator verified all six; four fixed
+at `eef1d74`, two recorded as rows.**
+
+1. Stale generator line numbers in `decomps/all_different.md`, `decomps/cumulative.md`,
+   `decomps/disjunctive.md` and `CLAUDE.md` — the file grew in W1-T3/T7 and the references did
+   not follow. Repointed: `alldiff` l.808–809, `cumul` l.810–812.
+2. `decomps/all_different.md` states the shipped rule in the `∃i'` form; **it is `∀i'`**
+   (verified against `cata/alldifferent.tex`). That difference is the whole floor-versus-strength
+   point, so it is not cosmetic. Left for the spec's owner, flagged here.
+3. **22 vs 25 dropped branches.** `CLAUDE.md`, `docs/ROADMAP.md` and this file say 22; the
+   generator's own comment at l.549 says 25. Both come from W1-S, the instrumentation was a
+   one-off, and neither is re-measurable. **Today's catalog drops 21**, measured and
+   reproducible: `grep -ho 'dropped F [0-9]*' cata/*.tex | awk '{s+=$3} END{print s}'`. The
+   *finding* — all dropped branches were `F`, nothing was lost to the silence — is identical in
+   both accounts and is unaffected. Recorded as disputed rather than silently picking one.
+4. Warning census drifted again: measured **6 / 31 / 56**; `CLAUDE.md` said 8/31/57 and the
+   Makefile expected 57. Both corrected. Third movement in three days, which is why that bullet
+   now says re-measure rather than quote.
+5. **The `gcc` decomposition value (l.813–814) is dead code** — verified: `gcc` appears only at
+   its own definition and in comments, and `cata/gcc.tex` is produced by **`gccn`** (l.827–829).
+   Anyone reading `gcc` to understand that entry reads the wrong decomposition. Now **W1-T12**.
+   There is also no `decomps/global_cardinality.md`.
+6. `gcc` rules 3–4 carry the generator's D-0009 "binds an index name twice" flag *and* a
+   `SOUND and MINIMAL` verdict. Both are reported in the entry, which is the honest treatment:
+   the rule is sound under every reading the validator enumerated, and the LaTeX still does not
+   determine which reading is meant.
