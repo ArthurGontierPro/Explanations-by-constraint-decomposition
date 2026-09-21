@@ -5,7 +5,7 @@ guard) and, for `symmetric_all_different`, also gap G8 below.
 
 ## all_different
 
-Pure Shape P1, already in the generator (`alldiff`, lines 678-679) and validated **1/1 sound
+Pure Shape P1, already in the generator (`alldiff`, l.808–809 — was 678-679, stale since W1-T3/T7 grew the file) and validated **1/1 sound
 and minimal** (task brief, not re-measured here). One rule, `X_i ≠ t ← ∃i'≠i: X_i'=t`; the
 second rule ("X_i = t") some earlier note wanted does not exist because it needs Hall-set
 counting across sums (E4), not a ≤-direction sum. Nothing to add.

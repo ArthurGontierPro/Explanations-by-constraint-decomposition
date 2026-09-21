@@ -153,9 +153,13 @@ resists extension — see D-0006.
   raises on `FE`/`IM`, warns on `R` (cutting a cycle is a design choice), and counts legitimate
   `F` discards into a diagnostics block appended to every `cata/*.tex`.
   **The old note claimed `alldifferent.tex` "has one rule where it should have two". It should
-  have one.** Measured: instrumenting the old filter over all 16 entries found 22 dropped
-  branches, **all 22 of them `F`** — `IM`, `FE` and `R` never occurred, so nothing was ever lost
-  to the silence. `alldiff`'s decomposition is `rule1` + `rule5` *alone* (a Boolean sum ≤), and
+  have one.** Measured by instrumenting the old filter over all 16 entries: **all** dropped
+  branches were `F`. **The count is recorded inconsistently — 22 in this file and the
+  roadmap, 25 in the generator's own comment (l.549) — and the instrumentation was a one-off,
+  so neither can be re-measured.** Today's catalog drops **21** (measured 2026-09-21:
+  `grep -ho 'dropped F [0-9]*' cata/*.tex | awk '{s+=$3} END{print s}'`), and that number *is*
+  reproducible. The finding — nothing was ever lost to the silence — is unaffected — `IM`, `FE` and `R` never occurred, so nothing was ever lost
+  to the silence. `alldiff`'s decomposition (l.808–809) is `rule1` + `rule5` *alone* (a Boolean sum ≤), and
   `X_i = t` is simply not derivable from a ≤ direction. `element.tex`'s `I=i` is the same case.
   **Getting that second rule requires counting across sums — that is E4 (D-0006), the research
   item, not a bug in W1.**
@@ -170,8 +174,9 @@ resists extension — see D-0006.
   `Global_devent` first. Add a decomposition with an accumulated-state auxiliary and it will
   appear in your `.tex` as text. W1-T10.
 - **Warning counts move when the generator changes — re-measure, never quote.** On OCaml 5.1.1,
-  before W1-T3/T7: default 0, `-w +27+39` 16, `+40+41+42` 42, `+a` 91. **After** (2026-09-18,
-  from `make check`): default **0**, `-w +27+39` **8**, `-w +40+41+42` **31**, `-w +a` **57**. An earlier draft of this file said "16 default
+  before W1-T3/T7: default 0, `-w +27+39` 16, `+40+41+42` 42, `+a` 91. **After W3-S** (measured 2026-09-21 from `make check`):
+  default **0**, `-w +27+39` **6**, `-w +40+41+42` **31**, `-w +a` **56**. The figure moved
+  three times in three days, which is the point of the bullet. An earlier draft of this file said "16 default
   warnings"; 27 and 39 are off by default in 5.1.1, so the 16 only appear if you ask. The
   two warning-39s are the `printind_name_list` non-recursion bug below. `make check` keeps
   this census and fails if the counts move.

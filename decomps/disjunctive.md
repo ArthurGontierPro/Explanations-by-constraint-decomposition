@@ -5,7 +5,7 @@ starts `s_i` and durations `d_i` do not overlap. In the version this spec covers
 constant.
 
 **Shape: `SCH-1`** (`_shapes-ext.md`). **This is the shape the generator already runs**: the
-entry named `cumul` at `explenation generator.ml` l.680–682, emitted to `cata/cumulative.tex`,
+entry named `cumul` at `explenation generator.ml` l.810–812, emitted to `cata/cumulative.tex`,
 is `rule5` with an implicit bound of 1 over the per-time-point overlap Booleans — a **unary**
 resource, i.e. `disjunctive`. `CHRISTMAS_LIST.md` §6 says the same ("the repo's entry is the
 unary-resource special case"), and the file name is the only thing that says `cumulative`.
