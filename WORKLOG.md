@@ -1294,3 +1294,45 @@ have now reported line-number rot, and the fix is to cite symbols or to check th
 **Could not establish, correctly left open:** whether any individual `*_fn` library body does more
 than declare a result and post the predicate. That needs the MiniZinc library, which is not
 vendored here, and R2 had no web access. Marked as the one open item rather than assumed.
+
+### 2026-09-21 — R1 (tier-D stubs) — CLOSED. Review wave closed: 79 of 118 reviewed.
+
+Fifteen entries, nine commits, resumed after the session limit without redoing anything.
+Index regenerated: **118 / 118 entries — 79 reviewed, 39 stubs** (was 12 reviewed this morning).
+
+**The `disjunctive` finding is confirmed and sharper than my brief.** R1 verified it instead of
+taking it: **`rule5` takes no capacity argument at all** (l.343, `rule5 e de c dec ch`), so
+`cumul`'s "at most 1" is not a parameter set to 1 — there is no parameter, and `alldiff` uses the
+same pair at l.808–809. The consequence is the best news in the wave: `catalog/cumulative.md`
+lists G11+G15 between the artifact and Schutt's TimeD, but **for `disjunctive` G11 falls away** —
+a unary resource *is* `r_i = 1`, so an unweighted sum is the target rather than an approximation.
+Only G15 and G1 remain, making `disjunctive` **the corpus's closest approach to a published
+shape**, and `cata/cumulative.tex` is its artifact, filed under the wrong name.
+
+**No new shapes in fifteen constraints** — 7 collapse into S5 (lex/symmetry), 4 into S8, 3 into
+S9 plus modifiers. And a rule worth keeping, which R1 derived rather than inherited: **a suffix
+is free when it widens a clause** (`mdd_nondet`, `strict_lex2`), **G1 when it is a predicate on a
+constant** (`disjunctive_strict`), **G2 when it is a new variable** (`disjunctive_opt`). Also:
+`mdd`/`regular_nfa` need G16+G17 *as well as* G7, so unlike `regular` they are on W3-T3's plan
+(b) — closing G7 alone produces nothing for them.
+
+**It corrected a stale claim it had itself repeated.** "Index functions are opaque closures" has
+been false since W1-T7; R1 wrote it into an entry, found the `ind_op` values, and fixed its own
+entry at `974fe3b` — and the duration shift's direction *is* readable, at l.796–797. I have now
+retired that trap in `CLAUDE.md` too, along with a second one of mine: the `grep -o '\frac'`
+example quoted 3/6/2, and today measures **0/5/2**, because W1-T2 emptied `table` and the `EXAND`
+repair took a rule off `nvalues`. A trap note with a stale number teaches the wrong lesson twice.
+
+**New defect, apparently unrecorded anywhere until now — W1-T15:** `printevent_var` (l.493)
+renders `var_name`'s `O` as the letter **`X`**, while `printvartex` (l.522) renders `O`.
+Plain-text path only, so no shipped `.tex` is affected; it sits beside the
+`printind_name_list`/`printiopl_list` tail bug in the same printer.
+
+**`D2` no longer prints `"setfils"` — it raises** (l.463–464, the W1-T2 backstop). The gap is
+unchanged, but `docs/DECOMP_FORMAT_NOTES.md` was describing a state that no longer exists;
+corrected.
+
+**Left open, correctly:** whether `strict_lex2` and `lex2_strict` are aliases — all three `lex2`
+names are distinct exports in the globals snapshot and no `.mzn` is vendored here; every
+signature in the fifteen is flagged as recall rather than sourced; and no published rule shape
+for the lex, mdd or regular papers, since only three constraints have sourced literature.
