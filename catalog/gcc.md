@@ -11,8 +11,8 @@
 | **Status** | `validated: sound and minimal at n,m <= 4` |
 | **Generated** | 4 rules in `cata/gcc.tex` |
 | **Validator** | 4 `SOUND and MINIMAL`, 0 flagged — **the only fully validated entry in the repo** |
-| **Calibration** | pending C2 |
-| **Last measured** | 2026-09-21, `make validate` and `python3 tools/mzn_coverage.py --rank --json` |
+| **Calibration** | **out of reach** — the published rule is a run-time flow cut / SCC; these 4 rules answer a different question |
+| **Last measured** | 2026-09-21, `make validate` (re-run by C3, same verdicts) and `python3 tools/mzn_coverage.py --rank --json` |
 
 ## Constraint
 
@@ -37,9 +37,26 @@ variants `_closed`, `_low_up`, `_low_up_closed` are **not** covered by this entr
 LNCS 7298:146–162 — `CHRISTMAS_LIST.md:127`. The row describes it as a generic explaining
 flow propagator that explicitly replaces a specialised **gcc** propagator.
 
-**Rule shape:** <!-- C2: sourced rule shapes go in catalog/_literature/gcc.md -->
-**pending C2** — see [`catalog/_literature/gcc.md`](_literature/gcc.md) once it exists.
-Nothing about the paper's rule shapes is stated here.
+**Rule shape:** sourced into [`catalog/_literature/gcc.md`](_literature/gcc.md). Summarised
+here with C2's provenance tags carried across unchanged.
+
+**There is no `gcc`-specific explanation rule in the paper.** `gcc` is encoded as a flow
+network (Régin's encoding, with `f_{i,v} = bool2int([x_i = v])`) and what is explained is the
+**generic** network-flow propagator. `QUOTED`, §3 Example 1.
+
+| paper | rule | event | schema? | tag |
+|---|---|---|---|---|
+| §4.1 failure | `⋀ ⟦f_uv ≥ l_uv⟧` over arcs **leaving** the cut `C` `∧ ⋀ ⟦f_uv ≤ u_uv⟧` over arcs **entering** it `→ false`, `C` = the nodes searched for an augmenting path | failure | per-propagation (Ford-Fulkerson cut) | `QUOTED` |
+| §4.2 pruning | the same, with an **SCC** of the residual graph as the cut-set | value removal / bound change (the same thing on Boolean arcs) | per-propagation (Tarjan) | `QUOTED` |
+
+Worked instance, §4.2 Example 4 — `alldifferent(x1,x2,x3)` as a `gcc` network,
+`[x3 ≠ 4] ∧ [c2 ≤ 1] ∧ [c3 ≤ 1] → [x1 ≠ 2]`, "or after removing redundant bounds
+`[x3 ≠ 4] → [x1 ≠ 2]`". `QUOTED`.
+
+**The paper does not claim its explanation minimal or strongest**, and says so in its own
+words: it is "the base explanation", improvable "by using lifting methods". Example 4's
+hand-stripping of "redundant bounds" is premise-droppability left as an optional post-pass.
+`QUOTED`. So calibration below compares on **implication strength**, not minimality.
 
 In-repo and quotable: `CHRISTMAS_LIST.md:127` prices `_low_up` at **E0**, full
 `global_cardinality` at **E3** — sharpened to **E9** by D-0011, because the trailing
@@ -206,15 +223,50 @@ Three caveats, all of which apply to that sentence:
 
 ## Calibration (W3-T5, D-0013)
 
-**Verdict: pending C2.**
+**Verdict: out of reach.** Not `weaker`, not `incomparable`: the two rules cannot be placed in
+an implication order at all, because the published premise set is not expressible in this
+method's vocabulary of index sets. "Out of reach" is a first-class verdict (D-0013), and this
+entry is the clean instance of it.
 
-Not written until the published rule shape is sourced into `catalog/_literature/gcc.md`.
-The in-repo prior, from `CHRISTMAS_LIST.md:127`: the flow explanation needs **E4**, and these
-four rules are within-sum reasoning only, so the expectation is *weaker than published*. There
-is a second, orthogonal axis on which the entry is narrower than the published setting: the
-paper explains a flow propagator for gcc with cardinality *bounds*; this decomposition has no
-bounds at all. A calibration should not report "weaker" where the honest word is
-"incomparable — different constraint".
+**Why no implication comparison can even be stated.** Three obstacles, all from C2's reading
+of §4.1-§4.2, and each independently fatal:
+
+1. **No index-set expression for the premise's range.** The premises are indexed by "the arcs
+   crossing the cut `C`", where `C` is the set of nodes searched for an augmenting path, or a
+   strongly connected component of the *residual* graph. The printer quantifies over `[1,n]`,
+   `[1,m]` and an undefined `D_k` beyond (`CLAUDE.md`, "Traps"); `C` is the output of a graph
+   algorithm run at propagation time.
+2. **Premise polarity depends on arc direction relative to the cut** (`≥ l` outflow, `≤ u`
+   inflow), and direction is a property of the residual graph, which flips arcs as flows reach
+   their bounds. A schema over indices has no such notion.
+3. **The rule is an explanation of an explanation** — equation (2), cut-conservation, is
+   synthesised per propagation and then explained as a linear constraint. This engine explains
+   a fixed decomposition.
+
+**It is not a vocabulary gap, and that distinction is worth keeping.** This entry *does* carry
+occurrence-count atoms (`O_t ≥ p`, `O_t < p`), and the published worked instance's premises are
+exactly of that kind — `[x3 ≠ 4] ∧ [c2 ≤ 1] ∧ [c3 ≤ 1]` mixes user-variable literals with
+cardinality-bound literals. What is out of reach is the **quantification**, not the literals.
+(This paragraph is C3's reading, built on C2's `QUOTED` Example 4; it is not a claim about the
+paper.)
+
+**The four rules answer a different question, and scoring them against the flow rule would
+hide that.** They channel between `X` literals and bounds on one occurrence variable, within a
+single sum, for one value `t` at a time. The published rule reasons *across* values, through
+the flow network — which is why it prunes where these cannot. `4 SOUND and MINIMAL at n,m ≤ 4`
+(my own run, below) is a complete answer to the first question and says nothing about the
+second. It is also the floor, not strength: rules 1 and 2 still name every other variable.
+
+**E4 is necessary but not sufficient**, sharpening `CHRISTMAS_LIST.md:127`, which prices the
+flow explanation at E4. Counting across sums would give access to the cardinality literals; it
+would not give a cut of a residual graph. C2 puts it as a negative result rather than a gap to
+close, and this entry adopts that.
+
+**Two priors recorded by C1, now settled.** C1 expected `weaker`, with "incomparable —
+different constraint" as a second axis. Sourcing resolves both to `out of reach`: the
+constraint mismatch is real (the paper's network carries cardinality *bounds*, this
+decomposition has none) but it is not the binding reason — the binding reason is structural,
+and it would still hold if the bounds were added.
 
 ## Gaps
 
@@ -224,14 +276,17 @@ bounds at all. A calibration should not report "weaker" where the honest word is
 | `G4` | one Boolean-sum family per rule (hard failure otherwise): the `_low_up` form wants two |
 | `G11` | no weighted Boolean sum |
 | `G12`/`G13` | `length(xs) >= sum(count)` sums *integer* variables — a fourth kind of schema (E9, D-0011), not a generalisation of `rule5/6/7` |
+| — | the published flow rule is blocked by no *gap* on this list: its premises are indexed by a run-time graph cut, so **E4 is necessary but not sufficient** (calibration, from C2) |
 
 Extensions: **E0** for `_low_up`'s shape, **E3** + **E9** for the full form, **E4** for the flow
-explanation (`CHRISTMAS_LIST.md:127`, with the E3→E9 correction at D-0011).
+explanation (`CHRISTMAS_LIST.md:127`, with the E3→E9 correction at D-0011) — E4 with the
+calibration caveat above.
 Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
 
 ## How this entry was produced
 
-- `make validate` (run 2026-09-21, this session) → `---- cata/gcc.tex (4 rules) ----`, four
+- `make validate` (re-run 2026-09-21 by session C3; verdicts identical to C1's run)
+  → `---- cata/gcc.tex (4 rules) ----`, four
   `VERDICT : SOUND and MINIMAL` lines, each with `store sweep agrees with singleton reduction`.
   Run totals: **34 rules checked in 11 entries: 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5
   entries out of scope**, 19/19 encoding invariants holding, all 11 controls behaving.
@@ -245,6 +300,12 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
   emitting call.
 - `CHRISTMAS_LIST.md:127` read → citation, solver columns, and the `fzn_global_cardinality`
   decomposition quoted verbatim.
+- `catalog/_literature/gcc.md` read, not fetched → every statement about the paper in the
+  "Published explanation" and "Calibration" sections, with C2's tags carried across. **No paper
+  was fetched by this session** and no provenance tag was upgraded.
+- The "out of reach" verdict is **reasoning about the two premise forms, not a measurement**:
+  the published premise is indexed by a residual-graph cut and the printer has no such index
+  set, so no implication either way is statable.
 
 **Noted, not fixed:** there is no `decomps/global_cardinality.md`. This is the one entry of
 the three with no `decomps/` spec, and the decomposition above was read straight off the
