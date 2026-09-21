@@ -96,7 +96,7 @@ cannot be written at all, let alone printed. That is **G10**,
 for a *sort* is `y_j ≤ y_{j+1}` between two decision variables. The shipped `increasing`
 (`explenation generator.ml:830-831`, shape S1) does not do that — it is `rule1` plus one
 `rule4` clause over `X_i ≥ t` literals at consecutive positions, i.e. variable-vs-domain-value
-throughout, which is how it avoids G3. That works because a chain of threshold literals
+throughout, which is how it avoids G3. That suffices because a chain of threshold literals
 *does* encode monotonicity over a shared value domain. Whether that suffices for `sort`'s
 output array depends on obligations 1 and 3 supplying the link to `x`, and they are the ones
 blocked. **This paragraph is reasoning read off `explenation generator.ml:830-831` and

@@ -207,7 +207,7 @@ uses it. **Read against G6 it is a candidate here too, and it is cheaper than it
 one respect and not a solution in another.** All of the following is read off the source,
 **not tested — nothing was run to check it**, and no decomposition was written.
 
-What already works today:
+What is already in place today:
 
 - `ontin (D2 [R 1; I 1])` is **constructible**: `ontin d = OpOn (FT, d)` (l.768) takes any
   `ind_set`, and `D2` is one.

@@ -117,7 +117,8 @@ not merely print badly.
 a bigger instance of the first. And the `all_different` side condition adds G1 to the list.
 
 **What is *not* worse.** Nothing in the written-cell half changes: it is still `element`'s
-S6, `k` copies of it, and copies of a shape that works are not a new gap.
+S6, `k` copies of it, and copies of a shape that already emits rules elsewhere are not
+a new gap.
 
 **Nothing here is validated, flagged or refuted.** There is no artifact.
 
