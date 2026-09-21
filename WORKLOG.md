@@ -71,6 +71,9 @@ session picks it up.
 | Catalog: format + first entries | `catalog/**` (new) | C1 (2026-09-21) | 2026-09-21 |
 | Catalog: sourcing the published explanations | `catalog/_literature/**` (new) | C2 (2026-09-21) | 2026-09-21 |
 | Catalog: merge literature + write calibration verdicts (W3-T5) | `catalog/*.md` (not `_literature/`) | C3 (2026-09-21) | 2026-09-21 |
+| Catalog: the five silent entries | `catalog/{among,range,regular,roots,sum}.md` | E1 (2026-09-21) | 2026-09-21 |
+| Catalog: the seven rule-bearing entries | `catalog/{allequal,atleastnvalues,atmostnvalues,nvalues,increasing,decreasing,element}.md` | E2 (2026-09-21) | 2026-09-21 |
+| Catalog: the 118-row index + its generator | `catalog/INDEX.md`, `tools/catalog_index.py` | E3 (2026-09-21) | 2026-09-21 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
@@ -990,3 +993,11 @@ comment earlier in this session and copied from there into the catalog README.
 **Tension left open, deliberately:** `decomps/cumulative.md` says "E4 makes it good", while the
 paper's TimeD statement says a decomposition of this shape already matches the global
 propagator. One of those is wrong and the spec corpus is not the catalog's to edit.
+
+### 2026-09-21 — branch `explanation-catalog` pushed
+
+At the author's request. `git checkout -b explanation-catalog` from `master` at `c734f75`, then
+`git push -u origin explanation-catalog`: **66 commits ahead of `origin/master`**, the whole of
+this session's work. Git forbids spaces in ref names, so the author's "ecplanation catalog"
+became `explanation-catalog`. **`master` is untouched and unpushed.** All catalog sessions from
+here work on the branch; the orchestrator pushes, sessions commit locally.
