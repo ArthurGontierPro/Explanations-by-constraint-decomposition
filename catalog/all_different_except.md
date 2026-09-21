@@ -166,7 +166,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
   (`ind_set_defined` and the three defined ranges), `:464` (`printind_set`'s `D2` raise),
   `:808-809` (`alldiff`).
 - `docs/DECOMP_FORMAT_NOTES.md:80` read → G8's wording and the constraints named against it;
-  `:96-107` → the withdrawal of the `D2` checked negative.
+  `:100-111` → the withdrawal of the `D2` checked negative.
 - `decomps/all_different.md` and `decomps/_shapes.md` (S2) read → the family spec and the shape.
 - **No scratch run for this entry.** The one substitution that matters cannot be written down:
   there is no `ind_set` value for "range minus a point", so there is nothing to hand the

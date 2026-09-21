@@ -25,7 +25,7 @@ What the name and the list's filing give, and it is enough for the gap analysis 
 **construction**: `sliding_among` is [`among`](among.md) applied to every window of consecutive
 positions rather than to the array as a whole. `CHRISTMAS_LIST.md` files it in
 `2. Counting and cardinality`, immediately after `among` (`:129`) and `nvalue` (`:130`);
-`docs/ROADMAP.md:90` files the same constraint in the **sequencing** family, W3-T2. Both are
+`docs/ROADMAP.md:91` files the same constraint in the **sequencing** family, W3-T2. Both are
 right, and the split is the point: it is a counting constraint with a sliding index set.
 
 **Provenance of the name:** `tools/data/minizinc-2.10.1-globals.txt:111`.
@@ -155,9 +155,9 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 - `CHRISTMAS_LIST.md:133`, `:129`, `:130`, `:106-109` read → the row, its neighbours and the
   solver legend.
 - `tools/data/minizinc-2.10.1-globals.txt:111` read → the name.
-- `docs/ROADMAP.md:90` read → W3-T2 files `sliding_among` in the sequencing family.
+- `docs/ROADMAP.md:91` read → W3-T2 files `sliding_among` in the sequencing family.
 - `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459-460` (`ind_set_defined` and the three defined ranges), `:464`
-  (`printind_set`'s `D2` raise), `:777-779` (`sumi`/`oni`'s family), `:793-794` (the index
+  (`printind_set`'s `D2` raise), `:763` and `:767-768` (`oni`, `oniin`, `ontin`), `:792-793` (the index
   shifts), `:851-853` (`among`, quoted above).
 - `docs/DECOMP_FORMAT_NOTES.md:80` and `:100-111` read → G8's wording and the withdrawal of the
   `D2` checked negative.
