@@ -98,6 +98,9 @@ independently of the counting pilot: `maximum`/`minimum`/`arg_max`/`arg_min` (pe
   (`lex_chain_*`, `value_precede_chain`, `seq_precede_chain`) and therefore as a checked
   negative. W2-C and W2-B, working separately, both found that **`D2`'s printer emits the
   literal string `"setfils"`** — `printind_set`, generator l.375, confirmed by the orchestrator.
+  **Updated 2026-09-21: it no longer prints that string, it RAISES** (W1-T2 added the backstop,
+  generator l.463–464). The gap is unchanged — `D2` still has no real printer — but a session
+  quoting `"setfils"` today is quoting a state that no longer exists.
   So `D2` exists in the type, is used by nothing, and would print garbage into the `.tex` if
   used. It is the right hook for G7, and it is not usable until it has a printer. **W2-A's
   checked negative is withdrawn; treat variable-length chains as blocked on the same missing

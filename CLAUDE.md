@@ -148,8 +148,10 @@ resists extension — see D-0006.
 
 - **`cata/*.tex` have no trailing newline**, so `wc -l` reports 0 for files with content.
   **`grep -c '\\frac'` is also wrong** — every entry is a *single line*, so it returns 1 for all
-  16 regardless of content. Count rules with `grep -o '\\frac' f | wc -l` (measured 2026-09-18:
-  `grep -c` gives 1 for `table`, `nvalues` and `increasing` alike; `grep -o` gives 3, 6 and 2).
+  16 regardless of content. Count rules with `grep -o '\\frac' f | wc -l` (**measured 2026-09-21**:
+  `grep -c` gives 1 for `table`, `nvalues` and `increasing` alike; `grep -o` gives **0, 5 and 2**
+  — it read 3, 6, 2 on 2026-09-18, before W1-T2 emptied `table` and the `EXAND` repair took a
+  rule off `nvalues`. Rule counts move with the generator; re-measure).
 - **FIXED 2026-09-18 (W1-T3), and the trap note it replaces was wrong.** `removeimp` used to
   discard any branch containing `F`/`IM`/`FE`/`R` in silence; it is now `filter_branches`, which
   raises on `FE`/`IM`, warns on `R` (cutting a cycle is a design choice), and counts legitimate
@@ -171,8 +173,12 @@ resists extension — see D-0006.
 - **The printer hardcodes index sets 1–3** (`[1,n]`, `[1,m]`, `[1,n]`) and falls through to
   an undefined `D_k` for everything else. That is why `regular`, `roots`, `range` and `table`
   reference `D_4`–`D_9` that appear nowhere.
-- **Index functions are opaque closures**, so nothing can print, compare or invert them, and
-  a wrong composition yields a plausible-looking wrong rule. This is D-0006's first item.
+- **FIXED 2026-09-18 (W1-T7): index modifications are first-order `ind_op` values, not closures.**
+  `print_op` prints them, `(=)` compares them, `invert_op` inverts what is invertible. Several
+  documents still say "opaque closures" — that is stale, and a claim that something cannot be
+  read off the index operators should be checked before it is repeated. What W1-T7 did *not*
+  fix is the ambiguity: applying a modification appends to the modifier list instead of
+  rewriting it, so 13 rules still bind an index name twice (D-0009).
 - **`!=` is used where structural inequality is meant** (physical equality in OCaml).
 - **`var_name`'s `B` prints as the literal `"ERROR B "`** (generator l.399, l.428) — and it is
   *printed*, not raised. No shipped entry triggers it, because every `B` there resolves to a
