@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** — `A no-literature + solver-decomposes`, ecodes `['E0']` |
-| **Status** | `nothing generated — blocked on G3` **for the MiniZinc signature only. The parameter-target fragment is blocked by nothing and is simply unwritten — see Status, and read the fragment statement below before quoting this row.** |
+| **Status** | **`encodable today, not encoded`** for the fragment this repo decomposes (`y` a parameter); **`nothing generated — blocked on G3`** for MiniZinc's var-target signature. **Two fragments, two statuses — read the fragment statement below before quoting either.** |
 | **Generated** | **0** rules — there is no `cata/member.tex` and no generator value for it |
 | **Validator** | out of scope: nothing to validate. `make validate` reads `cata/*.tex` and this constraint has no artifact there |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:195` records the literature column as `none` |
@@ -106,16 +106,25 @@ read off the gap statement and the type definitions (`Global_event` at l.50 carr
 
 ## Status
 
-**`nothing generated — blocked on G3`**, and the status legend does not fit this entry
-cleanly. That is stated rather than smoothed over:
+**`encodable today, not encoded`** for the parameter-target fragment;
+**`nothing generated — blocked on G3`** for the var-target signature. D-0012 requires the
+fragment to be named, and here it changes the status, not just the prose.
 
-`catalog/README.md`'s legend requires a gap number for `nothing generated` — "the gap number
-is required, not optional". For the **variable-target** reading G3 is the right number and
-the row is accurate. For the **parameter-target** fragment that `decomps/member.md` actually
-specifies, **there is no gap at all**, and no legend value says "encodable today, in the
-format's own vocabulary, and nobody has written it". `member` is the clearest instance of
-that hole in this slice; [`inverse`](inverse.md) is a softer one (writable, but only through
-G9's detour).
+**A caveat on the first value, measured rather than assumed.** The orchestrator records
+`encodable today, not encoded` as newly defined in `catalog/README.md` and
+`catalog/TEMPLATE.md`. As of this commit it is **in neither**: the legend still lists six
+values, ending at `nothing generated — blocked on G<n>` with "the gap number is required,
+not optional", and `grep -rn 'encodable today' catalog/` finds the phrase only in prose —
+`catalog/strictly_increasing.md:184`, `catalog/strictly_decreasing.md:186`,
+`catalog/value_precede.md:26`, and this slice. R5's own shipped Status row for
+`strictly_increasing` still reads `**nothing generated** — and **no status-legend value
+fits**`. This entry uses the value the orchestrator directs and records that the definition
+has not landed. Reported, not fixed: `catalog/README.md` is not this session's.
+
+**An earlier draft of this entry filed the whole constraint under
+`nothing generated — blocked on G3` and argued the legend had a hole.** The hole was real;
+the new value fills it, and forcing the parameter fragment under a gap number was the
+distortion the value exists to prevent. Corrected here.
 
 **What this means in practice.** If somebody spends an hour adding
 
@@ -150,7 +159,7 @@ is empty for no reason stronger than that nobody has typed it.
 | gap | what it blocks here |
 |---|---|
 | `G3` | **the MiniZinc signature only.** `B_i ⇔ X_i = y` with `y` a decision variable is a variable-vs-variable comparison (`docs/DECOMP_FORMAT_NOTES.md:34`, which anticipates exactly this case for `count`/`among`) |
-| — | **nothing blocks the parameter-target fragment.** `rule1` + `rule4` over one index family is shape S4 and runs today inside `nvalues` (l.841). The entry is empty because the value is unwritten, not because it is unwritable |
+| — | **nothing blocks the parameter-target fragment**, which is why its status is `encodable today, not encoded` rather than a gap number. `rule1` + `rule4` over one index family is shape S4 and runs today inside `nvalues` (l.841). One user array, so **no G2 either** — unlike [`inverse`](inverse.md) and `write`, nothing has to borrow a letter |
 | `G17` | no pivot-elimination pass. Not biting: `B_i` is reification scaffolding and washes out, as `decomps/member.md` says |
 
 Extensions: **E0** (`CHRISTMAS_LIST.md:195`, route cell "**E0** — `exists(i)(x[i]=y)`").
@@ -178,16 +187,17 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
   `decomps/_shapes-perm.md:104-112` (P4) and `decomps/_shapes.md` (S4) read → the shape.
 - `docs/DECOMP_FORMAT_NOTES.md:34` read → G3 and its explicit anticipation of
   variable-valued targets.
-- `catalog/README.md` status legend read → the "gap number is required" wording that the
-  Status section reports as not fitting this entry.
+- `catalog/README.md` status legend read, and `grep -rn 'encodable today' catalog/` run →
+  six legend values, the new one absent from the legend and present in four entries' prose.
+  That is the evidence for the Status caveat, and the grep is a run.
 - **The sketched `let member = …` in Status is a sketch and was not compiled**, and the
   fragment argument is reasoning over the source, labelled as such in place.
 
 **Discrepancies noted, not fixed (this session does not own those files).**
 
-1. **The status legend has no value for "encodable today, unwritten".**
-   `catalog/README.md`'s six statuses cover generated-and-judged, generated-and-unjudged,
-   and blocked-on-a-gap. `member` is none of those, and forcing it into
-   `nothing generated — blocked on G3` is only honest because the MiniZinc signature takes a
-   variable. A constraint with a par-only signature in the same position would have no
-   honest row. Raised here, not decided: a status-legend change is `docs/DECISIONS.md`'s.
+1. **`encodable today, not encoded` is used by this entry and is defined in neither
+   `catalog/README.md`'s legend nor `catalog/TEMPLATE.md`.** Measured 2026-09-21. The value
+   is the right one — it is exactly this entry's position, and `catalog/strictly_increasing.md`
+   and `catalog/strictly_decreasing.md` reached it independently — but until the legend
+   carries it, four entries use a status the format does not define, which is the same kind
+   of defect as an artifact quantifying over an undefined `D_k`.

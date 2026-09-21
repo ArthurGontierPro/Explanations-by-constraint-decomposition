@@ -101,9 +101,9 @@ it is the one place in the `write` family where a new gap number is plausible.
 
 The family's shared position, unchanged: G18 blocks the *quantifier* form;
 `decomps/write.md`'s clause-per-position workaround needs only `rule1` and `rule4` and
-**has never been tested**; G9 costs the channel detour; G2 is a hard stop on naming a second
-user array, because encoding it as `B 1` makes `printvartex` raise (l.517) rather than print
-badly.
+**has never been tested**; G9 costs the channel detour; and G2 costs the second user array its own name — `B 1` makes
+`printvartex` **raise** (l.517), while `O` prints as an indexed array (l.522, used by
+`gccn` at l.829), so the array is encodable today wearing `gcc`'s name.
 
 **This variant's own difficulty is order, and it is a modelling question before it is a
 format question.** The workaround for a single write is `B_j = A_j ∨ I = j`. For a sequence
@@ -134,7 +134,7 @@ note either. All three of the catalog's sources are empty for this constraint.
 |---|---|
 | `G18` | **the recorded one**, on both guarded channels. `Rel`'s second argument is an `ind_name` (l.10) and the excluded positions are `var_name`s — `docs/DECOMP_FORMAT_NOTES.md:86`, whose "hit by" column is this constraint and its two siblings |
 | — | **possible new gap, flagged not claimed.** The "later wins" channel's exclusion set `{I_{m+1}..I_k}` has variable *members* and an extent that depends on the update being asserted. `decomps/write.md` says "no new gap beyond G18" without argument; see Scope |
-| `G2` | **a hard stop on naming.** Two user arrays, one letter; the second as `B 1` makes `printvartex` raise (l.517) |
+| `G2` | **a legibility cost.** Two user arrays; `B 1` makes `printvartex` **raise** (l.517), but `O` is a genuine second-array letter (l.522, `gccn` l.829), so the array is encodable today wearing `gcc`'s name. `decomps/write.md`'s "would print as a Boolean auxiliary" is wrong in both directions |
 | `G9` | a **cost**: no `Global ⇔ Global` channel schema (`docs/DECOMP_FORMAT_NOTES.md:77`) |
 | — | **not G1.** `writes_seq` drops `writes`' `all_different` obligation on the index array — collisions are allowed and resolved by order — so the threshold gap that `writes` inherits does not apply |
 | — | **the workaround is unchecked, not blocked**, and its shape for a sequence has never been written out |
@@ -155,7 +155,8 @@ single addition (`:86`, `:106-112`).
 - `ls cata/` → 16 files; no `writes_seq.tex`. `grep -n -i 'write' 'explenation generator.ml'`
   → 4 lines, all `write_footer` or a stderr comment (l.645, 716, 727, 741).
 - `explenation generator.ml` read, not run → `var_name` at **3**, `Rel` at **10**,
-  `printvartex`'s `B i` raise at **517**.
+  `printvartex`'s `B i` raise at **517** and its `O` case at **522**, `gccn`'s
+  `Global_devent (true, O, …)` at **829**.
 - `CHRISTMAS_LIST.md:216`, `:106-109`, `:232-233` read → the literature, solver and route
   cells, the legend, the E2-unlock list.
 - `tools/data/minizinc-2.10.1-globals.txt:134` read → the name.

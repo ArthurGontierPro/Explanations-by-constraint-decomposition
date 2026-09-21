@@ -130,12 +130,16 @@ Quoted rather than paraphrased, because the distinction is the entry's main find
    the Boolean-auxiliary family, so a second user array would print as a Boolean auxiliary.
    That is **G2** on a new constraint, and it is sharper here than in the cases already
    recorded, because the collision is with the auxiliary family rather than with another
-   constraint's letter." **And it would be printed, not raised**: `printvartex` raises on
-   `B i` (l.517) precisely because a `B` that reaches the printer means no `Global_devent`
-   turned it back into a solver literal — which is exactly what a user array named `B` would
-   do. So encoding `b` as `B 1` does not merely read badly; on the current printer it aborts
-   the run. That is W1-T10's fix working as intended and it is a hard stop for this
-   constraint's naming. **Read off the source, not run.**
+   constraint's letter." **The spec's phrasing understates one half and overstates the
+   other, and both matter to whoever encodes this.** Understated: a second array encoded as
+   `B 1` does not "print as a Boolean auxiliary", it **raises** — `printvartex` (l.517)
+   refuses any `B i` that reaches it, because a `B` at the printer means no `Global_devent`
+   turned it back into a solver literal. That is W1-T10's fix working as intended, and it
+   makes `B` unusable rather than ugly. Overstated: `B` is not the only candidate. **`O` is
+   a genuine second-array letter** — `printvartex` renders it `"O"^printglobal_eventtex v`
+   (l.522), the same indexed-array path `X` uses, and `gccn` already carries it as a real
+   user global at l.829. So `b` is encodable today as `O`, printing as `gcc`'s occurrence
+   array. **G2 here is a legibility cost, not a hard stop.** Read off the source, not run.
 
 **Nothing here is validated, flagged or refuted.** There is no artifact.
 
@@ -156,7 +160,7 @@ implementation to note, as there is for [`inverse`](inverse.md) and `element`.
 | gap | what it blocks here |
 |---|---|
 | `G18` | **the recorded one, and it is about the quantifier form.** `∀j ≠ I` with `I` a decision variable: `Rel`'s second argument is an `ind_name` (l.10), not a `var_name`. Distinct from G8 (constant exclusion) and G14 (variable-determined summation extent) — `docs/DECOMP_FORMAT_NOTES.md:86`, whose "hit by" column is this constraint and its two siblings |
-| `G2` | **a hard stop on naming, sharper here than anywhere else recorded.** Two user arrays, one letter. Encoding the second as `B 1` makes `printvartex` raise (l.517), not merely print badly |
+| `G2` | **a legibility cost, and the spec's phrasing is wrong in both directions.** `B 1` does not print badly, it makes `printvartex` **raise** (l.517); but `O` is a genuine second-array letter (l.522, used by `gccn` at l.829), so `b` is encodable today wearing `gcc`'s name |
 | `G9` | a **cost**: no `Global ⇔ Global` channel schema, so the unwritten-cells channel re-derives `element`'s detour (`docs/DECOMP_FORMAT_NOTES.md:77`) |
 | — | **the workaround is unchecked, not blocked.** `B_j = A_j ∨ I = j` per position needs only `rule1` + `rule4`. `decomps/write.md` calls it "probably the right decomposition"; nothing has tested it |
 | `G17` | no pivot-elimination pass. Not biting: `B_i`, `B_t`, `B1_{i,t}` are reification scaffolding |
@@ -189,3 +193,11 @@ single addition, `:86` and `:106-112`).
 - `docs/DECOMP_FORMAT_NOTES.md:77, 86, 106-112` read → G9, G18 and the wave-three addendum.
 - **The `printvartex` consequence in Status item 3 is reasoning over the source, labelled as
   such in place.** Nothing was compiled and no decomposition was written.
+
+**Discrepancy noted, not fixed (this session does not own that file).**
+
+1. **`decomps/write.md`'s G2 paragraph is wrong in both directions.** It says a second user
+   array "would print as a Boolean auxiliary": with `B of int` it does not print at all
+   (`printvartex` raises, l.517), and `O` — which the paragraph does not mention — prints as
+   an indexed array (l.522) and is already used that way by `gccn` (l.829). The gap is real;
+   its severity as stated is not.

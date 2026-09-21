@@ -109,8 +109,10 @@ different entries.
 **G9 applies too and is a cost rather than a wall**, exactly as in
 [`inverse`](inverse.md): there is no `Global ⇔ Global` channel schema, so the two-array
 channel re-derives `element`'s multi-`Decomp` detour by hand. **G2** applies for the same
-reason as there (no `var_name` letter for a second user array, l.3). Neither would stop the
-value being written; G8 would stop it emitting.
+reason as there: `var_name` (l.3) has no letter *meaning* a second user array, so `Y` borrows
+`O` and prints as `gcc`'s occurrence array (`printvartex` l.522, `gccn` l.829). Neither would
+stop the value being written — [`inverse`](inverse.md) is `encodable today, not encoded` for
+exactly that reason — and G8 is what stops this one emitting.
 
 **Nothing here is validated, flagged or refuted.** There is no artifact.
 
@@ -133,7 +135,7 @@ be calibrated against either.
 |---|---|
 | `G8` | **the binding one, and a wall.** `ind_set` names only whole predefined ranges (l.6, l.459-460); a channel over a sub-range cannot be written or printed (`docs/DECOMP_FORMAT_NOTES.md:76`, which names this constraint) |
 | `G9` | a **cost**: no `Global ⇔ Global` channel schema, so the channel re-derives `element`'s detour (`docs/DECOMP_FORMAT_NOTES.md:77`) |
-| `G2` | **not in this constraint's spec; read off the source.** `var_name` (l.3) has no letter for a second user array — see [`inverse`](inverse.md), Status |
+| `G2` | **not in this constraint's spec; read off the source.** `var_name` (l.3) has no letter *meaning* a second user array; `Y` borrows `O` (l.522, `gccn` l.829). A legibility cost — see [`inverse`](inverse.md), Status |
 | `G17` | no pivot-elimination pass. Not biting: the reification booleans wash out |
 
 Extensions: **E0, E2** (`CHRISTMAS_LIST.md:199`). The row's "close to **E0**" assessment is
@@ -156,7 +158,8 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
   flagged; 2 rules in 5 entries out of scope.**
 - `ls cata/` → 16 files; no `inverse_in_range.tex`.
 - `explenation generator.ml` read, not run → `ind_set` at **6**, `var_name` at **3**,
-  `ind_set_defined` at **459**, `printind_set_int` at **460**, W1-T2's reasoning on the
+  `ind_set_defined` at **459**, `printind_set_int` at **460**, `printvartex`'s `O` case at
+  **522** and `gccn`'s `Global_devent (true, O, …)` at **829**, W1-T2's reasoning on the
   `D_k` counter at **437-447**. These are the evidence that G8 is a wall rather than a cost.
 - `CHRISTMAS_LIST.md:199` and `:106-109` read → the literature cell (`none`), the solver
   cell and its `inverse`-only parenthetical, the E2 route cell, the legend.

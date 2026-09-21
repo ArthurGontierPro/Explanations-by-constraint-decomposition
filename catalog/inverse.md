@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **B** — `B no-literature + solver-native`, ecodes `['E0', 'E2']` (shared row with `inverse_in_range`) |
-| **Status** | `nothing generated — blocked on G9` — **and G9 is a cost, not an absolute blocker. See Status.** |
+| **Status** | **`encodable today, not encoded`** — no gap blocks this decomposition; nobody has written it. G9 makes it verbose and G2 makes it read badly, and neither stops it. **See Status for a caveat about this value.** |
 | **Generated** | **0** rules — there is no `cata/inverse.tex` and no generator value for it |
 | **Validator** | out of scope: nothing to validate. `make validate` reads `cata/*.tex` and this constraint has no artifact there |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:199` records the literature column as `none` |
@@ -98,10 +98,31 @@ readable; none of them stops it.
 
 ## Status
 
-**`nothing generated — blocked on G9`**, with the qualification the legend's one-gap slot
-cannot carry:
+**`encodable today, not encoded`**
 
-**G9 is a cost, not an absolute blocker.** `docs/DECOMP_FORMAT_NOTES.md:77` states it as "no
+**A caveat on the value itself, measured rather than assumed.** The orchestrator records
+this as a new status defined in `catalog/README.md` and `catalog/TEMPLATE.md`. As of this
+commit it is **not in either file**: `catalog/README.md`'s status legend still lists six
+values, the last being `nothing generated — blocked on G<n>` with "the gap number is
+required, not optional", and `grep -rn 'encodable today' catalog/` finds the phrase only in
+prose — `catalog/strictly_increasing.md:184` and `catalog/strictly_decreasing.md:186` ("a
+state the legend has no word for"), `catalog/value_precede.md:26`, and this slice's
+[`member.md`](member.md). R5's own shipped Status row for `strictly_increasing` reads
+`**nothing generated** — and **no status-legend value fits**`. So this entry uses the value
+the orchestrator directs and records that **the legend entry defining it has not landed**.
+Reported, not fixed: `catalog/README.md` is not this session's.
+
+**Why this entry qualifies, and it turns on a letter.** Earlier drafting of this slice
+treated `inverse` as blocked-with-a-cost, on the reading that `var_name` has no letter for a
+second user array. **That reading was wrong and is corrected here.** `var_name` is
+`X | B of int | T | I | V | N | O` (`explenation generator.ml:3`), and `O` is a genuine
+second array letter: `printvartex` renders it as `"O"^printglobal_eventtex v` (l.522) — an
+indexed array literal, the same printer path `X` uses — and `gccn` already carries it as a
+real user global, `Global_devent (true, O, id, id, BC)` at l.829. So `Y` can be encoded
+today. It prints as `O`, which is `gcc`'s occurrence array wearing `inverse`'s meaning, and
+that is **G2**: a legibility cost, not a wall.
+
+**G9 is likewise a cost, not an absolute blocker.** `docs/DECOMP_FORMAT_NOTES.md:77` states it as "no
 `Global ⇔ Global` channel schema; `rule1` is fixed to `Global ⇔ Reified`, so every
 array-to-array channel re-derives `element`'s five-`Decomp` detour", and names `inverse`,
 `sort` and `arg_sort` as the constraints that hit it. What that costs `inverse` is the
@@ -109,19 +130,20 @@ detour, not the constraint: the detour is writable and `element` writes it. So t
 reading of the zero in the **Generated** row is *nobody has added the value to the
 generator*, and G9 is why doing so is boilerplate rather than three lines.
 
-**A second gap the spec does not record, read off the source: G2, and it bites on the name.**
-`var_name` is the closed enum `X | B of int | T | I | V | N | O` (`explenation generator.ml:3`).
-`inverse` has **two user arrays**, and only `X` is an array-of-decision-variables letter;
-`B of int` is the Boolean-auxiliary family, `I`/`V` are `element`'s scalars, and `O` is
-`gcc`'s occurrence array. So `Y` would have to borrow a letter and print as somebody else's.
-`decomps/write.md` records exactly this for `write`'s second array and calls it **G2**,
-"sharper here than in the cases already recorded, because the collision is with the auxiliary
-family". **`decomps/inverse.md` does not mention G2 at all**, and the two files describe the
-same situation. This paragraph is reasoning read off `explenation generator.ml:3` and
-`decomps/write.md`, not a measurement, and it is recorded so the next session does not
-rediscover it while writing the value.
+**A second gap the spec does not record, read off the source: G2, and it bites on the name
+rather than on the writing.** `decomps/write.md` records G2 for `write`'s second array and
+says the second array "would print as a Boolean auxiliary", which for `B of int` is worse
+than it sounds — `printvartex` **raises** on `B i` (l.517), so that encoding aborts the run
+rather than printing badly. **But `B` is not the only candidate and `O` is available**, per
+the paragraph above, so the correct statement for a two-array constraint is: encodable, with
+one array printing under a letter that means something else. **`decomps/inverse.md` does not
+mention G2 at all**, and `decomps/write.md` mentions it without noticing `O`. Both are read
+off `explenation generator.ml:3, 517, 522, 829`, not measured.
 
-**Nothing here is validated, flagged or refuted.** There is no artifact.
+**So the honest reading of the zero is: the value has not been written.** No gap refuses it,
+`make validate` has nothing to look at, and the work is one `let inverse = [...]` of four
+`Decomp`s plus an `explainall` line. **Nothing here is validated, flagged or refuted** —
+there is no artifact.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -143,7 +165,7 @@ index.
 | gap | what it blocks here |
 |---|---|
 | `G9` | the recorded one, and a **cost**: no `Global ⇔ Global` channel schema, so the two-array channel re-derives `element`'s multi-`Decomp` detour by hand (`docs/DECOMP_FORMAT_NOTES.md:77`) |
-| `G2` | **not in this constraint's spec; read off the source here.** `var_name` (l.3) has no letter for a second user array, so `Y` must borrow one — `decomps/write.md` records the same gap for `write`'s second array |
+| `G2` | **not in this constraint's spec; read off the source here.** `var_name` (l.3) has no letter *meaning* a second user array, so `Y` borrows `O` and prints as `gcc`'s occurrence array (`printvartex` l.522, `gccn` l.829). A legibility cost, not a wall — and **not** the `B i` raise at l.517 that `decomps/write.md`'s phrasing implies |
 | `G17` | no pivot-elimination pass. Not biting: `B1`/`B2` are pure reification scaffolding and wash out, exactly as `element`'s do (`decomps/inverse.md`, "Auxiliaries") |
 | — | **not G8.** `inverse` channels over the whole of `[1,n]`; the subrange gap belongs to [`inverse_in_range`](inverse_in_range.md), which shares this row and this spec |
 
@@ -179,8 +201,14 @@ would land on the value-set gap and the subrange gap instead.
 - `decomps/_shapes-perm.md:53-100` (P3) and `decomps/_shapes.md` (S6) read → the shape and
   its renumbering; `decomps/_shapes-perm.md:88-92` for the "no third variable, so no scalar
   trap" point.
-- `explenation generator.ml:3` read, not run → `var_name`'s closed enum, for the G2
-  observation; `:834-838` read → `elem`, the existence proof that S6 is writable.
+- `explenation generator.ml` read, not run → `var_name`'s closed enum at **3**;
+  `printvartex`'s `B i` raise at **517** and its `O` case at **522**; `gccn`'s
+  `Global_devent (true, O, …)` at **829** — together the evidence that a second user array
+  is encodable today under a borrowed letter; `:834-838` → `elem`, the existence proof that
+  S6 is writable.
+- `grep -rn 'encodable today' catalog/` and `sed -n '/^## Status legend/,/^## /p'
+  catalog/README.md` → the new status value is used in prose in four entries and is **not**
+  in the legend. That is a run, not a reading.
 - `docs/DECOMP_FORMAT_NOTES.md:76-77` read → G8, G9 and the "was" column that translates
   `decomps/inverse.md`'s local numbers.
 - **The G2 observation is reasoning over the source, labelled as such in place.** Nothing
@@ -198,3 +226,10 @@ would land on the value-set gap and the subrange gap instead.
 3. **`catalog/inverse_fn.md` resolves to this file and quotes its Status row as
    `not reviewed`.** That quotation is stale as of this commit. Recorded under
    `## Cross-session requests` in `WORKLOG.md`; `inverse_fn.md` is not this session's.
+4. **`encodable today, not encoded` is used by this entry and is not defined in
+   `catalog/README.md`'s legend or in `catalog/TEMPLATE.md`.** Measured 2026-09-21; see
+   Status.
+5. **`decomps/write.md`'s G2 paragraph says a second user array "would print as a Boolean
+   auxiliary".** With `B of int` it does not print at all — `printvartex` raises (l.517) —
+   and `O` is an available alternative the paragraph does not mention. Both halves matter
+   to anyone encoding a two-array constraint.

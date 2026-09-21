@@ -107,9 +107,10 @@ position is a `var_name`.
 
 Everything [`write`](write.md)'s Status records holds: G18 blocks the *quantifier* form,
 `decomps/write.md`'s clause-per-position workaround (`B_j = A_j ∨ I = j`) needs only `rule1`
-and `rule4` and **has never been tested**, G9 costs the channel detour, and G2 is a hard
-stop on naming a second user array — encoding it as `B 1` makes `printvartex` raise (l.517),
-not merely print badly.
+and `rule4` and **has never been tested**, G9 costs the channel detour, and G2 costs the
+second user array its own name — `B 1` makes `printvartex` **raise** (l.517), while `O`
+prints as an indexed array (l.522) and is already used that way by `gccn` (l.829), so the
+array is encodable today wearing `gcc`'s name.
 
 **Two things are worse here than in `write`.** The workaround's clause becomes
 `B_j = A_j ∨ I_1 = j ∨ … ∨ I_k = j`, one `rule4` clause of width `k+1` per position, with
@@ -139,7 +140,7 @@ note either.
 |---|---|
 | `G18` | **the recorded one, `k` times.** `∀j ∉ {I_1..I_k}` with each `I_m` a decision variable; `Rel`'s second argument is an `ind_name` (l.10) — `docs/DECOMP_FORMAT_NOTES.md:86` |
 | — | **possible second blocker, unnumbered: `k` is instance-dependent.** Variable-length chains are routed to `D2`'s missing printer at `docs/DECOMP_FORMAT_NOTES.md:96-104` (W2-A's checked negative, **withdrawn**). Whether that applies to a `k`-fold exclusion is not settled in the repo. Reasoning, flagged |
-| `G2` | **a hard stop on naming.** Two user arrays, one letter; the second as `B 1` makes `printvartex` raise (l.517) |
+| `G2` | **a legibility cost.** Two user arrays; `B 1` makes `printvartex` **raise** (l.517), but `O` is a genuine second-array letter (l.522, `gccn` l.829), so the array is encodable today wearing `gcc`'s name. `decomps/write.md`'s "would print as a Boolean auxiliary" is wrong in both directions |
 | `G1` | inherited with the `all_different` side condition on the index array: the threshold never reaches the page (`docs/DECOMP_FORMAT_NOTES.md:10`) |
 | `G9` | a **cost**: no `Global ⇔ Global` channel schema (`docs/DECOMP_FORMAT_NOTES.md:77`) |
 | — | **the workaround is unchecked, not blocked**, and it widens to `k+1` literals per clause here |
@@ -160,7 +161,7 @@ single addition (`:86`, `:106-112`).
 - `ls cata/` → 16 files; no `writes.tex`. `grep -n -i 'write' 'explenation generator.ml'` →
   4 lines, all `write_footer` or a stderr comment (l.645, 716, 727, 741).
 - `explenation generator.ml` read, not run → `var_name` at **3**, `Rel` at **10**,
-  `printvartex`'s `B i` raise at **517**, `alldiff` at **808-809**.
+  `printvartex`'s `B i` raise at **517** and its `O` case at **522**, `gccn`'s `Global_devent (true, O, …)` at **829**, `alldiff` at **808-809**.
 - `CHRISTMAS_LIST.md:216`, `:106-109`, `:232-233` read → the literature, solver and route
   cells, the legend, the E2-unlock list.
 - `tools/data/minizinc-2.10.1-globals.txt:133` read → the name.
