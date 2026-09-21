@@ -13,7 +13,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 
 | | |
 |---|---|
-| **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `bin_packing_load` ranks **out of scope** (`- out of scope`) |
+| **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `bin_packing_load` ranks **A** (`A no-literature + solver-decomposes`) — it moved out of `- out of scope` under **D-0014** (2026-09-21), which decides scope by mechanism rather than family |
 | **Status** | **resolves to [`bin_packing_load.md`](bin_packing_load.md)**, whose Status row reads `not reviewed` (read off that file, 2026-09-21). **No status-legend value is asserted for `bin_packing_load_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/bin_packing_load_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`bin_packing_load.md`](bin_packing_load.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
@@ -100,7 +100,10 @@ did not edit that file**, and row 217 still reads `—`.
 is a genuine defect worth naming: `tools/mzn_coverage.py` ranks on the literature and solver
 columns, row 217 leaves both blank, so all eleven `*_fn` names land in `- unclassified` while
 their bases are spread across **A**, **B**, **C** and **out of scope**. `bin_packing_load` is
-**out of scope**. The eleven are not unclassifiable; they are unclassified because a row that
+**A**, and it got there *after* these entries were drafted: **D-0014** (2026-09-21) moved it,
+`bin_packing` and `_capa` out of `- out of scope` on the ground that its route is **E8** — gap
+G11, weighted Boolean sums — the identical gap `knapsack` carries, and `knapsack` was already
+tier A. The `_fn` row moved nowhere, because a blank cell is unaffected by a scope decision. The eleven are not unclassifiable; they are unclassified because a row that
 describes a *syntactic* family has nothing to put in a *solver* column. Fixing it means either
 filling row 217 or teaching the tool the `_fn` → base mapping, and neither file is this
 session's.
@@ -205,7 +208,7 @@ gaps mean; none is attributed to `bin_packing_load_fn` itself.
 ## How this entry was produced
 
 - `python3 tools/mzn_coverage.py --rank --json` (2026-09-21) → `bin_packing_load_fn` in `- unclassified`,
-  no E-codes parsed, `CHRISTMAS_LIST.md` line 217; and `bin_packing_load` in `- out of scope`.
+  no E-codes parsed, `CHRISTMAS_LIST.md` line 217; and `bin_packing_load` in `A no-literature + solver-decomposes` (re-run after **D-0014**; it was `- out of scope` before that decision landed).
   The two tiers for one object are the artifact reported above.
 - `CHRISTMAS_LIST.md:217` read → the `*_fn` row: literature `—`, solver `—`, route
   "not separate constraints; they call the predicate form", quoted verbatim above.
