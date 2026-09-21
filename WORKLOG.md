@@ -897,3 +897,48 @@ of the `alldifferent` bounds rule and the `cumulative` filtering rules, which th
 themselves omit as "analogous"; Katsirelos 2008 and Rochart 2005, the `gcc`-specific
 ancestors. Nothing was blocked — these were budget choices, and each file says so in its own
 "What was not sourced".
+
+### 2026-09-21 — C2 (sourcing the published explanations) — CLOSED
+
+`catalog/_literature/{alldifferent,cumulative,gcc}.md` + README (`3ba4139`, `65983de`), 944
+lines. **6 fetches of a 15 cap.** Every quote transcribed locally — `curl` to the author's host
+is WAF-blocked, so it fetched the PDFs and read them with `pdftotext -raw` rather than trusting
+a summariser — and page pointers were re-verified page by page, with several first-draft numbers
+corrected before committing. That is the standard this directory should hold to.
+
+**My brief named the wrong paper.** I attributed the Hall-set explanation to Downing, Feydy,
+Stuckey 2012 *Explaining flow-based propagation* (CPAIOR). It is **Explaining alldifferent,
+ACSC 2012 (CRPIT 122)**. `CHRISTMAS_LIST.md:116` already had it right and C2 caught it. Second
+time this wave that a session has corrected a factual error in its own brief.
+
+**Result 1 — two of the three published explanations are structurally out of reach, and that is
+a finding, not a failure.** `alldifferent`'s bounds-consistent Hall-interval rule (§5) and
+domain-consistent SCC rule (§6) and the whole `gcc` flow rule quantify over **run-time objects**:
+a union-find interval, an SCC of a matching's residual graph, a Ford–Fulkerson cut. There is no
+index-set expression for "the arcs crossing an SCC". **E4 is necessary but not sufficient** —
+counting across sums buys `[c_j ≤ 1]`, it does not buy the cut. W4-T2 should be budgeted as a
+clean negative and written up as one.
+
+**Result 2 — `cumulative` is the opposite case and the better target by a distance.** Schutt et
+al.'s own **TimeD** decomposition (§5.1) is a `rule1` reified equivalence feeding a Boolean sum
+≤ — *this generator's exact shape* — and the paper states TimeD and the global propagator have
+**the same propagation strength**. That is a published claim that a decomposition of this shape
+loses nothing, and it is the strongest external support this method has. W4-T3 promoted.
+
+**Result 3 — none of the three papers proves any explanation minimal.** Measured: "minimal"
+occurs exactly once in the `alldifferent` paper, about an algorithm; Schutt et al. leave two
+minimality questions explicitly open; Downing et al. call the flow rule "the base explanation".
+**Calibration must therefore compare on the papers' own implication-strength order, not on the
+validator's minimality.** W3-T5 corrected accordingly — this changes the method of the
+deliverable, not just a number.
+
+**First calibration verdict, available now.** `cata/alldifferent.tex`'s rule universally
+quantifies its premise over all `i' ≠ i`; Downing §4's value-consistent rule uses a **single**
+literal, `[x_h = v] → [x_i ≠ v]`. Ours is sound, **strictly weaker for n > 2**, and coincident
+at `n = 2` — which is exactly the "fires only at `n=2`" observation, now with a citable
+counterpart. This is D-0013's first real result: *weaker than published, and here is the
+difference.*
+
+**Not sourced, all budget choices rather than blocks:** the typeset Springer/CRPIT versions (all
+three read as preprints, with a pagination caveat in each file), the symmetric upper-bound forms
+the papers themselves omit, and Katsirelos 2008 / Rochart 2005.
