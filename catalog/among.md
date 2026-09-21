@@ -202,3 +202,11 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
    table-separator row (`|---|---|---|---|`); the `among` row is **129**.
 3. `docs/DECOMP_FORMAT_NOTES.md:52` (G5) likewise cites "generator lines 418-420" and
    "generator lines 406-409" for `nvalues`; the current values are **851-853** and **839-842**.
+
+4. **Two different pre-W1-T2 rule counts for this entry.** `docs/VALIDATOR.md:329` says
+   `among` held **3** rules; `docs/ROADMAP.md:48` books the W1-T2 change as `among 2→0`.
+   Every other emptied entry agrees across the two documents (`range` 3, `regular` 2,
+   `roots` 4). The likely reconciliation is that the two counts were taken either side of
+   W1-T9, whose `allequal` `EXAND`/`EXOR` repair changed rule counts in several entries
+   (`docs/ROADMAP.md:53`) — but that is inference, and neither number was re-measured here,
+   because the rules no longer exist to count. Today's count is **0** either way.
