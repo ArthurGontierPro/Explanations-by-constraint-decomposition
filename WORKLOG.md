@@ -69,6 +69,7 @@ session picks it up.
 | W1-T11(a) + priority ranking | `tools/mzn_coverage.py`, `docs/COVERAGE.md` | orchestrator (2026-09-21) | 2026-09-21 |
 | Catalog: format + first entries | `catalog/**` (new) | C1 (2026-09-21) | 2026-09-21 |
 | Catalog: sourcing the published explanations | `catalog/_literature/**` (new) | C2 (2026-09-21) | 2026-09-21 |
+| Catalog: merge literature + write calibration verdicts (W3-T5) | `catalog/*.md` (not `_literature/`) | C3 (2026-09-21) | 2026-09-21 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
