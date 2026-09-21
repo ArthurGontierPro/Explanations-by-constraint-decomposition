@@ -21,7 +21,7 @@
 | **Status** | `<one status-legend value, verbatim>` |
 | **Generated** | `<k>` rules in `cata/<file>.tex` |
 | **Validator** | `<k SOUND and MINIMAL, k flagged>` / `out of scope: <reason>` |
-| **Calibration** | `<agrees / weaker / incomparable / pending C2 / no published rule>` |
+| **Calibration** | `<agrees / weaker / stronger / incomparable / out of reach / no published rule>` |
 | **Last measured** | `<YYYY-MM-DD>`, `<the commands run>` |
 
 <!--
@@ -33,7 +33,12 @@
   Validator       the verdict counts from YOUR OWN `make validate` run, for this
                   entry alone. If the entry is out of scope, say so and give the
                   machine-printed reason, not a paraphrase.
-  Calibration     one word, expanded in the Calibration section below.
+  Calibration     one verdict from the vocabulary below, expanded in the
+                  Calibration section. The comparison is on **implication
+                  strength**, never on minimality: no paper sourced so far
+                  proves an explanation minimal (W3-T5, method corrected
+                  2026-09-21). `out of reach` is a first-class verdict, not a
+                  failure to compare.
   Last measured   the date and the literal commands. "Read off the source" and
                   "measured" are different claims (CLAUDE.md); this row says which.
 -->
@@ -164,11 +169,35 @@ minimal means no premise is droppable, not that the rule is strong.>`
 
 ## Calibration (W3-T5, D-0013)
 
-**Verdict:** `<agrees / weaker than published / incomparable / pending C2 / no
-published rule exists>`
+**Verdict:** `<agrees / weaker than published / stronger than published /
+incomparable / out of reach / no published rule exists>`
 
-`<The comparison, once C2 has sourced the published shape. "Generated rule is
+`<The comparison against the shape sourced in catalog/_literature/<name>.md.
+Compare on IMPLICATION STRENGTH — does our premise imply theirs, theirs ours,
+or neither — and say at which arities the comparison holds. "Generated rule is
 sound but strictly weaker than <author>'s" is a RESULT (D-0013), not a failure.>`
+
+<!--
+  ---- Calibration ----
+  | verdict | means |
+  |---|---|
+  | `agrees`            | same rule up to renaming, at the stated arities |
+  | `weaker`            | our premise implies theirs; theirs does not imply ours, so their rule fires in strictly more states |
+  | `stronger`          | theirs implies ours and not conversely |
+  | `incomparable`      | both expressible in a common vocabulary, neither premise implies the other |
+  | `out of reach`      | no comparison is statable, because the published premise is not expressible here at all — typically indexed by a run-time object (a Hall set, an SCC, a graph cut). FIRST-CLASS, not a failure |
+  | `no published rule` | CHRISTMAS_LIST.md records no explanation for this constraint |
+
+  Do NOT compare on the validator's minimality. Measured 2026-09-21 (C2): none
+  of the three papers sourced proves any explanation minimal — Downing et al.
+  call theirs "the base explanation", Schutt et al. leave two minimality
+  questions open. Minimality is a floor; the papers' own order is implication.
+  Say WHICH arities the comparison holds at: `alldifferent` coincides with
+  Downing §4 at n = 2 and is strictly weaker for every n >= 3.
+  A verdict of `out of reach` still names what is out of reach and why, and
+  says whether a numbered gap would change it (cumulative: G11 + G15) or
+  nothing on the gap list would (gcc: E4 is necessary but not sufficient).
+-->
 
 ## Gaps
 

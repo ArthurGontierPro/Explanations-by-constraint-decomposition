@@ -59,6 +59,22 @@ dropped without losing soundness. It does not mean the rule is useful:
 The verdict vocabulary itself (`SOUND and MINIMAL`, `UNSOUND`, `AMBIGUOUS`, `VACUOUS`,
 `UNSOUND(firing)`, `NOT MINIMAL`) is defined in `docs/VALIDATOR.md`, "Quantifier ambiguity".
 
+## Calibration verdicts
+
+A separate axis from the status legend, and a separate question: how the generated rule
+compares to the **published** one (D-0013, W3-T5). One of `agrees`, `weaker`, `stronger`,
+`incomparable`, `out of reach`, `no published rule`; `catalog/TEMPLATE.md` defines each.
+
+Two rules about it, both learned the hard way in wave three:
+
+- **Compare on implication strength, not on minimality.** Measured: none of the three papers
+  sourced so far proves any explanation minimal. Sound-and-minimal is this repo's floor, and
+  `alldifferent` — `SOUND and MINIMAL` and strictly weaker than Downing et al. §4 at every
+  `n ≥ 3` — is the standing proof that the two axes are different.
+- **`out of reach` is a first-class verdict.** When the published premise is indexed by a
+  run-time object (a Hall set, an SCC, a flow cut), no implication either way is statable.
+  Saying so is a result; scoring it as `weaker` would be a fabrication.
+
 ## How an entry is produced
 
 1. **Tier** — `python3 tools/mzn_coverage.py --rank --json out.json`, read the constraint's
@@ -109,6 +125,7 @@ _literature/       sourced published rule shapes (owned by the literature sessio
 | entries written | 3 of 118 |
 | tier D | `alldifferent`, `cumulative` |
 | tier C | `gcc` (`global_cardinality`) |
+| calibrated (W3-T5) | 3 of 3 — `alldifferent` **weaker**, `cumulative` **out of reach** (by gaps G11 + G15), `gcc` **out of reach** (structurally) |
 
 Chosen because they are the only tier-D/tier-C constraints for which the generator currently
 emits anything at all.
