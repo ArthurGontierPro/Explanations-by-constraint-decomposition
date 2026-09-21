@@ -67,9 +67,14 @@ Decomp (3, rule7, [Decomp_devent (true, (B 2), id, oni)])
 ```
 
 — a `rule1` grid, an S4 existential restricting the value to the parameter set `D 4`, and a
-Boolean sum over **all** of `i`. `sliding_among` needs the last step's `oni` (`OpOn (FI, D 1)`,
-`explenation generator.ml:777-779` for the family, `:459` for what `D 1` is) replaced by a sum
-over a window `[j, j+seq-1]` — a *subrange* of `[1,n]`, one per window position.
+Boolean sum over **all** of `i`. `sliding_among` needs the last step's `oni`
+(`OpOn (FI, D 1)`, `explenation generator.ml:763`; `:460` prints `D 1` as the whole `[1,n]`)
+replaced by a sum over a window `[j, j+seq-1]` — a *subrange* of `[1,n]`, one per window
+position.
+
+**And the operator for that already exists.** `oniin set` (`:767`) is `oni` with the index set
+as an argument, and `among` itself uses the value-family twin `ontin (D 4)` at `:852`. So the
+missing thing is not an operator: it is a *set*, and `ind_set` cannot name one.
 
 **That single substitution is the whole entry**, and it is refused twice: once for the value
 set, once for the window. Both are **G8**, "`ind_set` names only whole predefined ranges — no
@@ -108,8 +113,9 @@ undefined set for the window, so the expected result is 0 rules for the same rea
   `ind_set_defined` (`:459`) admits `D 1`, `D 2`, `D 3` and nothing else, and `D2` — the hook
   that could name a computed set — has no printer and **raises** (`:464`, and
   `docs/DECOMP_FORMAT_NOTES.md:96-107`, where W2-A's "checked negative" on `D2` was withdrawn).
-  Note that the *shift* operators exist (`iplus`, `imoin`, `:793-794`) and are what `increasing`
-  and `regular` use; what is missing is not arithmetic on an index but a **set** defined by it.
+  Note that the *shift* operators exist (`iplus`, `imoin`, `:792-793`) and are what `increasing`
+  and `regular` use, and `oniin`/`ontin` (`:767-768`) already take a set as an argument. What is
+  missing is not arithmetic on an index, nor an operator to consume the set: it is the **set**.
 - **G1, the bounds.** `sliding_among(lo, up, …)` compares each window's count against two bare
   integers, and no bare integer reaches the printed rule — the defect
   `at_least`/`at_most`/`exactly` share (`decomps/_shapes.md`, S2; see [`at_most.md`](at_most.md)).
@@ -150,7 +156,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
   solver legend.
 - `tools/data/minizinc-2.10.1-globals.txt:111` read → the name.
 - `docs/ROADMAP.md:90` read → W3-T2 files `sliding_among` in the sequencing family.
-- `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459` (`ind_set_defined`), `:464`
+- `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459-460` (`ind_set_defined` and the three defined ranges), `:464`
   (`printind_set`'s `D2` raise), `:777-779` (`sumi`/`oni`'s family), `:793-794` (the index
   shifts), `:851-853` (`among`, quoted above).
 - `docs/DECOMP_FORMAT_NOTES.md:76` and `:96-107` read → G8's wording and the withdrawal of the

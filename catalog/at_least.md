@@ -104,7 +104,7 @@ constant is absent from the artifact.
 
 Nothing is generated because no `at_least` value exists in the generator. Authoring one is
 `rule1` + `rule6`, both of which already exist and are already exercised
-(`atleastnvalues`, `explenation generator.ml:845-848`, uses `rule6` in a channelled form), so
+(`atleastnvalues`, `explenation generator.ml:843-846`, uses `rule6` in a channelled form), so
 the block is not in the schemas. It is in the two things the format cannot print: the threshold
 `n` (**G1**) and the counted value `v` (**G8**; baking it in instead raises `Failure "hd"` at
 `explenation generator.ml:512` — measured, see [`at_most.md`](at_most.md)). Both are shared with
@@ -138,7 +138,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
   13 SOUND and MINIMAL, 21 flagged ==`; no line names `at_least`.
 - `CHRISTMAS_LIST.md:128` and `:106-109` read → the cells quoted above.
 - `tools/data/minizinc-2.10.1-globals.txt:29` read → the name.
-- `explenation generator.ml:845-848` read → `atleastnvalues`, the existing `rule6` use;
+- `explenation generator.ml:843-846` read → `atleastnvalues`, the existing `rule6` use;
   `:512` → the `hd` site; `:245-246` → `reified_devent`'s placeholder.
 - **Scratch generator run, 2026-09-21** — a copy of `explenation generator.ml` in this session's
   scratch directory, with `rule1` + `rule6` appended and `explainall [xac] … "cata/r4_atleast.tex"`.

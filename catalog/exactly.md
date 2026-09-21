@@ -56,8 +56,10 @@ Verified 2026-09-21. The machine-filled stub read this correctly.
 2. `∑_i B_i = n` — `rule7`, single `Decomp_devent`, no `Reified_devent`.
 
 **Same shape as `at_most` and `at_least`, comparator `=`** (`decomps/_shapes.md`, convention 2).
-`rule7` is already exercised in exactly this single-`Decomp_devent` form by `gcc`
-(`explenation generator.ml:813-814`) and `among` (`:851-853`). The shape analysis, and the two
+`rule7` is already exercised in exactly this single-`Decomp_devent` form by `among`
+(`explenation generator.ml:851-853`) and by the `gcc` value at `:813-814` — though that second
+one is **dead code**, per roadmap W1-T12: `cata/gcc.tex` is produced by `gccn` (`:827-829`), not
+by `gcc`. The shape analysis, and the two
 gaps that empty this entry, are in [`at_most.md`](at_most.md) and are not repeated.
 
 ## Scope of this entry
@@ -136,8 +138,9 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
   13 SOUND and MINIMAL, 21 flagged ==`; no line names `exactly`.
 - `CHRISTMAS_LIST.md:128`, `:106-109` read → the cells quoted above.
 - `tools/data/minizinc-2.10.1-globals.txt:62` read → the name.
-- `explenation generator.ml:813-814` and `:851-853` read → the two existing single-`Decomp_devent`
-  `rule7` uses (`gcc`, `among`); `:512` → the `hd` site.
+- `explenation generator.ml:851-853` read → `among`'s single-`Decomp_devent` `rule7`; `:813-814`
+  → the `gcc` value (dead code, W1-T12); `:827-829` → `gccn`, which actually emits
+  `cata/gcc.tex`; `:512` → the `hd` site.
 - **Scratch generator run, 2026-09-21** — a copy of the generator in this session's scratch
   directory with `rule1` + `rule7` appended and `explainall [xac] … "cata/r4_exactly.tex"`.
   OCaml 5.1.1, exit 0, **2** `\frac` (`grep -o`), footer as quoted, no `DEFECT` line.
