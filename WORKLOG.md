@@ -1001,3 +1001,31 @@ At the author's request. `git checkout -b explanation-catalog` from `master` at 
 this session's work. Git forbids spaces in ref names, so the author's "ecplanation catalog"
 became `explanation-catalog`. **`master` is untouched and unpushed.** All catalog sessions from
 here work on the branch; the orchestrator pushes, sessions commit locally.
+
+### 2026-09-21 — E3 (catalog index) — CLOSED
+
+`tools/catalog_index.py` + `catalog/INDEX.md` (`b2ac3f5`). Regenerate with
+`python3 tools/catalog_index.py`; `--dry-run` prints, `--validate-log FILE` reuses a saved run.
+Orchestrator re-ran it: numbers reproduce, warnings fire.
+
+**The coverage claim is now measured, and the number is small on purpose:** 3 of 118 have
+catalog entries, 8 of 118 have any generated rule, 6 of 118 have any validated one. By tier:
+A 36 globals (0 entries, 5 generated, 4 validated), B 8 (0/0/0), C 9 (1/1/1), D 19 (2/2/1).
+E1 and E2 are adding twelve more entries as this is written, so **regenerate before quoting.**
+
+**The finding that came out of building it: three shipped catalog files correspond to no
+MiniZinc 2.10.1 global at all.** `atleastnvalues` and `atmostnvalues` are **gccat** names
+(`atleast_nvalue` / `atmost_nvalue`); MiniZinc says it with `nvalue`. `sum` is the orphan and is
+ambiguous besides, between the release's `sum_pred` and `sum_set`. So of the 16 entries the 2020
+prototype ships, **only 13 map onto the target list** — worth knowing before anyone writes "16 of
+118". Routed to E2 so its two entries say so in place rather than looking like coverage.
+
+**Built the way it should have been:** the alias map is an editable `ALIAS` dict at the top of
+the script, every entry sourced to a specific `CHRISTMAS_LIST.md` row in a comment above it, and
+unmatched files are **printed as warnings rather than silently dropped** — the one failure mode
+that would have inflated coverage. `gcc → global_cardinality` maps the base form only;
+`_low_up` and friends are a separate G4 gap and were deliberately not fanned out.
+
+**Stated in its own footer, correctly:** the index cannot show whether a rule is right beyond
+the validator's floor, cannot show calibration (that lives per entry), and shows `—` for the
+blocking gap of any constraint that has no entry yet, since it greps the entries themselves.
