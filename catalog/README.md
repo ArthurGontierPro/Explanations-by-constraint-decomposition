@@ -100,7 +100,7 @@ The rules themselves are not written by hand. `cata/*.tex` is the artifact; an e
 eval $(opam env --switch=baguette --set-switch)   # OCaml 5.1.1; `which ocaml` is empty without this
 ocaml 'explenation generator.ml'                  # rewrites cata/*.tex in cwd
 make check                                        # golden-file byte-diff + warning census
-make validate                                     # verdicts; exits 1 today by design
+make validate                                     # verdicts; exits 0 (only a broken validator fails)
 ```
 
 `make check` proves **reproducibility**, not correctness. `make validate` is the one that

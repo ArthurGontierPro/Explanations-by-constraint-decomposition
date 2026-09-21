@@ -60,6 +60,7 @@ session picks it up.
 | W2-T5 (pilot) | W1-D (2026-09-18) | `decomps/*.md` × 6 + `docs/DECOMP_FORMAT_NOTES.md`, 270 lines. Commit `c6a4247`. Five format gaps pinned to constraints — that list is the W2-T1 payload |
 | W1-T3 + W1-T7 | W1-S (2026-09-18) | `1304386`, `463534f`. `make check` passes (orchestrator re-ran: exit 0). Goldens gained a diagnostics block and nothing else; W1-T7 changed zero goldens |
 | W1-T8 | W1-V (2026-09-18) | `6be1f30`, `c3ce7d9`, `3ccaf97`. Validator now covers 11 entries. Orchestrator re-ran it: 42 rules, 11 sound and minimal, 31 flagged, 14 out of scope |
+| Catalog C1/C2/C3 | C1, C2, C3 (2026-09-21) | `catalog/**`. First three entries complete: `alldifferent` **weaker than published**, `gcc` **out of reach**, `cumulative` **out of reach by gaps, not by structure** |
 | W2-T5 §3+§4 | `decomps/` files for its own constraints + `decomps/_shapes-seq.md` + `decomps/_gaps-seq.md` | W2-A (2026-09-18) | 2026-09-18 |
 | W2-T5 §5+§6 | `decomps/` files for its own constraints + `decomps/_shapes-ext.md` + `decomps/_gaps-ext.md` | W2-B (2026-09-18) | 2026-09-18 |
 | W2-T5 §1+§9 | `decomps/` files for its own constraints + `decomps/_shapes-perm.md` + `decomps/_gaps-perm.md` | W2-C (2026-09-18) | 2026-09-18 |
@@ -943,3 +944,49 @@ difference.*
 **Not sourced, all budget choices rather than blocks:** the typeset Springer/CRPIT versions (all
 three read as preprints, with a pagination caveat in each file), the symmetric upper-bound forms
 the papers themselves omit, and Katsirelos 2008 / Rochart 2005.
+
+### 2026-09-21 — C3 (merge + calibration) — CLOSED. The catalog's first three entries are done.
+
+**The three verdicts, which are the first output of D-0013:**
+
+1. **`alldifferent` — weaker than published.** Our premise `⋀_{i'≠i} X_{i'}=t` implies Downing
+   §4's single literal `[x_h=v]`; the converse fails, so their rule fires strictly more often.
+   Coincident at `n=2`; for `n≥3` our premise contradicts `alldifferent` itself, so the rule is
+   sound and **can never fire — while `make validate` still calls it SOUND and MINIMAL**. That
+   is the floor-versus-strength distinction, measured against a citation instead of asserted.
+2. **`gcc` — out of reach.** No index-set expression exists for "the arcs crossing an SCC", so
+   neither implication direction is even statable. C3 sharpened this correctly: it is a
+   **quantification** gap, not a vocabulary one — the entry already carries occurrence-count
+   atoms of the kind the paper's own nogood uses. The 4 validated rules are marked as answering
+   a different question rather than scored against it.
+3. **`cumulative` — out of reach by gaps, not by structure**, and that distinction is the
+   valuable part. Schutt et al.'s TimeD is `rule1 → rule3 → rule5`, which *is* the shipped
+   `cumul` chain (l.810–812) at `r_i = 1, c = 1`. Closing **G11** and **G15** puts the generator
+   on the shape the paper says matches the global propagator's strength. Conditional, nothing
+   measured, and the entry says so.
+
+**C3 corrected two of C1's priors rather than inheriting them.** C1's `cumulative` entry said
+"the honest comparison is against the unary special case of the same papers" — the paper gives
+no unary special case; the comparable object is TimeD and the unary specialisation is *this
+repo's*. And C1's `alldifferent` Scope attributes the missing `X_i=t` rule to E4, but the
+published equality rule comes from an SCC, so E4 is not the route to it. Both recorded.
+
+**Template changed, minimally and with a reason:** the verdict vocabulary lacked `out of reach`
+(two of the three verdicts) and `stronger` (possible once you compare by implication). Six
+verdicts now defined in `TEMPLATE.md`, with the "never compare on minimality" rule beside them,
+and `README.md` matched.
+
+**What a reader still cannot tell, recorded by C3 unprompted** — soundness beyond `n,m ≤ 4` and
+beyond a hand-encoded ground semantics; whether the `cumulative` rules are sound at all (no
+verdict exists); whether the TimeD correspondence survives contact with the generator, since the
+shift direction cannot be read off the index operators; and what the CPAIOR 2013
+time-table-edge-finding paper says (`NOT SOURCED`).
+
+**One loose end it flagged and I fixed (`Makefile`, `catalog/README.md`): `make validate` exits
+0, not 1.** The validator *binary* exits 1 when it flags rules, but the target maps only exit 2
+— a broken validator — to a failure. The wrong claim was mine, written into the Makefile
+comment earlier in this session and copied from there into the catalog README.
+
+**Tension left open, deliberately:** `decomps/cumulative.md` says "E4 makes it good", while the
+paper's TimeD statement says a decomposition of this shape already matches the global
+propagator. One of those is wrong and the spec corpus is not the catalog's to edit.

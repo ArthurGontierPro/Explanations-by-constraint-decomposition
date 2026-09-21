@@ -145,11 +145,16 @@ check-warnings:
 # ---------------------------------------------------------------------------
 # Exit status: 0 nothing flagged, 1 something flagged, 2 the validator's own
 # self-test or cross-check failed (in which case its verdicts mean nothing).
-# Today it exits 1: of 42 rules in 11 entries, 11 are sound and minimal and 31
-# are flagged; a further 14 rules in 5 entries are out of scope because the
-# artifact is underspecified (W1-T2). That is the expected state until W1 fixes
-# them, so `validate` is NOT part of `make check`. Re-measure these numbers, do
-# not quote them.
+# Measured 2026-09-21: 34 rules in 11 entries, 13 sound and minimal, 21 flagged;
+# 2 rules in 5 entries out of scope because the artifact is underspecified
+# (W1-T2). Re-measure these numbers, do not quote them.
+#
+# NOTE on exit codes, because an earlier version of this comment got it wrong:
+# the validator BINARY exits 1 when it flags rules, but this target maps only
+# exit 2 (the validator's own self-test failing) to a failure -- so
+# `make validate` exits 0 even with 21 rules flagged. Flagged rules are the
+# expected state until W1 fixes them, which is why `validate` is not part of
+# `make check`.
 validate: $(BUILDDIR)/validator
 	@$(BUILDDIR)/validator . ; \
 	 s=$$?; \
