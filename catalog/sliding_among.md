@@ -78,7 +78,7 @@ missing thing is not an operator: it is a *set*, and `ind_set` cannot name one.
 
 **That single substitution is the whole entry**, and it is refused twice: once for the value
 set, once for the window. Both are **G8**, "`ind_set` names only whole predefined ranges — no
-subrange, no exclusion" (`docs/DECOMP_FORMAT_NOTES.md:76`).
+subrange, no exclusion" (`docs/DECOMP_FORMAT_NOTES.md:80`).
 
 ## Scope of this entry
 
@@ -112,7 +112,7 @@ undefined set for the window, so the expected result is 0 rules for the same rea
   `j`. `ind_set` is `D of int | D2 of ind_name list` (`explenation generator.ml:6`);
   `ind_set_defined` (`:459`) admits `D 1`, `D 2`, `D 3` and nothing else, and `D2` — the hook
   that could name a computed set — has no printer and **raises** (`:464`, and
-  `docs/DECOMP_FORMAT_NOTES.md:96-107`, where W2-A's "checked negative" on `D2` was withdrawn).
+  `docs/DECOMP_FORMAT_NOTES.md:100-111`, where W2-A's "checked negative" on `D2` was withdrawn).
   Note that the *shift* operators exist (`iplus`, `imoin`, `:792-793`) and are what `increasing`
   and `regular` use, and `oniin`/`ontin` (`:767-768`) already take a set as an argument. What is
   missing is not arithmetic on an index, nor an operator to consume the set: it is the **set**.
@@ -159,7 +159,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 - `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459-460` (`ind_set_defined` and the three defined ranges), `:464`
   (`printind_set`'s `D2` raise), `:777-779` (`sumi`/`oni`'s family), `:793-794` (the index
   shifts), `:851-853` (`among`, quoted above).
-- `docs/DECOMP_FORMAT_NOTES.md:76` and `:96-107` read → G8's wording and the withdrawal of the
+- `docs/DECOMP_FORMAT_NOTES.md:80` and `:100-111` read → G8's wording and the withdrawal of the
   `D2` checked negative.
 - `catalog/among.md` and `catalog/count.md` read, not run → the two measured 0-rule results the
   inference in "Scope of this entry" rests on. **That inference is labelled as an inference in

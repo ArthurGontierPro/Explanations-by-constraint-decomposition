@@ -110,7 +110,7 @@ is unsound for this constraint at the excepted value.
 its three source lines. The `_0` variant adds no gap of its own and removes none: see
 "Decomposition used here" for why fixing the excepted value to a constant does not help.
 
-`docs/DECOMP_FORMAT_NOTES.md:76` names `all_different_except*` — the star covering both — as
+`docs/DECOMP_FORMAT_NOTES.md:80` names `all_different_except*` — the star covering both — as
 the constraint that hit G8.
 
 ## Calibration (W3-T5, D-0013)
@@ -146,7 +146,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 - `tools/data/minizinc-2.10.1-globals.txt:19` read → the name.
 - `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459-460` (`ind_set_defined` and
   the three printed ranges), `:464` (`printind_set`'s `D2` raise), `:808-809` (`alldiff`).
-- `docs/DECOMP_FORMAT_NOTES.md:76` read → G8 and the `all_different_except*` attribution.
+- `docs/DECOMP_FORMAT_NOTES.md:80` read → G8 and the `all_different_except*` attribution.
 - `decomps/all_different.md` read → the family spec and its "`0` for the `_0` variant" reading.
 - `catalog/all_different_except.md` (this session's sibling entry) read → everything this entry
   defers to rather than restating.

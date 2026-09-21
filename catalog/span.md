@@ -66,7 +66,7 @@ right" — and the argument has two steps:
 
 1. `S = min_i(start_i)` compares two **decision variables**. `Global_event`/`ind_modifs`
    express `X_i = t` for `t` an index-derived domain *value*, never `X_i = Y_i`
-   (`docs/DECOMP_FORMAT_NOTES.md:34-41`, **G3**). `decomps/maximum.md` calls this "not a
+   (`docs/DECOMP_FORMAT_NOTES.md:38-45`, **G3**). `decomps/maximum.md` calls this "not a
    derivation gap, it is a missing primitive", and `span`'s min over subtask starts is
    `minimum` under another name.
 2. **The precedent the E0 claim rested on does not exist.** `decomps/span.md` reused
@@ -103,7 +103,7 @@ slice — those get as far as a refusal or a crash.
 **`nothing generated — blocked on G3`.**
 
 G3 — "only variable-vs-domain-value comparisons exist, never variable-vs-variable" — is the
-most load-bearing gap in the consolidated list: `docs/DECOMP_FORMAT_NOTES.md:88-90` records
+most load-bearing gap in the consolidated list: `docs/DECOMP_FORMAT_NOTES.md:92-94` records
 that three independent families hit it (the counting pilot, `maximum`/`minimum`/`arg_*`, and
 `lex_less`), and it blocks `span` before a decomposition can be written, not after.
 
@@ -111,7 +111,7 @@ that three independent families hit it (the counting pilot, `maximum`/`minimum`/
 `span` at **E0**. That is inherited from `decomps/span.md`'s withdrawn Shape D reading; the
 correct route is whatever extension covers variable-vs-variable atoms, which the E-code table
 does not currently name — `CHRISTMAS_LIST.md`'s **E2** ("inequalities against expressions") is
-the nearest and `docs/DECOMP_FORMAT_NOTES.md:40-41` links G3 to it. **Recorded as a finding for
+the nearest and `docs/DECOMP_FORMAT_NOTES.md:44-45` links G3 to it. **Recorded as a finding for
 whoever owns `CHRISTMAS_LIST.md`; this session did not edit that file.**
 
 ## Calibration (W3-T5, D-0013)
@@ -149,7 +149,7 @@ for the contradiction and its resolution.
   "Contradictions between sessions" §1 and §2.
 - `explenation generator.ml:856-858` and `:859-861` read, not run → `roots` and `range`, which
   are Boolean sums and not a ∀/∃ pair; `:3` (`var_name`).
-- `docs/DECOMP_FORMAT_NOTES.md:34-41` and `:88-90` read → G3's wording, its link to E2, and the
+- `docs/DECOMP_FORMAT_NOTES.md:38-45` and `:92-94` read → G3's wording, its link to E2, and the
   three families that hit it.
 - **No scratch run**, for the reason in "Scope of this entry".
 - **Not fetched, not read:** the MiniZinc library (not vendored) and any paper. No web access.

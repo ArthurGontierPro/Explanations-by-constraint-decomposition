@@ -182,7 +182,7 @@ orphan and for the same row, which is the only row either name has.
 
 | gap | what it blocks here |
 |---|---|
-| `G14` | **reading (b) only, and binding there**: no summation over a variable-determined index set. `cumulatives` hit the same wall from the scheduling side (`docs/DECOMP_FORMAT_NOTES.md:82`) |
+| `G14` | **reading (b) only, and binding there**: no summation over a variable-determined index set. `cumulatives` hit the same wall from the scheduling side (`docs/DECOMP_FORMAT_NOTES.md:86`) |
 | `G11`, `G12`, `G13` | **not established as binding for reading (a)** — see "The conflict this entry exists to settle". They are the price of the AC-grid decomposition `decomps/sum_pred.md` chose, not of the constraint. They return the moment coefficients are real, which is [`knapsack`](knapsack.md) |
 | `G2` | `var_name` (`explenation generator.ml:3`) has no letter for "this constraint's own total"; the recovered `sum` borrows `N`, which is `nvalue`'s |
 | `D-0009` | not a gap but an open decision, and measured live here: all four rules of the working transcription bind an index name twice |

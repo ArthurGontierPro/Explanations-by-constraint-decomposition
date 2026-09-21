@@ -103,7 +103,7 @@ and not a weaker rule with a caveat.
 **`nothing generated — blocked on G8`.**
 
 `G8` is "**`ind_set` names only whole predefined ranges** — no subrange, no exclusion", and
-`docs/DECOMP_FORMAT_NOTES.md:76` names `all_different_except*` as the constraint that hit it.
+`docs/DECOMP_FORMAT_NOTES.md:80` names `all_different_except*` as the constraint that hit it.
 Measured against the source today, that is exactly right and there is no way around it:
 
 - `ind_set` is `D of int | D2 of ind_name list` (`explenation generator.ml:6`) — two
@@ -112,7 +112,7 @@ Measured against the source today, that is exactly right and there is no way aro
   `printind_set_int` (`:460`) prints them as `[1,n]`, `[1,m]`, `[1,n]`. A fourth `D k` is
   **refused** by W1-T2 rather than printed;
 - `D2`, the list-of-index-names hook that might have expressed an explicit value set, is used
-  by no decomposition and **raises** in the printer (`:464`). `docs/DECOMP_FORMAT_NOTES.md:96-107`
+  by no decomposition and **raises** in the printer (`:464`). `docs/DECOMP_FORMAT_NOTES.md:100-111`
   records that W2-A's "checked negative" on `D2` was **withdrawn** for this reason.
 
 **The decomposition can be written on paper and not encoded** — `decomps/all_different.md`'s own
@@ -143,7 +143,7 @@ cite. Recording that non-transfer is the point of the verdict here.
 
 | gap | what it blocks here |
 |---|---|
-| `G8` | **the binding one and the only one.** No subrange, no exclusion: the summed value family cannot be `[1,m] \ v`. `docs/DECOMP_FORMAT_NOTES.md:76` names this constraint against it |
+| `G8` | **the binding one and the only one.** No subrange, no exclusion: the summed value family cannot be `[1,m] \ v`. `docs/DECOMP_FORMAT_NOTES.md:80` names this constraint against it |
 | `E4` | not a gap — the missing `X_i = t` direction, inherited from `all_different` and unchanged by G8 |
 | `G1` | **not** binding here, unlike the counting family: the threshold is 1, the same invisible 1 `all_different` already lives with, and `all_different_except` does not vary it |
 
@@ -165,7 +165,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 - `explenation generator.ml` read, not run: `:6` (`ind_set`'s two constructors), `:459-460`
   (`ind_set_defined` and the three defined ranges), `:464` (`printind_set`'s `D2` raise),
   `:808-809` (`alldiff`).
-- `docs/DECOMP_FORMAT_NOTES.md:76` read → G8's wording and the constraints named against it;
+- `docs/DECOMP_FORMAT_NOTES.md:80` read → G8's wording and the constraints named against it;
   `:96-107` → the withdrawal of the `D2` checked negative.
 - `decomps/all_different.md` and `decomps/_shapes.md` (S2) read → the family spec and the shape.
 - **No scratch run for this entry.** The one substitution that matters cannot be written down:
@@ -177,7 +177,7 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 **Discrepancies noted, not fixed** (`decomps/` is not this session's).
 
 1. **`decomps/all_different.md:17` says `_except` is "blocked by gap G6" — that number moved.**
-   In the consolidated wave-two numbering (`docs/DECOMP_FORMAT_NOTES.md:72-76`) this gap is
+   In the consolidated wave-two numbering (`docs/DECOMP_FORMAT_NOTES.md:76-90`) this gap is
    **G8** and **G6 is now the 2-D constant table** that blocks `table`. The file is using its
    own pre-consolidation, per-family numbering ("was perm G6" in the reconciliation table), and
    a reader who takes the G6 at face value today lands on the wrong gap.
@@ -186,5 +186,5 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
    "line 6"; measured, `printind_set` is at **462-464** and `ind_set` at **6**.
 3. **The same file says `D2` "doesn't handle it beyond `\"setfils\"` — a placeholder string".**
    That string no longer exists: W1-T2 replaced it with a raise
-   (`explenation generator.ml:464`), as `docs/DECOMP_FORMAT_NOTES.md:101-103` records. The gap
+   (`explenation generator.ml:464`), as `docs/DECOMP_FORMAT_NOTES.md:105-107` records. The gap
    is unchanged; only the symptom is.

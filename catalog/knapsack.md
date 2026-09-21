@@ -195,5 +195,5 @@ for the E-code table.
    Measured 2026-09-21: **355**, **369**, **383**. Already on the W1-T14 list for the
    `_shapes-ext.md` copy of the same numbers; recorded here as still true of this file.
 2. **`decomps/knapsack.md` still labels the weights gap "X5"** alongside G11. X5 is the
-   pre-consolidation `_gaps-ext.md` number; `docs/DECOMP_FORMAT_NOTES.md:79` reassigns it to
+   pre-consolidation `_gaps-ext.md` number; `docs/DECOMP_FORMAT_NOTES.md:83` reassigns it to
    **G11**. The file says both, so no reader is misled, but the old label is live text.
