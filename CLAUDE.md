@@ -41,9 +41,11 @@ decompositions. These are not hypotheticals; they are shipped output. Treat ever
 entry as unverified until the validator says otherwise.
 
 > **The catalog has been measured, and it is mixed.** `make validate` covers 11 of 16 entries:
-> **11 of 42 rules are sound and minimal at n,m ≤ 4, and 31 are flagged.** The other 5 entries —
-> `among`, `cumulative`, `range`, `regular`, `roots` — cannot be checked at all, because they
-> quantify over index sets `D_4`–`D_9` that the printer never defines (W1-T2). So: run
+> **13 of 34 rules are sound and minimal at n,m ≤ 4, and 21 are flagged**; 2 rules in 5 entries
+> are out of scope. (This blockquote read 11 of 42 until 2026-09-21 — pre-W1-T2 figures that
+> disagreed with the table above it. **Re-measure with `make validate`; do not quote either.**)
+> `among`, `range`, `regular` and `roots` now emit **no rules at all** and `cumulative` cannot be
+> parsed, so those five entries are unmeasurable rather than unmeasured. So: run
 > `make validate` before calling any rule correct; say "validated: sound and minimal at n,m ≤ 4"
 > or "generated, unvalidated", never bare "correct"; and note that **sound and minimal is a
 > floor, not strength** — `alldifferent`'s one rule passes and still only ever fires at `n=2`,
