@@ -12,7 +12,12 @@ Data sources (read, never re-derived):
   - tools/mzn_coverage.py --json   -- the 118 release globals, their priority
     tier (A-D / unclassified / out of scope), from its `result.ranking`.
   - catalog/*.md                   -- filenames only (existence), plus a grep
-    for "blocked on G<n>" inside each, for the "blocking gap" column.
+    for "blocked on G<n>" inside each, for the "blocking gap" column, plus a
+    grep for STUB_MARKER, which splits the entries into *reviewed* (written by
+    a person against catalog/TEMPLATE.md) and *stub* (machine-filled by
+    tools/catalog_stub.py, every judgement field reading "not reviewed").
+    The summary NEVER prints a bare entry count: it always reports the split,
+    because "118 / 118" without it would read as 118 reviewed entries.
   - cata/*.tex                     -- rule counts. Every file is a SINGLE
     line with no trailing newline (see CLAUDE.md, "Traps"), so the only
     correct count is occurrences of the literal string "\\frac", never
@@ -48,8 +53,15 @@ CATA_DIR = os.path.join(REPO, "cata")
 MZN_COVERAGE = os.path.join(REPO, "tools", "mzn_coverage.py")
 INDEX_PATH = os.path.join(CATALOG_DIR, "INDEX.md")
 
+# The marker tools/catalog_stub.py writes at the top of every file it
+# generates. Defined HERE, and imported from here by catalog_stub.py, so the
+# writer and the reader of the marker can never drift apart. A file carrying it
+# is a machine-filled stub, not a reviewed entry; a file without it is never
+# touched by the stub generator.
+STUB_MARKER = "AUTO-STUB \u2014 NOT REVIEWED"
+
 # Files under catalog/ that are not entries.
-CATALOG_NON_ENTRIES = {"README.md", "TEMPLATE.md", "INDEX.md"}
+CATALOG_NON_ENTRIES = {"README.md", "TEMPLATE.md", "INDEX.md", "PROBLEMATIC.md"}
 CATALOG_NON_ENTRY_DIRS = {"_literature"}
 
 # --------------------------------------------------------------------------
@@ -209,6 +221,19 @@ def find_blocking_gap(md_path):
     return m.group(1) if m else None
 
 
+def is_stub(md_path):
+    """True if this catalog/*.md carries tools/catalog_stub.py's marker.
+
+    Existence of a file is NOT evidence that a constraint has been looked at:
+    106 of the 118 entries are machine-filled stubs whose every judgement
+    field reads "not reviewed". This predicate is the only thing separating
+    them from an entry a person wrote, so the index reports both numbers and
+    never a bare total.
+    """
+    with open(md_path, encoding="utf-8", errors="replace") as fh:
+        return STUB_MARKER in fh.read()
+
+
 def get_validate_output(saved_log=None):
     if saved_log:
         with open(saved_log, encoding="utf-8", errors="replace") as fh:
@@ -294,9 +319,21 @@ def build(validate_log=None):
     # reverse alias: global -> basename, for every alias that resolves
     global_to_base = {g: b for b, g in ALIAS.items() if g is not None}
 
-    warnings = []
+    # Identity resolution. A basename that IS a release global, spelled
+    # exactly, needs no ALIAS row: tools/catalog_stub.py names every stub
+    # after the release global, and 106 identity rows would drown the table.
+    # ALIAS keeps doing the one job a script cannot do -- the names that
+    # genuinely differ (alldifferent -> all_different) and the three
+    # deliberate UNMATCHED rows.
     known_bases = set(cata_files) | set(catalog_entries)
     for base in sorted(known_bases):
+        if base not in ALIAS and base in tier_of:
+            global_to_base.setdefault(base, base)
+
+    warnings = []
+    for base in sorted(known_bases):
+        if base in tier_of and base not in ALIAS:
+            continue  # resolved by identity, above
         if base not in ALIAS:
             warnings.append(
                 "no alias entry at all for basename %r (add it to ALIAS in "
@@ -344,12 +381,14 @@ def build(validate_log=None):
                 val_note = "%d/%d sound+minimal" % (vdata["sound_minimal"], vdata["rules"])
 
             gap = find_blocking_gap(catalog_path) if catalog_path else None
+            stub = is_stub(catalog_path) if catalog_path else False
 
             rows.append({
                 "global": global_name,
                 "tier": tier_key,
                 "base": base,
                 "catalog_path": catalog_path,
+                "stub": stub,
                 "generated": generated,
                 "validated": validated,
                 "val_note": val_note,
@@ -365,10 +404,14 @@ def tier_of_entries(tier_of, tier_key):
 
 def render(rows, release_count, coverage_provenance, warnings, catalog_entries, cata_files, cmd_line, when):
     have_entry = sum(1 for r in rows if r["catalog_path"])
+    reviewed = sum(1 for r in rows if r["catalog_path"] and not r["stub"])
+    stubs = sum(1 for r in rows if r["catalog_path"] and r["stub"])
     have_generated = sum(1 for r in rows if r["generated"] not in (None, 0))
     have_validated = sum(1 for r in rows if r["validated"] not in (None, 0))
 
     by_tier_entry = {}
+    by_tier_reviewed = {}
+    by_tier_stub = {}
     by_tier_generated = {}
     by_tier_validated = {}
     by_tier_total = {}
@@ -377,6 +420,10 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
         by_tier_total[t] = by_tier_total.get(t, 0) + 1
         if r["catalog_path"]:
             by_tier_entry[t] = by_tier_entry.get(t, 0) + 1
+            if r["stub"]:
+                by_tier_stub[t] = by_tier_stub.get(t, 0) + 1
+            else:
+                by_tier_reviewed[t] = by_tier_reviewed.get(t, 0) + 1
         if r["generated"] not in (None, 0):
             by_tier_generated[t] = by_tier_generated.get(t, 0) + 1
         if r["validated"] not in (None, 0):
@@ -403,19 +450,30 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
     w("")
     w("## Summary")
     w("")
-    w("- catalog entries: **%d / %d**" % (have_entry, release_count))
+    w("- catalog entries: **%d / %d** (%d reviewed, %d stubs)"
+      % (have_entry, release_count, reviewed, stubs))
+    w("  A **stub** is a file `tools/catalog_stub.py` generated: it carries a")
+    w("  machine-derived tier, citation line, solver class and rule count, and")
+    w("  the words `not reviewed` in every field that would be a judgement.")
+    w("  A **reviewed** entry is one a person wrote against `catalog/TEMPLATE.md`.")
+    w("  **The entry count is never printed without this split** -- %d / %d with"
+      % (have_entry, release_count))
+    w("  %d of them stubs is a claim about filenames, not about work done."
+      % stubs)
     w("- have any generated rule (`cata/*.tex`, `\\frac` count > 0): **%d / %d**"
       % (have_generated, release_count))
     w("- have any validated (SOUND and MINIMAL) rule: **%d / %d**"
       % (have_validated, release_count))
     w("")
-    w("| tier | globals | catalog entry | generated rules | validated |")
-    w("|---|---:|---:|---:|---:|")
+    w("| tier | globals | entries | reviewed | stubs | generated rules | validated |")
+    w("|---|---:|---:|---:|---:|---:|---:|")
     for t in TIER_KEYS:
         total = by_tier_total.get(t, 0)
-        w("| %s | %d | %d | %d | %d |" % (
+        w("| %s | %d | %d | %d | %d | %d | %d |" % (
             TIER_LABEL[t], total,
             by_tier_entry.get(t, 0),
+            by_tier_reviewed.get(t, 0),
+            by_tier_stub.get(t, 0),
             by_tier_generated.get(t, 0),
             by_tier_validated.get(t, 0),
         ))
@@ -429,8 +487,8 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
 
     w("## All %d globals" % release_count)
     w("")
-    w("| constraint | tier | catalog entry | generated rules | validated | blocking gap |")
-    w("|---|---|---|---:|---:|---|")
+    w("| constraint | tier | catalog entry | kind | generated rules | validated | blocking gap |")
+    w("|---|---|---|---|---:|---:|---|")
     for r in rows:
         constraint = "`%s`" % r["global"]
         tier = TIER_LABEL[r["tier"]]
@@ -438,14 +496,21 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
             entry_cell = "[%s](%s)" % (r["base"], os.path.basename(r["catalog_path"]))
         else:
             entry_cell = "—"
+        if not r["catalog_path"]:
+            kind_cell = "—"
+        elif r["stub"]:
+            kind_cell = "**stub**"
+        else:
+            kind_cell = "reviewed"
         generated_cell = "—" if r["generated"] is None else str(r["generated"])
         if r["validated"] is None:
             validated_cell = r["val_note"] if r["val_note"] else "—"
         else:
             validated_cell = str(r["validated"])
         gap_cell = r["gap"] if r["gap"] else "—"
-        w("| %s | %s | %s | %s | %s | %s |" % (
-            constraint, tier, entry_cell, generated_cell, validated_cell, gap_cell))
+        w("| %s | %s | %s | %s | %s | %s | %s |" % (
+            constraint, tier, entry_cell, kind_cell, generated_cell,
+            validated_cell, gap_cell))
     w("")
     w("## What this index cannot show")
     w("")
@@ -455,6 +520,11 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
     w("- **Calibration against a published rule** (agrees/weaker/stronger/")
     w("  incomparable/out of reach) -- that verdict lives in each entry's own")
     w("  \"Calibration\" field and is not re-derived here.")
+    w("- **Anything about a stub beyond the machine-derived fields it")
+    w("  carries.** A `**stub**` row means a file exists holding a tier, a")
+    w("  `CHRISTMAS_LIST.md` line number, a solver class and a `\\frac` count.")
+    w("  It also means nobody has read the constraint. The entry column is not")
+    w("  progress unless the kind column beside it says `reviewed`.")
     w("- **Entries that exist only as a claim.** This script trusts the")
     w("  filesystem (`catalog/*.md` existing) and `make validate`'s own output;")
     w("  it does not read entry prose for correctness.")
