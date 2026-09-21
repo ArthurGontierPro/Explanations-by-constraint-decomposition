@@ -42,7 +42,7 @@ repeats.
 
 - **G4 — one Boolean-sum family per rule, hard failure otherwise.** `rule5`/`rule6`/`rule7`
   pattern-match `dee::[]` and `failwith "sommes multiples pas encore implémentés"` on anything
-  else (generator lines 177-219). None of the six pilot specs need more than one summed family,
+  else (generator l.355, 369, 383 — re-measured 2026-09-21; this cited 177-219, from before W1-T3/T7 grew the file). None of the six pilot specs need more than one summed family,
   but `among`/`count`'s shape is one step away from `global_cardinality`'s per-value sums, which
   do need this (`CHRISTMAS_LIST.md`'s E3) — worth flagging now because the pilot's simplicity
   is partly *because* it stays on this side of the wall, not because the wall isn't there.

@@ -1245,3 +1245,52 @@ route cell names no E-code at all, a stronger ground than a closable extension),
 `arg_max`/`arg_min`, whose route is E2 **+** E7 — the int/bool variant is reachable and has a
 native explaining propagator, only the float variant is out. The tooling classifies by name and
 cannot split one, so the entry says so instead of the index pretending.
+
+### 2026-09-21 — R2 (tier C + the eleven `*_fn`) — CLOSED
+
+19 files, six commits, resumed cleanly after the session limit and redid nothing.
+
+**The `*_fn` question is answered, and the answer is no: a functional variant does not change the
+explanation.** Three steps, each checkable: the method explains *events* derived from a
+*decomposition*; `CHRISTMAS_LIST.md:217` says the `_fn` forms "call the predicate form", so the
+`Decomp` list and the available literals are identical; `find`/`an`/the printer are functions of
+those, so the rules are the same object. R2 then found a **second, independent in-repo source** —
+`docs/DECOMP_FORMAT_NOTES.md:129`, wave two's *format* survey, which had already recorded "the
+`*_fn` variants — not separate constraints; no gap recorded". Two independent derivations
+agreeing is the strongest evidence this catalog has produced without a citation. It settles why
+those eleven rows carry no E-code: the route is the base's.
+
+It chose one entry per name rather than a single shared note, for a reason I would not have
+thought of: **the catalog's denominator and `tools/catalog_index.py` are both per release
+global**, so collapsing eleven names would make the index undercount.
+
+**It found a stub-generator data defect, in all eleven files.** The machine-derived solver cell
+read row 217's `—` and rendered Geas and Choco as `absent`. **A solver never sees a `_fn` name**,
+so the base's row is the right source. Corrected, and — the part worth copying — it described the
+stub's derivation as *right for the cell it read*, rather than calling the generator wrong.
+
+**Tier C's eight entries each name a different gap, which is more informative than the tier.**
+`global_cardinality_closed` → G8, and R2's observation that if `cover` is the whole range the
+constraint *is* `gcc`, "so G8 is the whole difference"; `global_cardinality_low_up` → G1, because
+`gccn`'s `rule6` step with free `p` — the W1-T9 `pointp` repair — already *is* the low/up shape at
+`p := lb_t`, and only printing `p = lb_t` is missing; `cumulatives` → G14, with the finding that
+`decomps/cumulatives.md`'s workaround **trades G14 for G16** rather than avoiding it;
+`cost_regular` → G15, and it "cannot use the shipped auxiliary-free EXT-2a", so it pays G16+G17
+rather than `regular.md`'s G7; `cost_mdd` → G15 and pays G6 three or four times over.
+
+**Calibration handled with the right asymmetry:** `out of reach` *inherited* from `gcc.md` for the
+gcc trio, but `out of reach` *stated independently* for the cumulative trio — because
+`CHRISTMAS_LIST.md:168` says "no new literature", so `cumulative.md`'s positive TimeD result does
+**not** transfer to the optional and multi-machine forms. Both `cost_*` left `pending sourcing`.
+
+**Reported, not fixed:** more stale line numbers (`failwith` is at 355/369/383, not the 177-219 in
+`DECOMP_FORMAT_NOTES.md` nor the 320/334/348 in `_shapes-ext.md`; `_shapes-ext.md` still has
+`cumul` at 680–682; `docs/COVERAGE.md:137–139` cites 118/174/213 for rows now at 120/178/217), and
+`docs/COVERAGE.md` still calls `cost_mdd`'s duplicate row a defect that W3-C fixed on 2026-09-18.
+I corrected the `failwith` citation and opened **W1-T14** for the pattern itself — six sessions
+have now reported line-number rot, and the fix is to cite symbols or to check the citations in
+`make check`, not to re-point them by hand a seventh time.
+
+**Could not establish, correctly left open:** whether any individual `*_fn` library body does more
+than declare a result and post the predicate. That needs the MiniZinc library, which is not
+vendored here, and R2 had no web access. Marked as the one open item rather than assumed.
