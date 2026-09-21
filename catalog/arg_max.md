@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Tier** | `- out of scope` per `tools/mzn_coverage.py --rank` (section `9. Ordering, sorting, channelling`), ecode `E2+E7` — **this session flags the tier itself as questionable; see "Is that classification right?" below** |
+| **Tier** | `- out of scope` per `tools/mzn_coverage.py --rank` (section `9. Ordering, sorting, channelling`), ecode `E2+E7`. **Checked against D-0014 (2026-09-21) and left here deliberately** — see "Is that classification right?" below |
 | **Status** | `nothing generated — blocked on E2 (int/bool variant) / E7 (float variant)` |
 | **Generated** | no generator entry — there is no `cata/arg_max.tex` |
 | **Validator** | out of scope — no `cata/arg_max.tex` exists |
@@ -54,6 +54,18 @@ the row below). `arg_max` is in section `9. Ordering, sorting, channelling`, so 
 
 **What would bring it in scope.** For the int/Boolean variant: E2 (var-var atoms), same as `maximum`/`minimum` — arguably should sit in tier B alongside them rather than out of scope. For the float variant: E7, genuinely out of scope per `docs/ROADMAP.md:106`. Recommend splitting this row's tier judgement by variant rather than filing the name as one entry.
 
+**Resolution (D-0014, 2026-09-21).** This finding was raised alongside the `diffn`/`bin_packing*`
+misclassifications in the same review pass. The orchestrator checked all three and accepted
+`diffn`/`bin_packing*` outright (`docs/DECISIONS.md` D-0014, tier A count 36→43); `arg_max`/
+`arg_min` were decided differently and **left out of scope**, with the reason recorded rather
+than silently dropped: `tools/mzn_coverage.py` classifies by constraint *name*, and MiniZinc's
+`arg_max`/`arg_min` is one name covering two variants with two different mechanisms (E2 for
+int/bool, E7 for float) — the tool cannot file half a name in one tier and half in another.
+Splitting it would need the tool to know which call site is which, which is outside what the
+vendored `tools/data/minizinc-2.10.1-globals.txt` (names only) can tell it. So this entry
+stays `- out of scope` as a name-level approximation, with the int/bool-vs-float split stated
+here rather than the index pretending the name is uniformly one thing or the other.
+
 ## Generated rules
 
 None. No `cata/arg_max.tex` exists.
@@ -93,6 +105,8 @@ Source: `docs/ROADMAP.md:103-107`; `CHRISTMAS_LIST.md:227-244` ("What to actuall
 - `docs/ROADMAP.md:103-107` read → the "Explicitly out of scope" statement, which names
   categories, not E-codes, and does not name `E2+E7` as excluded on its own.
 - `os.path.isfile("decomps/arg_max.md")` → False. `os.path.isfile("cata/arg_max.tex")` → False.
-- Nothing was compiled, run or validated. The misclassification argument is this session's own
-  reading, not a machine output — it is reasoning from the route cell and the priority list,
-  flagged for the orchestrator to weigh, not asserted as settled.
+- `docs/DECISIONS.md` D-0014 read → the orchestrator's ruling that `arg_max`/`arg_min` stay
+  out of scope at the name level, with the int/bool-vs-float split recorded in this entry
+  rather than resolved by re-tiering.
+- Nothing was compiled, run or validated. The variant-split argument is this session's own
+  reading, checked and left standing by D-0014 — not asserted as a tier change.

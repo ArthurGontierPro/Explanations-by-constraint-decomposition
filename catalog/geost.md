@@ -57,6 +57,13 @@ correct, deliberate call, not a section-filter accident — but it is also the r
 "out of scope" is least like `diffn`'s or `bin_packing`'s, and lumping all three under one
 tier label obscures that difference.
 
+**Confirmed by D-0014 (2026-09-21).** `diffn`/`diffn_k`/`diffn_nonstrict`/`diffn_nonstrict_k`
+and `bin_packing`/`_capa`/`_load` were re-tiered to A on exactly the distinction drawn above —
+they name a closable E-code (E2, E8) — while `geost` was named explicitly as staying out of
+scope "on the last ground": no E-code at all (`docs/DECISIONS.md`, D-0014). Nothing here
+changes as a result; the point is that the distinction this entry drew is the one the
+orchestrator's fix now encodes, not something this entry needs to revise.
+
 **What would bring it in scope.** Nothing named in `docs/ROADMAP.md` or `CHRISTMAS_LIST.md`'s
 extension list (E0-E9) is claimed to reach `geost`; the row's own text says there is no
 schema-expressible decomposition, so no single E-code closes it the way E5 would for
