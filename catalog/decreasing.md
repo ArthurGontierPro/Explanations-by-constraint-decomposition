@@ -154,7 +154,7 @@ sign-swapped, not because anything transports a rule. The contrast to draw is wi
 [`atleastnvalues.md`](atleastnvalues.md) / [`atmostnvalues.md`](atmostnvalues.md), the other
 `comparison swapped` pair in this catalog, where the generator produces **byte-identical**
 output for two constraints with opposite closure properties. Same relation, opposite outcome:
-here the duality is expressed and correct, there it is collapsed and wrong.
+here the two constraints get two different, mirror-image files, each validated 2/2; there they get one file, which cannot be a sound rule for both.
 
 ## Gaps
 
