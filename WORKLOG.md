@@ -1167,3 +1167,52 @@ all_different` and the three deliberate `None` rows. And `catalog/README.md`'s h
 "entries written | 3 of 118" table is gone, replaced by a pointer to the generated index; it
 was stale at 3 when the truth was 12, and a second copy of a generated number will always
 rot.
+
+### 2026-09-21 — S-A (stub every remaining global) and S-C (problematic register) — CLOSED
+
+**The catalog's denominator is now honest: `118 / 118` entries — 12 reviewed, 106 stubs.** That
+parenthesis is the deliverable, not the 118. `catalog/INDEX.md` carries a `kind` column on every
+row, reviewed/stub columns per tier, and four lines saying a file count is not work done.
+Regenerate with `python3 tools/catalog_stub.py` then `python3 tools/catalog_index.py` (the index
+runs `make validate`, so it needs the opam switch).
+
+**Idempotence was tested rather than asserted**, which is why this can be re-run safely: a second
+run reports `0 created / 0 refreshed / 106 already current` with `catalog/**` byte-identical; a
+run with the date monkeypatched to 2027 changes nothing, because dates are normalised out of the
+comparison; and hand-removing a stub's marker makes the next run skip that file and leave its
+bytes alone. **0 existing entries were modified** — `git show --stat 021bcbd` is 106 additions,
+no modifications.
+
+**A stub says nothing it cannot source.** Five machine-derived fields, each naming where it came
+from, and `not reviewed` everywhere a judgement would go — with the banner stating that this
+means *nobody has read this constraint*, not that there is nothing to say. No stub guesses a gap,
+a status or an extension.
+
+**A number in my brief was wrong again, and S-A measured the right one.** I said 55 constraints
+have a `decomps/` spec; **43 of the 118 globals have one under their exact name**, 35 of those
+now stubs. The 55 came from W3-D's shape consolidation, which counts constraints *covered* by the
+specs, not files named after globals. Both are true of different things; the brief conflated them.
+
+### The problematic register — `catalog/PROBLEMATIC.md`
+
+Seven categories by kind of trouble, with counts: P1 structurally out of reach (**3 of 3** sourced
+explanations, ~8 more predicted); P2 blocked on a named gap (**34 of 118** globals route through
+E2); P3 rules that cannot fire (**13 of 34** validated rules vacuous); P4 rules that say nothing
+(3 entries); P5 encoded twice indistinguishably (2 constraints); P6 out of scope by decision
+(**35 of 118**); P7 not a MiniZinc global at all (3 of the 15 entry files).
+
+**Widest blast radius: the index-set / side-condition family (E2 — G6/G7/G8/G15), 34 of 118.**
+Runner-up by rule count is per-literal binder scope (W1-T1/D-0009) at 13 of 36 emitted rules, and
+S-C flagged that as a *floor*, because the ambiguity check never inspects the conclusion, so
+`all_equal`'s two go uncounted.
+
+**12 problems have no fix scoped anywhere.** The consequential one is now **W1-T13**: nothing
+generates or prefers the strongest sound rule — `alldifferent` emits `∀i'` where `∃i'` is sound
+and strictly stronger, `all_equal` emits a tautology reading — and **minimality cannot see
+either**, so the validator will go on certifying weak rules. **W4-T5** added for `gcc`'s flow rule,
+which had an `out of reach` verdict and no write-up row where `alldifferent` and `cumulative`
+both had one.
+
+**Of S-C's 13 recorded contradictions the sharpest was mine:** `CLAUDE.md`'s reality table said
+34/13/21 while the blockquote below it still said 42/11/31, pre-W1-T2. Fixed at `d430c57`, and
+that blockquote now says to re-measure rather than quote either.

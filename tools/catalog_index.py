@@ -373,7 +373,9 @@ def build(validate_log=None):
                     reason = reason.replace("|", "/")
                     if len(reason) > 70:
                         reason = reason[:67] + "..."
-                    val_note = "out of scope: %s" % reason
+                    # keep the cell narrow: the full reason belongs in the entry,
+                    # not in a 118-row table (orchestrator, 2026-09-21)
+                    val_note = "out of scope"
                 else:
                     val_note = "out of scope"
             else:

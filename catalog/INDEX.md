@@ -48,7 +48,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `all_different_except_0` | A | [all_different_except_0](all_different_except_0.md) | **stub** | — | — | — |
 | `all_equal` | A | [allequal](allequal.md) | reviewed | 2 | 2 | — |
 | `alternative` | A | [alternative](alternative.md) | **stub** | — | — | — |
-| `among` | A | [among](among.md) | reviewed | 0 | out of scope: index set D_4 is never defined by the printer (W1-T2), AND among's ... | G8 |
+| `among` | A | [among](among.md) | reviewed | 0 | out of scope | G8 |
 | `arg_sort` | A | [arg_sort](arg_sort.md) | **stub** | — | — | — |
 | `arg_val` | A | [arg_val](arg_val.md) | **stub** | — | — | — |
 | `at_least` | A | [at_least](at_least.md) | **stub** | — | — | — |
@@ -98,7 +98,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `global_cardinality_low_up` | C | [global_cardinality_low_up](global_cardinality_low_up.md) | **stub** | — | — | — |
 | `global_cardinality_low_up_closed` | C | [global_cardinality_low_up_closed](global_cardinality_low_up_closed.md) | **stub** | — | — | — |
 | `all_different` | D | [alldifferent](alldifferent.md) | reviewed | 1 | 1 | — |
-| `cumulative` | D | [cumulative](cumulative.md) | reviewed | 2 | out of scope: the durations d_i appear as uninterpreted symbols inside index equa... | — |
+| `cumulative` | D | [cumulative](cumulative.md) | reviewed | 2 | out of scope | — |
 | `disjunctive` | D | [disjunctive](disjunctive.md) | **stub** | — | — | — |
 | `disjunctive_opt` | D | [disjunctive_opt](disjunctive_opt.md) | **stub** | — | — | — |
 | `disjunctive_strict` | D | [disjunctive_strict](disjunctive_strict.md) | **stub** | — | — | — |
@@ -109,7 +109,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `lex_lesseq` | D | [lex_lesseq](lex_lesseq.md) | **stub** | — | — | — |
 | `mdd` | D | [mdd](mdd.md) | **stub** | — | — | — |
 | `mdd_nondet` | D | [mdd_nondet](mdd_nondet.md) | **stub** | — | — | — |
-| `regular` | D | [regular](regular.md) | reviewed | 0 | out of scope: index sets D_8, D_9 — the transition relation — are never defined b... | G7 |
+| `regular` | D | [regular](regular.md) | reviewed | 0 | out of scope | G7 |
 | `regular_nfa` | D | [regular_nfa](regular_nfa.md) | **stub** | — | — | — |
 | `regular_regexp` | D | [regular_regexp](regular_regexp.md) | **stub** | — | — | — |
 | `strict_lex2` | D | [strict_lex2](strict_lex2.md) | **stub** | — | — | — |
@@ -153,9 +153,9 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `partition_set` | out of scope | [partition_set](partition_set.md) | **stub** | — | — | — |
 | `piecewise_linear` | out of scope | [piecewise_linear](piecewise_linear.md) | **stub** | — | — | — |
 | `piecewise_linear_non_continuous` | out of scope | [piecewise_linear_non_continuous](piecewise_linear_non_continuous.md) | **stub** | — | — | — |
-| `range` | out of scope | [range](range.md) | reviewed | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); this ... | G8 |
+| `range` | out of scope | [range](range.md) | reviewed | 0 | out of scope | G8 |
 | `reachable` | out of scope | [reachable](reachable.md) | **stub** | — | — | — |
-| `roots` | out of scope | [roots](roots.md) | reviewed | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); the s... | G8 |
+| `roots` | out of scope | [roots](roots.md) | reviewed | 0 | out of scope | G8 |
 | `steiner` | out of scope | [steiner](steiner.md) | **stub** | — | — | — |
 | `subcircuit` | out of scope | [subcircuit](subcircuit.md) | **stub** | — | — | — |
 | `subgraph` | out of scope | [subgraph](subgraph.md) | **stub** | — | — | — |
