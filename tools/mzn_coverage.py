@@ -333,8 +333,14 @@ OUT_OF_SCOPE_CODES = ("E5", "E6", "E7")   # sets, graph, floats -- docs/ROADMAP.
 # ROADMAP.md puts three FAMILIES out of scope as well, and those rows do not all
 # carry an out-of-scope E-code: geometry and packing are coded E2/E8 but are out
 # all the same.  Section match, so the two agree.
+# D-0014 (2026-09-21): scope is decided by MECHANISM, not by family.  "Packing
+# and geometry" used to be in this regex and it swept in diffn* (route E2) and
+# bin_packing* (route E8, the same gap knapsack carries), which are reachable.
 OUT_OF_SCOPE_SECTIONS = re.compile(
-    r"Packing and geometry|Graph and reachability|Set constraints", re.I)
+    r"Graph and reachability|Set constraints", re.I)
+# ...and the one geometry constraint that is genuinely out: its route cell names
+# no E-code at all, which is a stronger exclusion than a named extension.
+OUT_OF_SCOPE_NAMES = ("geost",)
 
 # Tiers, best case first.  The ordering is an argument, not a preference:
 # a constraint with no published explanation whose solvers only decompose it is
@@ -367,6 +373,7 @@ def rank_globals(covered, rows, ecode_rows_by_global):
                  "line": r.line, "literature": has_literature(r.lit),
                  "solver": classify_solver(r.solver)}
         if (any(c in OUT_OF_SCOPE_CODES for c in codes)
+                or name in OUT_OF_SCOPE_NAMES
                 or OUT_OF_SCOPE_SECTIONS.search(r.section or "")):
             out["- out of scope"].append(entry)
             continue

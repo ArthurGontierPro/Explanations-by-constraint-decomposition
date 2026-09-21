@@ -102,6 +102,13 @@ format and a working validator; each decomposition is its own file, so sessions 
 
 ## Explicitly out of scope
 
-Stated here so it is not rediscovered at constraint 200. ~25 of the 118 MiniZinc globals:
-graph and reachability (E6), geometry and packing, floats (E7), and set variables unless
-channelled to Booleans first (E5). See `CHRISTMAS_LIST.md`.
+Stated here so it is not rediscovered at constraint 200. **Scope is decided by the mechanism a
+constraint needs, not by the family it is filed under — D-0014, 2026-09-21.** Out of scope:
+graph and reachability (E6), floats (E7), set variables unless channelled to Booleans first
+(E5), and constraints with no schema-expressible decomposition at all (`geost`).
+
+**"Geometry and packing" used to be listed here as a family and that was wrong.** `diffn` and
+its variants route **E2** — pairwise non-overlap is a 4-way disjunction of var-var linear atoms
+— and `CHRISTMAS_LIST.md:51` records that the Huub paper reports the solver losing *precisely
+on `diffn` and `cumulative`*, which makes it a target rather than an exclusion. `bin_packing*`
+route **E8**, the same gap `knapsack` carries. All seven are in scope. See `CHRISTMAS_LIST.md`.

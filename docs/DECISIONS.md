@@ -355,3 +355,38 @@ word sharpened, because two different things are called complete in this repo:
 must not read as though it lists all of them. This does not close D-0008: the per-entry question
 of what "complete for this constraint" means is still open, and D-0013's calibration results are
 the evidence that will settle it.
+
+## D-0014 — Out of scope is decided by mechanism, not by family. `diffn` and `bin_packing*` are IN
+
+**DECIDED 2026-09-21 by the orchestrator**, under the author's standing instruction to resolve
+its own open questions. Raised by R3 while reviewing the out-of-scope stubs.
+
+`docs/ROADMAP.md` said "graph and reachability (E6), geometry and packing, floats (E7), and set
+variables". **"Geometry and packing" is a family, not a mechanism, and it swept in constraints
+this method can reach.** Three places in `CHRISTMAS_LIST.md` say so:
+
+- **l.51** — the Huub paper "reports where Huub loses: precisely on **`diffn`, `cumulative`**".
+  A constraint where a competitive LCG solver loses is the *best* target this project has, not
+  an excluded one.
+- **l.177** — `diffn` and its three variants are routed **E2**: "pairwise non-overlap is a 4-way
+  disjunction of var-var linear atoms, so actually reachable once E2 lands".
+- **l.232** — `diffn` is named in E2's "biggest single unlock", beside `disjunctive`, `maximum`,
+  `minimum`, `table` and `regular`, none of which is out of scope.
+
+`bin_packing`, `_capa` and `_load` are the same error one step along: route **E8** (gap G11,
+weighted Boolean sums) — the *identical* gap `knapsack` carries, and `knapsack` is tier A.
+
+**The rule from here: a constraint is out of scope because of the mechanism it needs**, namely
+set variables (E5), graph reachability (E6), floats (E7), or having no schema-expressible
+decomposition at all. `geost` stays out on the last ground — its route cell names no E-code,
+which is a stronger exclusion than `diffn`'s named, closable extension.
+
+**`arg_max`/`arg_min` are a third case and are left out for now, with the reason recorded:**
+their route is E2 **+** E7 — the int/bool variant is reachable like `maximum`/`minimum` and
+already has a native explaining propagator, only the float variant is E7. The tooling classifies
+by name and cannot split one, so the entry says so rather than the index pretending.
+
+**Cost of the error:** seven constraints were filed out of scope that are not, and the tier
+ranking under-counted tier A by the same seven. **Mine to own — I added the section filter** on
+2026-09-21 to stop `diffn` and `bin_packing` ranking as tier A, reasoning from the roadmap's
+family wording without checking the routes. R3 caught it by reading the rows.
