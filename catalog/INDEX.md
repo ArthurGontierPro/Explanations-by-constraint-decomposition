@@ -15,22 +15,22 @@ every regeneration, never hand-typed -- see the header comment for how.
 
 ## Summary
 
-- catalog entries: **118 / 118** (79 reviewed, 39 stubs)
+- catalog entries: **118 / 118** (118 reviewed, 0 stubs)
   A **stub** is a file `tools/catalog_stub.py` generated: it carries a
   machine-derived tier, citation line, solver class and rule count, and
   the words `not reviewed` in every field that would be a judgement.
   A **reviewed** entry is one a person wrote against `catalog/TEMPLATE.md`.
   **The entry count is never printed without this split** -- 118 / 118 with
-  39 of them stubs is a claim about filenames, not about work done.
+  0 of them stubs is a claim about filenames, not about work done.
 - have any generated rule (`cata/*.tex`, `\frac` count > 0): **8 / 118**
 - have any validated (SOUND and MINIMAL) rule: **6 / 118**
 
 | tier | globals | entries | reviewed | stubs | generated rules | validated |
 |---|---:|---:|---:|---:|---:|---:|
-| A | 43 | 43 | 13 | 30 | 5 | 4 |
-| B | 8 | 8 | 0 | 8 | 0 | 0 |
+| A | 43 | 43 | 43 | 0 | 5 | 4 |
+| B | 8 | 8 | 8 | 0 | 0 | 0 |
 | C | 9 | 9 | 9 | 0 | 1 | 1 |
-| D | 19 | 19 | 18 | 1 | 2 | 1 |
+| D | 19 | 19 | 19 | 0 | 2 | 1 |
 | unclassified | 11 | 11 | 11 | 0 | 0 | 0 |
 | out of scope | 28 | 28 | 28 | 0 | 0 | 0 |
 
@@ -44,57 +44,57 @@ every regeneration, never hand-typed -- see the header comment for how.
 
 | constraint | tier | catalog entry | kind | generated rules | validated | blocking gap |
 |---|---|---|---|---:|---:|---|
-| `all_different_except` | A | [all_different_except](all_different_except.md) | **stub** | — | — | — |
-| `all_different_except_0` | A | [all_different_except_0](all_different_except_0.md) | **stub** | — | — | — |
+| `all_different_except` | A | [all_different_except](all_different_except.md) | reviewed | — | — | G8 |
+| `all_different_except_0` | A | [all_different_except_0](all_different_except_0.md) | reviewed | — | — | G8 |
 | `all_equal` | A | [allequal](allequal.md) | reviewed | 2 | 2 | — |
-| `alternative` | A | [alternative](alternative.md) | **stub** | — | — | — |
+| `alternative` | A | [alternative](alternative.md) | reviewed | — | — | G3 |
 | `among` | A | [among](among.md) | reviewed | 0 | out of scope | G8 |
-| `arg_sort` | A | [arg_sort](arg_sort.md) | **stub** | — | — | — |
-| `arg_val` | A | [arg_val](arg_val.md) | **stub** | — | — | — |
-| `at_least` | A | [at_least](at_least.md) | **stub** | — | — | — |
-| `at_most` | A | [at_most](at_most.md) | **stub** | — | — | — |
+| `arg_sort` | A | [arg_sort](arg_sort.md) | reviewed | — | — | G10 |
+| `arg_val` | A | [arg_val](arg_val.md) | reviewed | — | — | — |
+| `at_least` | A | [at_least](at_least.md) | reviewed | — | — | G1 |
+| `at_most` | A | [at_most](at_most.md) | reviewed | — | — | G1 |
 | `bin_packing` | A | [bin_packing](bin_packing.md) | reviewed | — | — | G11 |
 | `bin_packing_capa` | A | [bin_packing_capa](bin_packing_capa.md) | reviewed | — | — | G11 |
 | `bin_packing_load` | A | [bin_packing_load](bin_packing_load.md) | reviewed | — | — | G11 |
-| `count` | A | [count](count.md) | **stub** | — | — | — |
+| `count` | A | [count](count.md) | reviewed | — | — | G8 |
 | `decreasing` | A | [decreasing](decreasing.md) | reviewed | 2 | 2 | — |
 | `diffn` | A | [diffn](diffn.md) | reviewed | — | — | G3 |
 | `diffn_k` | A | [diffn_k](diffn_k.md) | reviewed | — | — | G3 |
 | `diffn_nonstrict` | A | [diffn_nonstrict](diffn_nonstrict.md) | reviewed | — | — | G3 |
 | `diffn_nonstrict_k` | A | [diffn_nonstrict_k](diffn_nonstrict_k.md) | reviewed | — | — | G3 |
-| `distribute` | A | [distribute](distribute.md) | **stub** | — | — | — |
+| `distribute` | A | [distribute](distribute.md) | reviewed | — | — | G4 |
 | `element` | A | [element](element.md) | reviewed | 6 | 2 | — |
-| `exactly` | A | [exactly](exactly.md) | **stub** | — | — | — |
+| `exactly` | A | [exactly](exactly.md) | reviewed | — | — | G1 |
 | `increasing` | A | [increasing](increasing.md) | reviewed | 2 | 2 | — |
-| `knapsack` | A | [knapsack](knapsack.md) | **stub** | — | — | — |
-| `lex_chain_greater` | A | [lex_chain_greater](lex_chain_greater.md) | **stub** | — | — | — |
-| `lex_chain_greatereq` | A | [lex_chain_greatereq](lex_chain_greatereq.md) | **stub** | — | — | — |
-| `lex_chain_greatereq_orbitope` | A | [lex_chain_greatereq_orbitope](lex_chain_greatereq_orbitope.md) | **stub** | — | — | — |
-| `lex_chain_less` | A | [lex_chain_less](lex_chain_less.md) | **stub** | — | — | — |
-| `lex_chain_lesseq` | A | [lex_chain_lesseq](lex_chain_lesseq.md) | **stub** | — | — | — |
-| `lex_chain_lesseq_orbitope` | A | [lex_chain_lesseq_orbitope](lex_chain_lesseq_orbitope.md) | **stub** | — | — | — |
-| `member` | A | [member](member.md) | **stub** | — | — | — |
+| `knapsack` | A | [knapsack](knapsack.md) | reviewed | — | — | G11 |
+| `lex_chain_greater` | A | [lex_chain_greater](lex_chain_greater.md) | reviewed | — | — | G3 |
+| `lex_chain_greatereq` | A | [lex_chain_greatereq](lex_chain_greatereq.md) | reviewed | — | — | G3 |
+| `lex_chain_greatereq_orbitope` | A | [lex_chain_greatereq_orbitope](lex_chain_greatereq_orbitope.md) | reviewed | — | — | G3 |
+| `lex_chain_less` | A | [lex_chain_less](lex_chain_less.md) | reviewed | — | — | G3 |
+| `lex_chain_lesseq` | A | [lex_chain_lesseq](lex_chain_lesseq.md) | reviewed | — | — | G3 |
+| `lex_chain_lesseq_orbitope` | A | [lex_chain_lesseq_orbitope](lex_chain_lesseq_orbitope.md) | reviewed | — | — | G3 |
+| `member` | A | [member](member.md) | reviewed | — | — | G3 |
 | `nvalue` | A | [nvalues](nvalues.md) | reviewed | 5 | 0 | — |
-| `seq_precede_chain` | A | [seq_precede_chain](seq_precede_chain.md) | **stub** | — | — | — |
-| `sliding_among` | A | [sliding_among](sliding_among.md) | **stub** | — | — | — |
-| `sliding_sum` | A | [sliding_sum](sliding_sum.md) | **stub** | — | — | — |
-| `sort` | A | [sort](sort.md) | **stub** | — | — | — |
-| `span` | A | [span](span.md) | **stub** | — | — | — |
-| `strictly_decreasing` | A | [strictly_decreasing](strictly_decreasing.md) | **stub** | — | — | — |
-| `strictly_increasing` | A | [strictly_increasing](strictly_increasing.md) | **stub** | — | — | — |
-| `sum_pred` | A | [sum_pred](sum_pred.md) | **stub** | — | — | — |
-| `symmetric_all_different` | A | [symmetric_all_different](symmetric_all_different.md) | **stub** | — | — | — |
-| `write` | A | [write](write.md) | **stub** | — | — | — |
-| `writes` | A | [writes](writes.md) | **stub** | — | — | — |
-| `writes_seq` | A | [writes_seq](writes_seq.md) | **stub** | — | — | — |
-| `inverse` | B | [inverse](inverse.md) | **stub** | — | — | — |
-| `inverse_in_range` | B | [inverse_in_range](inverse_in_range.md) | **stub** | — | — | — |
-| `lex_greater` | B | [lex_greater](lex_greater.md) | **stub** | — | — | — |
-| `lex_greatereq` | B | [lex_greatereq](lex_greatereq.md) | **stub** | — | — | — |
-| `maximum` | B | [maximum](maximum.md) | **stub** | — | — | — |
-| `minimum` | B | [minimum](minimum.md) | **stub** | — | — | — |
-| `value_precede` | B | [value_precede](value_precede.md) | **stub** | — | — | — |
-| `value_precede_chain` | B | [value_precede_chain](value_precede_chain.md) | **stub** | — | — | — |
+| `seq_precede_chain` | A | [seq_precede_chain](seq_precede_chain.md) | reviewed | — | — | G17 |
+| `sliding_among` | A | [sliding_among](sliding_among.md) | reviewed | — | — | G8 |
+| `sliding_sum` | A | [sliding_sum](sliding_sum.md) | reviewed | — | — | G12 |
+| `sort` | A | [sort](sort.md) | reviewed | — | — | G10 |
+| `span` | A | [span](span.md) | reviewed | — | — | G3 |
+| `strictly_decreasing` | A | [strictly_decreasing](strictly_decreasing.md) | reviewed | — | — | — |
+| `strictly_increasing` | A | [strictly_increasing](strictly_increasing.md) | reviewed | — | — | — |
+| `sum_pred` | A | [sum_pred](sum_pred.md) | reviewed | — | — | G14 |
+| `symmetric_all_different` | A | [symmetric_all_different](symmetric_all_different.md) | reviewed | — | — | G10 |
+| `write` | A | [write](write.md) | reviewed | — | — | G18 |
+| `writes` | A | [writes](writes.md) | reviewed | — | — | G18 |
+| `writes_seq` | A | [writes_seq](writes_seq.md) | reviewed | — | — | G18 |
+| `inverse` | B | [inverse](inverse.md) | reviewed | — | — | — |
+| `inverse_in_range` | B | [inverse_in_range](inverse_in_range.md) | reviewed | — | — | G8 |
+| `lex_greater` | B | [lex_greater](lex_greater.md) | reviewed | — | — | G3 |
+| `lex_greatereq` | B | [lex_greatereq](lex_greatereq.md) | reviewed | — | — | G3 |
+| `maximum` | B | [maximum](maximum.md) | reviewed | — | — | G3 |
+| `minimum` | B | [minimum](minimum.md) | reviewed | — | — | G3 |
+| `value_precede` | B | [value_precede](value_precede.md) | reviewed | — | — | G17 |
+| `value_precede_chain` | B | [value_precede_chain](value_precede_chain.md) | reviewed | — | — | G7 |
 | `cost_mdd` | C | [cost_mdd](cost_mdd.md) | reviewed | — | — | G15 |
 | `cost_regular` | C | [cost_regular](cost_regular.md) | reviewed | — | — | G15 |
 | `cumulative_opt` | C | [cumulative_opt](cumulative_opt.md) | reviewed | — | — | G2 |
@@ -120,7 +120,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `regular_nfa` | D | [regular_nfa](regular_nfa.md) | reviewed | — | — | G7 |
 | `regular_regexp` | D | [regular_regexp](regular_regexp.md) | reviewed | — | — | G7 |
 | `strict_lex2` | D | [strict_lex2](strict_lex2.md) | reviewed | — | — | G3 |
-| `table` | D | [table](table.md) | **stub** | 0 | 0 | — |
+| `table` | D | [table](table.md) | reviewed | 0 | 0 | G6 |
 | `var_perm_sym` | D | [var_perm_sym](var_perm_sym.md) | reviewed | — | — | G3 |
 | `var_sqr_sym` | D | [var_sqr_sym](var_sqr_sym.md) | reviewed | — | — | G3 |
 | `among_fn` | unclassified | [among_fn](among_fn.md) | reviewed | — | — | G8 |

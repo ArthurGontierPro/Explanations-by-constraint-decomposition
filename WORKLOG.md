@@ -1473,3 +1473,45 @@ lines of R4's work) in via `git add -A`. R6 switched to explicit paths and its n
 correctly left six sibling-modified files unstaged. It cited this repo's own precedent — the
 W2-A/W2-C sweep — for flagging rather than rewriting shared history. That is the protocol
 working as designed.
+
+### 2026-09-21 — R4 (counting and cardinality: 13 entries) — CLOSED. **The catalog is 118 / 118 reviewed, 0 stubs.**
+
+All thirteen tier A, all `no published rule exists` — every row's literature cell reads none.
+`make check` still exits 0, so nothing generated was disturbed.
+
+**The `sum_pred` conflict is resolved, and R4 upgraded it from a reading to a measurement.** It
+verified `3e4f17d:361-363` and its `explainall` at `:388` independently, then **re-spelled that
+order encoding in a scratch copy of the generator** the way today's `rule5/6/7` entries are
+written: it **runs, exit 0, four rules, premises matching the shipped `cata/sum.tex`**. So
+`rule1`(BC) + `rule6` expresses an integer sum **with no weighted sum and no integer schema** —
+`decomps/sum_pred.md`'s G11+G12+G13 prices *its own AC-grid choice*, not the constraint, and
+`CHRISTMAS_LIST.md:213`'s E9 is not established as necessary for that reading. Four
+qualifications are in the entry, including that the faithful 2020 spelling instead raises
+`Failure "missing index set prim"` and that all four rules carry D-0009 defects. **It does not
+extend to `knapsack`** — a coefficient survives the order encoding, so G11 stands there. This is
+the first time a session has settled a repo contradiction by running code rather than reading it.
+
+**`at_most` authored as S2/`rule5` is `alldiff` character for character, and its artifact is
+byte-identical to `cata/alldifferent.tex`** — measured with `cmp`. That is the strongest possible
+confirmation of the shape consolidation's claim that **G1 is one defect across four
+constraints**, not four defects.
+
+**`count` authored as `among` plus the missing count channel emits 0 rules, all four events
+`REFUSED (D4)`** — so **G8 blocks it before G5 does**, which reorders those two gaps for that
+constraint.
+
+**A third printer defect, recorded nowhere until now — W1-T17.** `printglobal_eventtex` (l.511)
+does an unguarded `hd (isppp … @ isttt …)`, so an `X` literal with a parameter value baked in
+raises `Failure "hd"`. **It is reachable from `decomps/count.md`'s own specced shape, which
+aborts mid-run** — a spec the corpus already contains. Verified. It joins W1-T10 (`B`/`T` raise)
+and W1-T15 (`O` prints as `X`) in the same printer.
+
+**Stub fields: all 13 correct** — no repeat of the blank-row solver bug, which R2 had found in
+the `*_fn` set.
+
+**Routed, not fixed:** `decomps/all_different.md` called its gap G6 when it is G8 (**fixed** at
+this commit's parent — G6 is the 2-D table); `catalog/{count,distribute}_fn.md` quote their
+bases' status as `not reviewed`, now stale; `CHRISTMAS_LIST.md:152`'s shared E0 cell is wrong for
+`span` and needs splitting; and **eight sibling entries cite `docs/DECOMP_FORMAT_NOTES.md:96–107`,
+which my own G2 edit moved to 100–111 the same hour** — W1-T14 is not a legacy problem, it is
+generated fresh by every edit to a cited file, including mine.
