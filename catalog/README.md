@@ -1,0 +1,114 @@
+# The catalog
+
+One entry per MiniZinc global constraint, gathering three sources side by side:
+
+1. **the published explanation**, if one exists (`CHRISTMAS_LIST.md`'s citation, with the
+   rule shape sourced into `catalog/_literature/`);
+2. **what solvers implement** — native explaining propagator, or decomposition;
+3. **what this method generates** — the rules `explenation generator.ml` derives from a
+   decomposition, with each rule's validator verdict.
+
+`catalog/TEMPLATE.md` is the format. Every entry keeps every heading.
+
+---
+
+## What the catalog claims
+
+**It claims complete *coverage*.** Every one of the 118 MiniZinc globals gets an entry with
+an honest status — including `nothing generated, blocked on G6`, which is a complete entry,
+not a hole. 118 of 118 entries with a known status is a checkable target and
+`tools/mzn_coverage.py` measures the denominator.
+
+**It never claims complete *enumeration*.** An entry lists the rules this method generated
+for the events the generator was asked to explain. It does **not** list every valid
+explanation of the constraint. That set is exponential for some entries even at fixed arity,
+and what "complete for this constraint" should mean is still **D-0008, open**.
+
+So: *an entry listing some rules must not read as if it lists all of them.* Three things in
+the format exist to enforce that, and an entry that drops them is wrong even if every rule in
+it is right.
+
+- The **banner** at the top of every entry says it in one sentence.
+- The **Scope of this entry** section states the finite question that was asked — "explain
+  these events of this decomposition" — and shows the empty answers alongside the non-empty
+  ones. `alldifferent` was asked for two events and produced one rule; the entry says so.
+- **Status** is never `correct`. See the legend below.
+
+Both claims are recorded in `docs/DECISIONS.md`, under the 2026-09-21 note appended to D-0013.
+
+## Never write "correct"
+
+A rule in this catalog is `validated: sound and minimal at n,m <= 4`, or `flagged`, or
+`generated, unvalidated`, or `not validatable`. It is never "correct" and never "works".
+
+And **sound and minimal is a floor, not strength.** Minimality means no premise can be
+dropped without losing soundness. It does not mean the rule is useful:
+`cata/alldifferent.tex`'s one rule is sound and minimal and only ever fires at `n = 2`.
+
+## Status legend
+
+| status | means |
+|---|---|
+| `validated: sound and minimal at n,m <= 4` | every generated rule in the entry got `SOUND and MINIMAL` from `make validate`, at the sizes `docs/VALIDATOR.md` enumerates |
+| `partly validated` | some rules `SOUND and MINIMAL`, some flagged. The per-rule verdicts are in the entry |
+| `flagged` | every generated rule is flagged: `UNSOUND`, `AMBIGUOUS`, `VACUOUS`, `UNSOUND(firing)` or `NOT MINIMAL` |
+| `not validatable` | rules exist in `cata/` but the validator reports the entry out of scope, with a machine-printed reason (an undefined `D_k`, an unparsed index equation, an argument that appears in no atom) |
+| `generated, unvalidated` | rules exist and no verdict has been obtained. Distinct from `not validatable`: nobody has looked |
+| `nothing generated — blocked on G<n>` | no decomposition is encodable, or the generator emits no rule. The gap number is required, not optional |
+
+The verdict vocabulary itself (`SOUND and MINIMAL`, `UNSOUND`, `AMBIGUOUS`, `VACUOUS`,
+`UNSOUND(firing)`, `NOT MINIMAL`) is defined in `docs/VALIDATOR.md`, "Quantifier ambiguity".
+
+## How an entry is produced
+
+1. **Tier** — `python3 tools/mzn_coverage.py --rank --json out.json`, read the constraint's
+   tier out of `result.ranking`. Entries are written documented-first, tier D → C → B → A
+   (**D-0013**).
+2. **Citation** — `grep -n -i '<name>' CHRISTMAS_LIST.md`. Quote the row with its line number.
+   Do **not** web-search, and do **not** write a published rule shape from memory: the shapes
+   are sourced separately into `catalog/_literature/<name>.md`, which is not this session's to
+   write. Until that file exists the entry says `pending C2`.
+3. **Solver support** — the same row's solver column; legend at `CHRISTMAS_LIST.md:106-109`.
+4. **Decomposition** — find the value in `explenation generator.ml` (the `(*Decompositions*)`
+   block) and the `explainall` call that emits it. Record both the value name and the line
+   numbers; the numbers rot, the name does not.
+5. **Rules and scope** — read `cata/<name>.tex` and its `%% generator diagnostics` footer.
+6. **Verdicts** — `make validate`, and quote *your own run*, dated.
+7. **Gaps** — `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
+
+## Regenerating the generated parts
+
+The rules themselves are not written by hand. `cata/*.tex` is the artifact; an entry renders it.
+
+```sh
+eval $(opam env --switch=baguette --set-switch)   # OCaml 5.1.1; `which ocaml` is empty without this
+ocaml 'explenation generator.ml'                  # rewrites cata/*.tex in cwd
+make check                                        # golden-file byte-diff + warning census
+make validate                                     # verdicts; exits 1 today by design
+```
+
+`make check` proves **reproducibility**, not correctness. `make validate` is the one that
+judges rules, and it is deliberately not part of `make check` because it is red on purpose.
+
+If a regeneration changes a rule, the entry's **Generated rules**, **Status**, **Validator**
+and **Last measured** rows all change together. Re-run; do not patch one and leave the others.
+
+## Files
+
+```
+TEMPLATE.md        the entry format, with each field's rules beside it
+README.md          this file
+<name>.md          one entry per MiniZinc global
+_literature/       sourced published rule shapes (owned by the literature sessions)
+```
+
+## Coverage so far
+
+| | |
+|---|---|
+| entries written | 3 of 118 |
+| tier D | `alldifferent`, `cumulative` |
+| tier C | `gcc` (`global_cardinality`) |
+
+Chosen because they are the only tier-D/tier-C constraints for which the generator currently
+emits anything at all.
