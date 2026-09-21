@@ -76,6 +76,9 @@ session picks it up.
 | Catalog: the 118-row index + its generator | `catalog/INDEX.md`, `tools/catalog_index.py` | E3 (2026-09-21) | 2026-09-21 |
 | Catalog: stub every global that has no entry | `tools/catalog_stub.py`, the generated `catalog/<name>.md` stubs, `tools/catalog_index.py` | S-A (2026-09-21) | 2026-09-21 |
 | Catalog: the problematic-constraints register | `catalog/PROBLEMATIC.md` | S-C (2026-09-21) | 2026-09-21 |
+| Review the tier-D stubs | the tier-D `catalog/<name>.md` stubs only | R1 (2026-09-21) | 2026-09-21 |
+| Review the tier-C and unclassified stubs | those `catalog/<name>.md` stubs only | R2 (2026-09-21) | 2026-09-21 |
+| Review the out-of-scope stubs | those `catalog/<name>.md` stubs only | R3 (2026-09-21) | 2026-09-21 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
