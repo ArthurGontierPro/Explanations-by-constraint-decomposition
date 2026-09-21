@@ -1029,3 +1029,49 @@ that would have inflated coverage. `gcc → global_cardinality` maps the base fo
 **Stated in its own footer, correctly:** the index cannot show whether a rule is right beyond
 the validator's floor, cannot show calibration (that lives per entry), and shows `—` for the
 blocking gap of any constraint that has no entry yet, since it greps the entries themselves.
+
+### 2026-09-21 — E1 (the five silent catalog entries) — CLOSED
+
+`catalog/{among,range,regular,roots,sum}.md`, six commits. All ten template headings kept, no
+entry says "correct", every number from its own `make validate` run.
+
+| entry | status | blocked on |
+|---|---|---|
+| `among` | nothing generated (2 candidates, 2 W1-T2 refusals over `D_4`) | **G8** |
+| `range` | nothing generated (4 candidates → 3 refusals + 1 `F`) | **G8** |
+| `regular` | nothing generated (4 candidates → 2 refusals on `D_8`/`D_9` + 2 `F`) | **G7** |
+| `roots` | nothing generated (4 candidates, 4 refusals, no `F` — the cleanest case) | **G8** |
+| `sum` | **flagged** — 4 rules: 2 sound but NOT minimal, 2 vacuous; orphaned; not a MiniZinc global | — |
+
+**E1 overruled my brief on the gaps, and it is right.** I told it `regular` was G7+G16 and implied
+the others were G6/G7 too. Only `regular` is: `among`'s `D_4` and `range`/`roots`' `D_5`/`D_6`
+are **named value subsets**, not sets indexed by another index, so the binding gap is **G8**
+(`ind_set` names only whole predefined ranges). For `range`/`roots` it splits the claim further:
+G8 unblocks the *artifact*, while the constraints themselves need E5 + G14 (+G2). That split is
+the kind of thing an entry is for.
+
+**The find of this wave: `cata/sum.tex`'s producer is not lost.** Verified by the orchestrator —
+`3e4f17d` (2020-08-10) has `let sum = [Decomp …]` at l.361 and its `explainall` at l.388;
+`e973e1e` (2020-08-19, the `table` index-propagation rewrite) deleted both while keeping the
+`sumi`/`sumt` helpers, and rewrote every other `cata` file in the same commit. **W1-T6 becomes
+port-it-forward rather than delete-or-regenerate**, and two places that assert "no source in this
+repo" (`docs/VALIDATOR.md:55–63`, `validator.ml:439`) are wrong. Both rows updated.
+
+Two consequences E1 drew from the recovered decomposition, written as falsifiable predictions
+rather than claims: all four `sum` verdicts follow from `∀p ∈ [1,n]` collapsing to `N ≥ n` /
+`N < 1` — **the same rendering `pointp` fixed for `gcc` in W1-T9**, unreachable here only because
+the entry is an orphan; and the recovered decomposition is an **order encoding over a BC
+channel**, so it needs neither a weighted sum nor an integer-valued schema — contradicting
+`decomps/sum_pred.md`'s G11+G12+G13 pricing. `validator.ml`'s `nv_range Sum = (n, n·m)`, written
+from gccat alone, independently agrees with the recovered form.
+
+**On `regular`'s fragment sentence** — E1 carried D-0012's "strictly 2-local" verbatim, labelled
+it derived rather than measured, and sharpened it: the *shipped* value is narrower still than the
+full 2-local fragment — two `Decomp`s, one uniform pair clause, no first/last-symbol condition,
+nothing for `q₀`/`F`, and an unguarded `±1` shift. That sharpens W2-B rather than contradicting
+it, and it is the honest version of the sentence D-0012 requires.
+
+**Stale references reported, not fixed** (not E1's files): line numbers in `decomps/among.md`,
+`decomps/regular.md`, `decomps/_shapes-ext.md`, `decomps/_shapes.md`, `docs/GCCAT.md`,
+`CHRISTMAS_LIST.md:206`, `validator.ml:439–453`; and `decomps/_gaps-ext.md`'s X3 quotes a premise
+"read off `cata/regular.tex`" that W1-T2 has since removed.
