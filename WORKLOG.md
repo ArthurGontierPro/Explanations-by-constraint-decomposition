@@ -1433,3 +1433,43 @@ it under S6. And it separated cost from wall throughout: `inverse` is G9 as a **
 
 **Same wrong stub field as R5, independently:** 7 of 12 stubbed "no spec" while covered by a
 family file. Now **W1-T16**.
+
+### 2026-09-21 — R6 addendum (and a correction to my own closure of it)
+
+I closed R6 at `19e0af1` **before its last three commits landed** — `46719da`, `1a1e5c1`,
+`5991b7c`. The closure note above is therefore incomplete, and two of its claims are now wrong.
+Corrected here rather than edited there, per append-only.
+
+**G2 is a legibility cost, NOT a hard stop. R6 retracted its own finding and I verified the
+retraction.** The first reading — that a second user array must be `B 1`, which makes
+`printvartex` raise — held for about twenty minutes in `docs/DECOMP_FORMAT_NOTES.md` because I
+committed it. **`var_name`'s `O` is a perfectly good second array**: l.522 renders it
+`"O" ^ printglobal_eventtex v`, the same indexed-global path `X` uses, and `gccn` already carries
+`O` as a real user global at l.829. So `inverse`, `sort` and the `write` family **are writable
+today**, with one array wearing `gcc`'s letter — which is exactly the cost G2 always described.
+Retracted at `12ceed8`. R6 propagated the correction through five of its own entries and moved
+`inverse` off G9.
+
+**This also sharpens a spec defect:** `decomps/write.md`'s G2 paragraph is wrong in *both*
+directions — a second array as `B 1` does not "print as a Boolean auxiliary", it raises; and `O`,
+which the paragraph never mentions, prints fine.
+
+**Two entries now use `encodable today, not encoded`:** `member` (split by fragment — the
+parameter-target decomposition the repo specifies is encodable; MiniZinc's var-target signature
+is G3) and `inverse`. R6 deliberately did **not** flip the `write` family, because
+`decomps/write.md` calls its workaround only "probably the right decomposition" and nothing has
+tested it. That restraint is the right instinct and worth keeping.
+
+**R6 caught me twice more, both fair.** My message told it the status value was already defined
+in `README.md` and `TEMPLATE.md`; when it measured, the value was in neither, so it adopted the
+value with a caveat saying so — and my `bc64ca3` then landed the legend row mid-session, making
+its caveat stale within one commit. It re-measured and corrected. **`catalog/TEMPLATE.md` still
+did not define it**, which I have now fixed with a pointer to the legend rather than a second
+copy. And R5's `strictly_*` Status rows still read "no status-legend value fits" — the
+observation that *created* the value — now updated to use it.
+
+**Its own staging sweep, flagged not rewritten:** `9bdcd69` swept `catalog/sum_pred.md` (255
+lines of R4's work) in via `git add -A`. R6 switched to explicit paths and its next commit
+correctly left six sibling-modified files unstaged. It cited this repo's own precedent — the
+W2-A/W2-C sweep — for flagging rather than rewriting shared history. That is the protocol
+working as designed.
