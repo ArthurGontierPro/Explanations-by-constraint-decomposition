@@ -70,6 +70,8 @@ session picks it up.
 | Catalog: format + first entries | `catalog/**` (new) | C1 (2026-09-21) | 2026-09-21 |
 | Catalog: sourcing the published explanations | `catalog/_literature/**` (new) | C2 (2026-09-21) | 2026-09-21 |
 
+_**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
+
 _W3-C RELEASED (`1e7dc67`): index coverage 113/118 → **118/118**. W3-D RELEASED (`04d800a`, `1d25c45`, `b083974`): the corpus is complete — **12 shapes + 3 modifiers cover 55 constraints**. W3-S RELEASED (`790bfa7`, `fbb95c7`, `47bb4ef`, `576c718`). **Wave three is closed. Nothing is claimed.**_
 
 _W2-C closed (`c0a704a`), W2-A closed (`fdf46ca`), W2-B closed (`c5a8352`). **Wave two is closed.** Gaps consolidated at `9774a62`. Wave three claimed 2026-09-18: engine fixes, spec consolidation, and the literature index — three files, three owners, no overlap._
@@ -734,3 +736,65 @@ packing rows carry E2/E8, not E5/E6/E7, so a code-only filter ranked `diffn*`, `
 Fixed in passing (W1-T11(a), the `tools/` half): the E-code regex stopped at `E7` and could not
 see **E8**/**E9** from D-0011, and it read the `(was E3; …)` traceability notes as live routes.
 **The validator's stale out-of-scope reason strings are a different file and still open.**
+
+### 2026-09-21 — C1, the catalog's first three entries
+
+`catalog/` now exists. `TEMPLATE.md` is the format and carries each field's rules as HTML
+comments beside it; `README.md` states what the catalog claims and holds the status legend.
+Three entries: `alldifferent.md` (tier D), `cumulative.md` (tier D), `gcc.md` (tier C) — the
+only tier-D/C constraints the generator currently emits anything for (D-0013's documented-first
+order).
+
+**The wording decision that mattered.** D-0013's appended note says an entry listing some rules
+must not read as if it lists all of them. Three devices in the format enforce it, and an entry
+that drops any of them is wrong even if every rule in it is right: a **banner** at the top of
+every entry; a mandatory **"Scope of this entry"** section that states the finite question the
+generator was asked (which events, over which decomposition) and shows the *empty* answers
+beside the non-empty ones; and a **status legend** with no value meaning "correct".
+The Scope section is the load-bearing one — it is what turns "`alldifferent` has one rule" from
+a suspicious-looking number into a stated result.
+
+**Status lines, from this session's own `make validate` (2026-09-21):**
+`alldifferent` validated sound and minimal at n,m ≤ 4 (1/1) · `gcc` validated sound and minimal
+at n,m ≤ 4 (4/4, the only fully validated entry) · `cumulative` **not validatable** (out of
+scope: `UNPARSED: index equation offset: t'=t-d_{i}`, and the capacity appears in no atom).
+Run totals reproduce CLAUDE.md exactly: 34 rules in 11 entries, 13 sound and minimal, 21
+flagged; 2 rules in 5 entries out of scope.
+
+**Left for C2:** all three entries' *Published explanation → Rule shape* and *Calibration*
+sections say `pending C2` and link to `catalog/_literature/<name>.md`. No published rule shape
+is stated anywhere from memory. Each entry does record the in-repo prior (from
+`CHRISTMAS_LIST.md`) for what the calibration is expected to find, written down *before* the
+comparison so the eventual result confirms or contradicts something.
+
+**Discrepancies found while reading, none fixed — they are in files C1 does not own:**
+
+1. **Stale generator line numbers in three places.** `decomps/all_different.md` cites `alldiff`
+   at "lines 678-679" (now 808-809); `decomps/cumulative.md` and `decomps/disjunctive.md` cite
+   `cumul` at "l.680-682"/"l.682" (now 810-812); `CLAUDE.md` carries the same "generator
+   l.680-682". The *claims* made at those sites are still true at the new lines; only the
+   numbers rot. `explenation generator.ml` l.399/l.428 in CLAUDE.md's `var_name` trap is
+   likewise worth re-checking.
+2. **`decomps/all_different.md` misstates the shipped rule.** It gives it as
+   `X_i ≠ t ← ∃i'≠i: X_i'=t`. The shipped premise is `∀i'` — and the ∀/∃ difference is the
+   whole point of `docs/VALIDATOR.md`'s "sound and minimal does not mean good" passage, since
+   the ∃ form is the strictly stronger rule the generator does *not* produce.
+3. **22 vs 25 dropped branches.** `CLAUDE.md:156`, `docs/ROADMAP.md:49` and `WORKLOG.md:337`
+   all say the old silent filter dropped **22** branches across 16 entries; the comment at
+   `explenation generator.ml:549` says **25**. The all-`F` finding is identical in both and is
+   the part anything depends on, so this is a bookkeeping conflict, not a result in doubt.
+   (For reference: today's shipped catalog drops **21**, measured 2026-09-21 by summing the
+   `dropped F` fields across `cata/*.tex` — a different generator, not comparable to either.)
+4. **`make check`'s warning census has drifted from CLAUDE.md.** Measured this session:
+   default 0, `-w +27+39` **6**, `-w +40+41+42` 31, `-w +a` **56**. CLAUDE.md says 8 and 57 for
+   the first and last; the Makefile's own expected line says 6 and 57. The gate passes (the
+   census is informational), but CLAUDE.md's "8" is stale and `+a` is off by one against the
+   Makefile's own expectation.
+5. **No `decomps/global_cardinality.md`.** `gcc` is the one entry of the three with no
+   `decomps/` spec; its decomposition was read straight off the generator. Also worth knowing
+   for anyone reading that source: the value named `gcc` at l.813-814 is **dead** — `cata/gcc.tex`
+   is emitted from `gccn` at l.827-829.
+6. **Convention drift in this file, pre-existing.** The 4-column claim rows (W2-A onward,
+   including C1/C2 at `88d1c24`) are appended to the 3-column table under `## Completed`, not
+   to the one under `## Active claims`. Left alone rather than reflowed, per the append-only
+   rule.
