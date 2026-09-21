@@ -1219,3 +1219,29 @@ both had one.
 **Of S-C's 13 recorded contradictions the sharpest was mine:** `CLAUDE.md`'s reality table said
 34/13/21 while the blockquote below it still said 42/11/31, pre-W1-T2. Fixed at `d430c57`, and
 that blockquote now says to re-measure rather than quote either.
+
+### 2026-09-21 — R3 (out-of-scope stubs) — CLOSED
+
+33 entries upgraded, then 7 of them revised again under D-0014. Verified against the fixed tool:
+tier A = 43, out of scope = 28, matching.
+
+**Its finding changed a project decision, which is the point of reviewing a stub rather than
+trusting it.** `diffn`×4 and `bin_packing`×3 were out of scope only because the ranking filtered
+by *section*; their routes are E2 and E8. The decisive line was `CHRISTMAS_LIST.md:51` — the
+Huub paper loses *precisely on `diffn` and `cumulative`* — which makes `diffn` a target. D-0014
+now decides scope by mechanism, and the section filter was mine.
+
+**On revision it sharpened the blockers past what I told it**, which is the better answer:
+`diffn*` is `nothing generated — blocked on **G3**` (only variable-vs-value comparisons exist;
+non-overlap needs variable-vs-variable atoms), not "E2" as a bare code; `bin_packing*` is
+**G11**, the same gap tier-A `knapsack` carries. Each keeps a short *History* paragraph recording
+that the classification was checked rather than assumed — the right instinct, since a reader who
+sees only the corrected state cannot tell whether anyone looked.
+
+**Correctly left out of scope, with reasons now recorded in the entries:** all 8 set constraints
+(E5 — the event type has no set-membership literal), all 12 graph constraints (E6 — both
+documents say *declare* out of scope, not schedule), the 3 float constraints (E7), `geost` (its
+route cell names no E-code at all, a stronger ground than a closable extension), and
+`arg_max`/`arg_min`, whose route is E2 **+** E7 — the int/bool variant is reachable and has a
+native explaining propagator, only the float variant is out. The tooling classifies by name and
+cannot split one, so the entry says so instead of the index pretending.
