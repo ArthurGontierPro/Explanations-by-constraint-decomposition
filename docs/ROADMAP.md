@@ -70,6 +70,13 @@ Goal: the decomposition format stops changing, so content work can fan out.
 
 ## W3 — fan out by constraint family
 
+**Ordering, D-0013 (2026-09-21): documented-first — tier D → C → B → A**, per the ranking in
+`tools/mzn_coverage.py`. The family rows below stay as they are; what changes is the order
+entries are *generated and published*, and that **every tier-D/C entry carries a calibration
+note** — how the generated rule compares to the published one. Tier A is 36 constraints and
+is where the value is; it is last because its output is unfalsifiable until the method has
+been shown to reproduce known answers.
+
 Goal: coverage. **Only after W2-T1.** Each session authors decompositions against a frozen
 format and a working validator; each decomposition is its own file, so sessions do not collide.
 
@@ -88,6 +95,7 @@ format and a working validator; each decomposition is its own file, so sessions 
 | W4-T2 | Target `alldifferent`: can the method reach the Hall-set explanation? | TODO | Published baseline: Downing, Feydy, Stuckey 2012. **Budget this as an experiment, not as a constraint.** A clean negative is a result. **Sharpened 2026-09-18 (W1-S, verified): `alldifferent.tex`'s single rule is correct, not a dropped one.** `alldiff` is `rule1` + `rule5` alone, and `X_i = t` is not derivable from a Boolean sum's ≤ direction — so the missing rule *is* E4, counting across sums. W4-T2 is therefore "add pigeonhole reasoning", not "fix a silent discard" |
 | W4-T3 | Target `cumulative`: can the method reach the window/capacity explanation? | TODO | Published baseline: Schutt et al. 2011. Current entry is the unary-resource special case and names all *n* tasks |
 | W4-T4 | Close D-0008 (what "complete" means per entry) | TODO | Needs W4-T2's outcome |
+| W3-T5 | **Calibration: for each tier-D/C entry with a citation, compare the generated rule to the published one** and record agrees / weaker / incomparable, with the difference | TODO | **Added 2026-09-21 (D-0013), and it is main line, not W4.** Comparison is cheap and needs no new machinery. Reaching a published rule's *strength* is a different thing, needs E4, and stays demoted with W4 |
 
 ## Explicitly out of scope
 

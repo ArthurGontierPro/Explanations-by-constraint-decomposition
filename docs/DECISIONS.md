@@ -297,3 +297,41 @@ statement of that fragment, and it belongs in the entry.
 
 **Revisit (b) when** E1 lands for another reason, or when someone wants the `cost_*` family,
 which needs E1 and E9 regardless.
+
+## D-0013 — The catalog is built documented-first: tier D → C → B → A
+
+**DECIDED by the author, 2026-09-21.** The catalog proceeds from the constraints whose
+explanations are published toward the ones where nothing exists, using the ranking in
+`tools/mzn_coverage.py` (`docs/COVERAGE.md`): **D (literature + native) → C (literature +
+decomp) → B (no literature + native) → A (no literature + decomp)**.
+
+**Why this is right, and it is not the order of value.** Tier A is where the value is — 36
+constraints for which a derived schema would be the only schema in existence. But a generated
+rule for a constraint nobody has ever studied is **unfalsifiable by anything except the
+validator**, and the validator checks soundness and minimality, not agreement with what an
+expert would have written. Sound-and-minimal is a floor, not strength: `alldifferent`'s one rule
+passes and only ever fires at `n=2`. So tier-A output is only as credible as the method that
+produced it, and the only way to establish that credibility is to run the method where the
+answer is already known and compare.
+
+**The consequence that makes this concrete: a calibration result is now a first-class
+deliverable.** Not "the rule is sound" but "the generated rule for X agrees with / is weaker
+than / is incomparable to the published one, and here is the difference." Nothing in the
+roadmap produced that yet — W4-T2 and W4-T3 are budgeted as *experiments* for `alldifferent`
+and `cumulative`.
+
+**Split those two apart, because D-0010 demoted W4 and this must not silently re-promote it:**
+
+- **Comparison against a published rule is calibration.** Cheap, no new machinery, main line.
+  It applies to every tier-D and tier-C entry with a citation in `CHRISTMAS_LIST.md`.
+- **Reaching the published rule's *strength*** — Hall sets for `alldifferent`, the window/
+  capacity argument for `cumulative` — **needs E4 and stays demoted** (D-0010). A calibration
+  that reports "generated rule is sound but strictly weaker than Downing's" is a **result**,
+  not a failure, and it is exactly the evidence D-0008 needs to define "complete".
+
+**This also confirms D-0012 rather than conflicting with it.** `regular` is tier D, so putting
+it first is consistent — with the caveat D-0012 already carries: the entry must say which
+fragment it covers.
+
+**What it costs.** The first ~28 entries are ones where the answer is already known, so coverage
+of the 118 (D-0010) starts slower. That is the price of every later tier-A claim being credible.
