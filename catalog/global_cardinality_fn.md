@@ -71,6 +71,18 @@ shared page. Two reasons, and both are about what the catalog measures:
    list and that event. Identical inputs, identical rules. **There is nothing for a
    `cata/global_cardinality_fn.tex` to contain that `cata/`'s `global_cardinality` artifact does not already contain.**
 
+**A second in-repo source, found after the decision and agreeing with it.**
+`docs/DECOMP_FORMAT_NOTES.md:129` closes the wave-two gap survey with a list of constraints that
+produced no new gap, and the last line of it reads, verbatim:
+
+> the `*_fn` variants — not separate constraints; no gap recorded.
+
+That is an independent statement: `CHRISTMAS_LIST.md:217` is the literature-and-solver index,
+while this is the *format* analysis, arrived at by asking what each constraint demands of the
+`event`/`ind_modifs`/rule-schema encoding. The two agree, and the second is the stronger of the
+pair for this entry's purposes — "no gap recorded" is exactly the claim that the functional
+syntax costs this method nothing.
+
 **The qualification, stated once and not hidden.** Step 2 rests on `CHRISTMAS_LIST.md:217`, an
 index this repo wrote, **not** on the MiniZinc library, which is not vendored here. If some
 `*_fn` body did something other than declare a result and post the predicate — added a
@@ -222,6 +234,8 @@ gaps mean; none is attributed to `global_cardinality_fn` itself.
   21 flagged ==`, `== 2 rules in 5 entries out of scope (underspecified artifact) ==`. No line of
   that run mentions `global_cardinality_fn`, which is the measurement behind the **Validator** row.
 - `docs/COVERAGE.md:137-139` read → the three-rows-without-an-E-code passage discussed above.
+- `docs/DECOMP_FORMAT_NOTES.md:129` read → "the `*_fn` variants — not separate constraints;
+  no gap recorded", quoted verbatim above as the second in-repo source.
 - **The three-step argument that the functional form does not change the explanation is
   reasoning, labelled as such in place**, from `CLAUDE.md`'s description of the generator and
   from `CHRISTMAS_LIST.md:217`. It is not a measurement and no code was run to support it.
