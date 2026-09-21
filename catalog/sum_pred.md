@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E9` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G14` under reading (b); **under reading (a) nothing blocks it and nobody has authored it.** See Status |
+| **Status** | **`encodable today, not encoded`** under reading (a) — measured; `nothing generated — blocked on G14` under reading (b). See Status |
 | **Generated** | no generator entry — there is no `cata/sum_pred.tex`. The orphan [`cata/sum.tex`](sum.md) is the nearest artifact and is not this constraint |
 | **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `sum_pred` entry |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:213` records `none` |
@@ -146,14 +146,23 @@ constraint that artifact is about depends on the signature question above.
 
 ## Status
 
-**`nothing generated — blocked on G14` under reading (b).** Under reading (a), and this is the
-finding: **nothing blocks it.**
+**Reading (a): `encodable today, not encoded`.** **Reading (b): `nothing generated — blocked on
+G14`.**
 
-That is an uncomfortable status to write and it is the honest one. The six legend values in
-`catalog/README.md` assume that an absent entry is absent because something blocks it, and here
-what is absent is an authoring: no `sum_pred` value exists in `explenation generator.ml`, no
-`explainall` call writes `cata/sum_pred.tex`, and the schemas it would need — `rule1` on a BC
-channel and `rule6` — both exist, ship, and were run by this session against exactly this shape.
+Under reading (a) there is no gap to name, and that is the finding. What is absent is an
+authoring: no `sum_pred` value exists in `explenation generator.ml`, no `explainall` call writes
+`cata/sum_pred.tex`, and the schemas it would need — `rule1` on a BC channel and `rule6` —
+exist, ship today, and were run by this session against exactly this shape, emitting four rules.
+Naming a G-number here would be inventing a blocker to satisfy the legend.
+
+`encodable today, not encoded` is the status value added to `catalog/README.md`'s legend
+(`:66`) on 2026-09-21, by the concurrent session that hit the same situation with
+`strictly_increasing`/`strictly_decreasing`: "the current format can already express the
+decomposition, but nothing in the generator does it, so **there is no gap to name**". This is
+the second kind of case for it — there the argument is a parameter shift on a validated pair,
+here it is a decomposition recovered from git and re-run. **The two runs behind the claim are
+in "How this entry was produced"**, and the four qualifications above are part of it: encodable
+is not validated, and the one artifact this shape ever produced is `flagged` 4 of 4.
 
 What a next session should do, in order: (1) pin the signature; (2) if it is reading (a), port
 the recovered decomposition (roadmap **W1-T6**, already rescoped to "port it forward"), using

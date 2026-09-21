@@ -21,6 +21,10 @@ repeats.
   lives only as an OCaml literal baked into which schema gets called.
 
 - **G2 — `var_name` has no slot for "this constraint's own parameter", only borrowed letters.**
+  **Hardened 2026-09-21 (R6, verified at generator l.517): this is a hard stop, not a borrowed-name
+  inconvenience.** A second *user array* taken as `B 1` makes `printvartex` **raise**, so a
+  constraint with two user arrays (`inverse`, `write`, `sort`) cannot be printed at all.
+  `decomps/write.md` records G2 here without the raise; `decomps/inverse.md` records neither.
   `count`'s count variable `c` needs a `rule1` channel exactly like `nvalue`'s `N` or `gccn`'s
   `O`, but `var_name` is a closed variant (`X | B of int | T | I | V | N | O`) and none of its
   constructors mean "count of a single given value" — the nearest fits (`N`, `O`) already carry
