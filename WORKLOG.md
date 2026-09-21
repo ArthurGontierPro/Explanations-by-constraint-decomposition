@@ -94,6 +94,8 @@ per this session's standing instructions against destructive git ops on someone 
 flagging for the orchestrator rather than rewriting history. See handoff note below for the
 substance.
 
+_**S-A RELEASED 2026-09-21** (`c753045`, `021bcbd`, `b9a4bd0`). `tools/catalog_stub.py` (new), 106 generated `catalog/<name>.md` stubs, `tools/catalog_index.py`, `catalog/INDEX.md`, `catalog/README.md`, `.gitignore`. Index now reads **118 / 118 (12 reviewed, 106 stubs)** and cannot print the total without the split. The 12 reviewed entries and `catalog/_literature/**` were not touched: the generator refuses any `catalog/*.md` lacking the `AUTO-STUB — NOT REVIEWED` marker and reported all 12 skipped. `catalog/PROBLEMATIC.md` (S-C) was not created, read or written by this session, only added to the index's non-entry list so it is not counted as a constraint entry._
+
 ## Handoff notes
 
 ### 2026-09-18 — design session (with the author)
@@ -1129,3 +1131,39 @@ entries (now on W1-T11); `docs/ROADMAP.md:51`'s rule numbering is off by one sin
 `CHRISTMAS_LIST.md` said `decomps/all_equal.md` does not exist (it does, written later that day)
 and used "already correct in the repo", which `catalog/README.md` forbids — **both fixed at
 `45d1974`**; and `decomps/{all_equal,increasing,element,nvalue}.md` cite pre-W1 line numbers.
+
+### S-A (2026-09-21) — stubbing the remaining 106
+
+**The number to quote is "118 / 118 (12 reviewed, 106 stubs)", never "118 / 118".** That is
+enforced in code, not by convention: `tools/catalog_index.py` prints the split in the same
+breath as the total and spends four lines saying that a file count is not work done. If a
+later session finds a bare 118/118 anywhere, it is a regression.
+
+**What a stub is allowed to know.** Five fields, each naming its own source in the file:
+tier (`mzn_coverage.py --rank`), the literature/solver/E-route cells of the constraint's
+`CHRISTMAS_LIST.md` row quoted verbatim with the line number, the name's line in the vendored
+globals snapshot, a `decomps/<name>.md` link when the spec exists, and the `cata/<name>.tex`
+`\frac` count when the file exists. Everything else reads `not reviewed`. No status value, no
+blocking gap, no calibration verdict, no guessed extension — a guess and a finding are
+indistinguishable six months later, which is the entire point of the exercise.
+
+**Measured, not assumed:** 106 stubs written, 12 files skipped for lacking the marker, 0
+existing entries modified (`git show --stat`). Of the 118 release globals, **43** have a
+`decomps/<name>.md` under their exact release name, of which **35** fall to stubs; the other
+3 spec files (`edit_distance`, `lex_chain`, `orbitope`) name no release global. **No stub
+carries a rule count**, because every `cata/*.tex` already belongs to one of the 12 reviewed
+entries.
+
+**Idempotence is real and was tested three ways**, not asserted: a second run reports
+`0 created / 0 refreshed / 106 already current` and the md5 of `catalog/**` is unchanged; a
+run with `date.today()` monkeypatched to 2027-03-04 also changes nothing, because content is
+compared with dates normalised out; and de-marking a stub by hand makes the next run skip it
+and leave the bytes alone (13 skipped instead of 12).
+
+**Two things a later session should know.** `tools/catalog_index.py` no longer needs an
+`ALIAS` row for a basename that spells a release global exactly — identity resolution covers
+the 106, and `ALIAS` is back to doing only the job a script cannot: `alldifferent →
+all_different` and the three deliberate `None` rows. And `catalog/README.md`'s hand-typed
+"entries written | 3 of 118" table is gone, replaced by a pointer to the generated index; it
+was stale at 3 when the truth was 12, and a second copy of a generated number will always
+rot.

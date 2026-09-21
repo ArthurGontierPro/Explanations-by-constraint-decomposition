@@ -12,3 +12,7 @@ _build/
 *.cmxa
 *.o
 *.a
+
+# Python byte-compilation of tools/ (tools/catalog_stub.py imports its
+# siblings rather than re-parsing their sources; CPython caches them here).
+__pycache__/
