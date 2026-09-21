@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** — `A no-literature + solver-decomposes`, ecode `E0` (shared row with `increasing`, `decreasing` and `strictly_increasing`) |
-| **Status** | **`nothing generated`** — and **no status-legend value fits.** The legend's only `nothing generated` form requires a gap number; there is no gap. See Status |
+| **Status** | **`encodable today, not encoded`** — the format can already express it and no gap blocks it; nothing in the generator does it. (This entry read "no status-legend value fits" until 2026-09-21, when that observation caused the value to be added to `catalog/README.md`'s legend.) See Status |
 | **Generated** | **0** rules — there is no `cata/strictly_decreasing.tex` and no generator value for it |
 | **Validator** | out of scope: nothing to validate. `make validate` reads `cata/*.tex` and this constraint has no artifact there |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:193` literature cell reads `none specific` |

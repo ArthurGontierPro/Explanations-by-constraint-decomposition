@@ -161,6 +161,10 @@ Rendered from `cata/<file>.tex` (single line, no trailing newline; count with
 
 ## Status
 
+<!-- The status legend is in `catalog/README.md` (seven values as of 2026-09-21), not here.
+     It includes `encodable today, not encoded`, for a constraint the format can already express
+     but nothing generates — use it rather than inventing a G-number. -->
+
 **`<status-legend value>`**
 
 `<Two or three sentences. What is and is not established. If the status is

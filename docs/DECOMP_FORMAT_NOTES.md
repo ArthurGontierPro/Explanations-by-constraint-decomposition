@@ -21,10 +21,17 @@ repeats.
   lives only as an OCaml literal baked into which schema gets called.
 
 - **G2 — `var_name` has no slot for "this constraint's own parameter", only borrowed letters.**
-  **Hardened 2026-09-21 (R6, verified at generator l.517): this is a hard stop, not a borrowed-name
-  inconvenience.** A second *user array* taken as `B 1` makes `printvartex` **raise**, so a
-  constraint with two user arrays (`inverse`, `write`, `sort`) cannot be printed at all.
-  `decomps/write.md` records G2 here without the raise; `decomps/inverse.md` records neither.
+  **2026-09-21, corrected within the day — G2 is a legibility cost, NOT a hard stop.** The first
+  reading was that a second *user array* must be taken as `B 1`, which makes `printvartex`
+  **raise** (l.517, W1-T10), and that reading was published here for about twenty minutes. R6
+  re-measured and retracted it: **`var_name`'s `O` is a perfectly good second array** — l.522
+  renders it `"O" ^ printglobal_eventtex v`, the same indexed-global path `X` uses, and `gccn`
+  already carries `O` as a real user global (l.829). So a two-array channel (`inverse`, `sort`,
+  the `write` family) **is writable today**, with one array wearing `gcc`'s letter. The cost is
+  exactly what G2 always said: the explanation names `O` where the reader wrote something else.
+  **`decomps/write.md`'s G2 paragraph is wrong in both directions** — a second array as `B 1`
+  does not "print as a Boolean auxiliary", it raises; and `O`, which that paragraph never
+  mentions, prints fine.
   `count`'s count variable `c` needs a `rule1` channel exactly like `nvalue`'s `N` or `gccn`'s
   `O`, but `var_name` is a closed variant (`X | B of int | T | I | V | N | O`) and none of its
   constructors mean "count of a single given value" — the nearest fits (`N`, `O`) already carry
