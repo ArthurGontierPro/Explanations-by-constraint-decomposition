@@ -1075,3 +1075,55 @@ it, and it is the honest version of the sentence D-0012 requires.
 `decomps/regular.md`, `decomps/_shapes-ext.md`, `decomps/_shapes.md`, `docs/GCCAT.md`,
 `CHRISTMAS_LIST.md:206`, `validator.ml:439–453`; and `decomps/_gaps-ext.md`'s X3 quotes a premise
 "read off `cata/regular.tex`" that W1-T2 has since removed.
+
+### 2026-09-21 — E2 (the seven rule-bearing catalog entries) — CLOSED. Catalog wave closed.
+
+Seven entries, six commits, nothing outside its own files. **`catalog/INDEX.md` regenerated
+after: 12 of 118 globals have entries** (15 entry files, three of which — `atleastnvalues`,
+`atmostnvalues`, `sum` — match no MiniZinc global), 8 of 118 have a generated rule, 6 of 118
+have a validated one.
+
+| entry | verdict |
+|---|---|
+| `increasing`, `decreasing` | 2/2 sound and minimal each, **and both fire** |
+| `allequal` | 2/2 sound and minimal — but **the premise literal is the conclusion literal** |
+| `element` | 2 sound and minimal + **4 vacuous**; `I=i` emits nothing |
+| `nvalues` | 4 vacuous + 1 unsound. **No rule that both fires and is sound** |
+| `atleastnvalues`, `atmostnvalues` | **0 of 4 sound** each; byte-identity re-measured (`cmp` silent, md5 equal) |
+
+**W1-T5 is diagnosed, and the orchestrator verified the reading at l.343–369.** `rule5` and
+`rule6` are the *same four-branch body* with the positive and negative calls interchanged
+(`ap`↔`nap`, `fre`↔`fnre`). `ap`/`nap` take their sign from the devent, so negating `B4`'s
+reified sign in the decomposition undoes the swap on both descent paths: **as encoded,
+`atleastnvalues` and `atmostnvalues` are the same decomposition written twice.** E2 also
+recorded a candidate root cause rather than stopping at the mechanism — step 2's channel is
+`rule1`, a reified *equivalence*, so `B4_p ⇔ N ≥ p` pins `N` from both sides and the `≤`/`≥`
+distinction has nowhere left to live but the sum schema.
+
+**A second CLAUDE.md claim of mine corrected, verified: `element`'s missing `I=i` rule is not an
+E4 case.** `elem` (l.834–838) is `rule1`×3 + `rule4`×2 with **no Boolean sum anywhere**, so
+"counting across sums" cannot be its route; `alldifferent`'s `rule5` made that analogy tempting
+and wrong. Its cause is the scalar-quantifier defect plus per-literal binder scope — W1-T1.
+
+**`allequal` is the opposite failure mode to `element`, and worth naming.** `element`'s rules
+are sound and cannot fire; `allequal`'s fire and say nothing — its premise literal *is* its
+conclusion literal, and the `.tex` admits two readings (a tautology, and the intended
+dichotomy), both sound, so the verdict cannot separate them. Root cause read off source:
+`addexists`/`addforall` (l.202–203) do not rename the index they bind, while `addprim` (l.204)
+does. That is a sharper, cheaper statement of D-0009 than the one in the record.
+
+**It refined my own heuristic rather than applying it blindly.** I told it to check every
+`∀i' ≠ i` premise for whether it can fire, by analogy with `alldifferent`. `atleast`/`atmost`
+rule 1 has that shape and *does* fire — its polarity is `X_{i'} ≠ t`, which is satisfiable,
+where `alldifferent`'s is `X_{i'} = t`, which is not. Its real defect is different: dropping the
+two droppable premises leaves pure domain exhaustion, sound for *any* constraint.
+
+**Sourcing discipline held.** `atleast_nvalue`/`atmost_nvalue` got `pending`, not "no published
+rule", because `CHRISTMAS_LIST.md` has **no row** for either — the silence is unsearched, not
+empty. The other five got "no published rule" from their rows. Nothing written from memory.
+
+**Reported, not fixed:** `docs/VALIDATOR.md:279–288`'s per-entry table is stale for five
+entries (now on W1-T11); `docs/ROADMAP.md:51`'s rule numbering is off by one since `790bfa7`;
+`CHRISTMAS_LIST.md` said `decomps/all_equal.md` does not exist (it does, written later that day)
+and used "already correct in the repo", which `catalog/README.md` forbids — **both fixed at
+`45d1974`**; and `decomps/{all_equal,increasing,element,nvalue}.md` cite pre-W1 line numbers.

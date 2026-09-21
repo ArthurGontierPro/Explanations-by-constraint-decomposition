@@ -15,18 +15,18 @@ every regeneration, never hand-typed -- see the header comment for how.
 
 ## Summary
 
-- catalog entries: **3 / 118**
+- catalog entries: **12 / 118**
 - have any generated rule (`cata/*.tex`, `\frac` count > 0): **8 / 118**
 - have any validated (SOUND and MINIMAL) rule: **6 / 118**
 
 | tier | globals | catalog entry | generated rules | validated |
 |---|---:|---:|---:|---:|
-| A | 36 | 0 | 5 | 4 |
+| A | 36 | 6 | 5 | 4 |
 | B | 8 | 0 | 0 | 0 |
 | C | 9 | 1 | 1 | 1 |
-| D | 19 | 2 | 2 | 1 |
+| D | 19 | 3 | 2 | 1 |
 | unclassified | 11 | 0 | 0 | 0 |
-| out of scope | 35 | 0 | 0 | 0 |
+| out of scope | 35 | 2 | 0 | 0 |
 
 ## Warnings from this run
 
@@ -40,19 +40,19 @@ every regeneration, never hand-typed -- see the header comment for how.
 |---|---|---|---:|---:|---|
 | `all_different_except` | A | — | — | — | — |
 | `all_different_except_0` | A | — | — | — | — |
-| `all_equal` | A | — | 2 | 2 | — |
+| `all_equal` | A | [allequal](allequal.md) | 2 | 2 | — |
 | `alternative` | A | — | — | — | — |
-| `among` | A | — | 0 | out of scope: index set D_4 is never defined by the printer (W1-T2), AND among's ... | — |
+| `among` | A | [among](among.md) | 0 | out of scope: index set D_4 is never defined by the printer (W1-T2), AND among's ... | G8 |
 | `arg_sort` | A | — | — | — | — |
 | `arg_val` | A | — | — | — | — |
 | `at_least` | A | — | — | — | — |
 | `at_most` | A | — | — | — | — |
 | `count` | A | — | — | — | — |
-| `decreasing` | A | — | 2 | 2 | — |
+| `decreasing` | A | [decreasing](decreasing.md) | 2 | 2 | — |
 | `distribute` | A | — | — | — | — |
-| `element` | A | — | 6 | 2 | — |
+| `element` | A | [element](element.md) | 6 | 2 | — |
 | `exactly` | A | — | — | — | — |
-| `increasing` | A | — | 2 | 2 | — |
+| `increasing` | A | [increasing](increasing.md) | 2 | 2 | — |
 | `knapsack` | A | — | — | — | — |
 | `lex_chain_greater` | A | — | — | — | — |
 | `lex_chain_greatereq` | A | — | — | — | — |
@@ -61,7 +61,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `lex_chain_lesseq` | A | — | — | — | — |
 | `lex_chain_lesseq_orbitope` | A | — | — | — | — |
 | `member` | A | — | — | — | — |
-| `nvalue` | A | — | 5 | 0 | — |
+| `nvalue` | A | [nvalues](nvalues.md) | 5 | 0 | — |
 | `seq_precede_chain` | A | — | — | — | — |
 | `sliding_among` | A | — | — | — | — |
 | `sliding_sum` | A | — | — | — | — |
@@ -103,7 +103,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `lex_lesseq` | D | — | — | — | — |
 | `mdd` | D | — | — | — | — |
 | `mdd_nondet` | D | — | — | — | — |
-| `regular` | D | — | 0 | out of scope: index sets D_8, D_9 — the transition relation — are never defined b... | — |
+| `regular` | D | [regular](regular.md) | 0 | out of scope: index sets D_8, D_9 — the transition relation — are never defined b... | G7 |
 | `regular_nfa` | D | — | — | — | — |
 | `regular_regexp` | D | — | — | — | — |
 | `strict_lex2` | D | — | — | — | — |
@@ -147,9 +147,9 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `partition_set` | out of scope | — | — | — | — |
 | `piecewise_linear` | out of scope | — | — | — | — |
 | `piecewise_linear_non_continuous` | out of scope | — | — | — | — |
-| `range` | out of scope | — | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); this ... | — |
+| `range` | out of scope | [range](range.md) | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); this ... | G8 |
 | `reachable` | out of scope | — | — | — | — |
-| `roots` | out of scope | — | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); the s... | — |
+| `roots` | out of scope | [roots](roots.md) | 0 | out of scope: index sets D_5, D_6 are never defined by the printer (W1-T2); the s... | G8 |
 | `steiner` | out of scope | — | — | — | — |
 | `subcircuit` | out of scope | — | — | — | — |
 | `subgraph` | out of scope | — | — | — | — |
