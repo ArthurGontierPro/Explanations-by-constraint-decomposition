@@ -42,7 +42,7 @@ and is exactly what the shipped shape cannot say.
 
 1. **The status has to be one thing while the constraint is two.** `nothing generated —
    blocked on G7` is chosen because G7 is necessary on both rows and sufficient on the first.
-   A reader who takes it to mean "close G7 and `regular_regexp` works" would be wrong for
+   A reader who takes it to mean "close G7 and `regular_regexp` is finished" would be wrong for
    every expression outside the 2-local fragment; that is what this section is for.
 2. **The compilation step itself costs nothing.** `decomps/regular_regexp.md:9-10`: "The
    compilation step is a modelling act outside the format and adds no requirement of its own."

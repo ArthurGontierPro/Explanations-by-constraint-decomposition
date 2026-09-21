@@ -49,7 +49,7 @@ Tasks with start times `s_i` and durations `d_i` do not overlap in time.
 `.mzn` file at all (`find . -name '*.mzn'` → empty, 2026-09-21). The signature above is
 transcribed from `decomps/disjunctive.md`, "Signature", which records it without a citation of
 its own; treat it as recall. That spec also states the restriction the shipped decomposition
-works under: **`d_i` is a constant.**
+operates under: **`d_i` is a constant.**
 
 ## Published explanation
 

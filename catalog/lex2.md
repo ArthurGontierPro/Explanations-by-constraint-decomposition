@@ -206,5 +206,5 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
 
 **Discrepancy noted, not fixed (this session does not own that file).**
 `decomps/lex2.md:15` cites `x3ac` at "line ~727". Measured 2026-09-21: **875**. The claim it
-supports — that `R` already exists for a second, row-like dimension — is correct at the new
+supports — that `R` already exists for a second, row-like dimension — holds at the new
 line.
