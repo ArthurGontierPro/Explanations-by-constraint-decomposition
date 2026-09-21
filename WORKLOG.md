@@ -1353,3 +1353,79 @@ C1 wrote `alldifferent`, `cumulative`, `gcc`; E1 wrote `among`, `range`, `regula
 `sum`. `table` has carried the AUTO-STUB banner the whole time. It goes to R6, and it matters
 more than most: it is the constraint whose `T[r,i]` link the author and the orchestrator worked
 through in detail, and G6 is named for it.
+
+### 2026-09-21 — orchestrator error: `--amend` in a shared checkout
+
+I ran `git commit --amend` while R4 was live. R4 committed between my `git add` and my amend, so
+the amend rewrote **R4's** commit: `0c2b28f` now carries R4's `catalog/sum_pred.md` review
+alongside my two doc edits, under my message. R4's earlier `2df823f` is untouched and nothing
+was lost — the message and the boundary are wrong, the content is not. **I did not rewrite
+history a second time to fix a label while a session was running.**
+
+This is the stronger form of the `git add -A` hazard I hit this morning and then warned two
+sessions about an hour before doing this. **Rule for the next orchestrator: with live sessions,
+stage explicit paths and never amend.** The shared git index is the one piece of shared mutable
+state this protocol does not otherwise have.
+
+Also recorded: I told R4 and R6 by message that the status value `encodable today, not encoded`
+was "now defined" in `catalog/TEMPLATE.md` before defining it, and it turned out to live in
+`catalog/README.md` anyway. It is defined now (`bc64ca3`). Asserting a fact to a session before
+making it true is the same failure as a stale document, with a shorter fuse.
+
+### 2026-09-21 — R5 (lex, precedence, sliding: 14 entries) — CLOSED
+
+All 14 reviewed, all `no published rule` — every row's literature cell reads `none`.
+**11 of 14 are pure instances**: the two `lex_greater*` (argument swap), six `lex_chain*`
+(S5 + row modifier), three precede entries. Three are genuinely distinct.
+
+**`strictly_increasing`/`strictly_decreasing` are free — no gap.** R5 established it by reading:
+`tplus`/`tmoin` exist (l.794–795), `imap`/`OpSeq` composes (l.799–801), the `Addint` printer case
+is already exercised by `incr`/`decr` (l.471, l.503). Three qualifications stated in place:
+`tplus`/`tmoin` appear in no shipped decomposition, nothing was run, and the boundary falls off
+two index sets (a note, not a blocker — `increasing` already carries it).
+
+**It found a hole in the status legend and refused to paper over it.** "Encodable today, not
+encoded" had no legend value, and the only `nothing generated` form *requires* a gap number.
+R5 declined to invent one and reported it. The value now exists (`bc64ca3`).
+
+**`value_precede` is the only one of the fourteen the current format can express** — its guarded
+literal is `X_i = t` against a *parameter*, so G3 does not apply; G17 and the W1-T10 raise are
+what block it. That corrects the shape of the earlier claim that the whole family is G3-blocked.
+
+**Wrong stub fields, fixed in 12 files:** `Spec: none` on 8, because the stub probes for
+`decomps/<exact-name>.md` and misses family specs; bare `native` Chuffed cells on 4 where the row
+names `lex.cpp` / `value-precede.cpp`; and a `Literature: absent` heading над a quote that names
+Downing et al. 2012 for the sequence family.
+
+### 2026-09-21 — R6 (channelling, order, and `table`: 12 entries) — CLOSED
+
+**`table`** — artifact verified as 0 rules, diagnostics only. `X_i=t` loses its one candidate to
+the W1-T2 refusal over `D_4`; `X_i≠t` loses its one to an `F`, because step 3 has no
+`Reified_devent` and falls back to the `T` placeholder. Status `nothing generated — blocked on
+G6`; calibration `pending sourcing`. The entry carries the precise G6 statement — one anonymous
+`t` standing for both `T[r',i]` and `T[r,i]`, so **the unsoundness and the illegibility are the
+same fact** — both intended propagations with the second's circularity, and W1-T4's
+`MASKED, NOT FIXED`, from which it draws the operational conclusion: **G6 must land *with* any
+definition of `D_4`, not after it**, or the empty-premise rule returns.
+
+**On the `D2` route for G6: half viable, and the other half lands on W1-T1.** `ontin (D2 [R 1; I 1])`
+is constructible and `apply_op` carries it; missing are a printer, admission by
+`ind_set_defined`, and a stated meaning. But it does **not** reach the anonymous-`t` problem:
+`OpOn` installs one fresh `T 1`, `OpForall`/`OpPoint` collide on that name, and the only primers
+attach `Rel (t', NEQ, t)` unconditionally, which is false for `table`. **Printer and meaning are
+the easy part; the second value index is the work, and it is W1-T1 — `element`'s blocker.** That
+links the two biggest open items in the repo, which nothing had done before.
+
+**New finding, now in the gap notes:** **G2 is a hard stop, not a legibility cost.** A second
+*user array* taken as `B 1` makes `printvartex` **raise** (l.517), so `inverse`, `write` and
+`sort` cannot be printed at all. `decomps/write.md` records G2 without the raise;
+`decomps/inverse.md` records neither.
+
+**It corrected my brief:** `arg_sort` is **not** one of `_shapes.md`'s five unshaped G3-blocked
+constraints (those are `maximum`, `minimum`, `arg_max`, `arg_min`, `span`) — `_shapes.md` lists
+it under S6. And it separated cost from wall throughout: `inverse` is G9 as a **cost** (the
+`element` detour is writable, so its zero is "unwritten"), while `inverse_in_range` is G8 as a
+**wall**. That distinction is worth more than the entries.
+
+**Same wrong stub field as R5, independently:** 7 of 12 stubbed "no spec" while covered by a
+family file. Now **W1-T16**.
