@@ -79,6 +79,9 @@ session picks it up.
 | Review the tier-D stubs | the tier-D `catalog/<name>.md` stubs only | R1 (2026-09-21) | 2026-09-21 |
 | Review the tier-C and unclassified stubs | those `catalog/<name>.md` stubs only | R2 (2026-09-21) | 2026-09-21 |
 | Review the out-of-scope stubs | those `catalog/<name>.md` stubs only | R3 (2026-09-21) | 2026-09-21 |
+| Review the counting/cardinality stubs (13) | those `catalog/<name>.md` only | R4 (2026-09-21) | 2026-09-21 |
+| Review the lex/sequencing stubs (14) | those `catalog/<name>.md` only | R5 (2026-09-21) | 2026-09-21 |
+| Review the channelling/order stubs + `table` (12) | those `catalog/<name>.md` only | R6 (2026-09-21) | 2026-09-21 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
@@ -1336,3 +1339,11 @@ corrected.
 names are distinct exports in the globals snapshot and no `.mzn` is vendored here; every
 signature in the fifteen is flagged as recall rather than sourced; and no published rule shape
 for the lex, mdd or regular papers, since only three constraints have sourced literature.
+
+### 2026-09-21 — orchestrator error: `catalog/table.md` was never reviewed
+
+I told R1 that `table` was already reviewed and excluded it from the tier-D list. It was not —
+C1 wrote `alldifferent`, `cumulative`, `gcc`; E1 wrote `among`, `range`, `regular`, `roots`,
+`sum`. `table` has carried the AUTO-STUB banner the whole time. It goes to R6, and it matters
+more than most: it is the constraint whose `T[r,i]` link the author and the orchestrator worked
+through in detail, and G6 is named for it.
