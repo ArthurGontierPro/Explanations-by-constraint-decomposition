@@ -11,8 +11,8 @@
 | **Status** | `validated: sound and minimal at n,m <= 4` |
 | **Generated** | 1 rule in `cata/alldifferent.tex` |
 | **Validator** | 1 `SOUND and MINIMAL`, 0 flagged |
-| **Calibration** | pending C2 |
-| **Last measured** | 2026-09-21, `make validate` and `python3 tools/mzn_coverage.py --rank --json` |
+| **Calibration** | **weaker than published** (Downing et al. §4); the §5 and §6 rules are **out of reach** |
+| **Last measured** | 2026-09-21, `make validate` (re-run by C3, same verdicts) and `python3 tools/mzn_coverage.py --rank --json` |
 
 ## Constraint
 
@@ -31,12 +31,30 @@ standard-library one and is recorded here as recall, not as a citation.
 comparing value-, bounds- and domain-consistent propagators and their explanations, and
 finding no single one best.
 
-**Rule shape:** <!-- C2: sourced rule shapes go in catalog/_literature/alldifferent.md -->
-**pending C2** — see [`catalog/_literature/alldifferent.md`](_literature/alldifferent.md) once
-it exists. Nothing about the paper's rule shapes is stated here, because nothing about them has
-been read in this repo.
+**Rule shape:** sourced into
+[`catalog/_literature/alldifferent.md`](_literature/alldifferent.md). Summarised here with C2's
+provenance tags carried across unchanged; the paper is not restated at length.
 
-One thing *is* in-repo and quotable: `CHRISTMAS_LIST.md:116` says the Hall-set explanation
+The paper gives **four** explanation forms, and only two of them are schemas:
+
+| paper | rule | event | schema? | tag |
+|---|---|---|---|---|
+| §4 value-consistent | `[x_h = v] → [x_i ≠ v]` — a **single** premise literal | value removal | **schema** | `QUOTED` |
+| §5 bounds-consistent | `[x_i ≥ a] ∧ ⋀_{h∈H} ([x_h ≥ a] ∧ [x_h ≤ b]) → [x_i ≥ b+1]`, `H` a Hall set with `V = a..b` | lower-bound increase | per-propagation (union-find) | `QUOTED` |
+| §6 domain-consistent | eq. (1), `⋀_{h∈H, d∈E\V} [x_h ≠ d] → [x_i ≠ j]`; also fixes equalities and failure | value removal / equality / failure | per-propagation (matching + SCC) | `QUOTED`; the failure form `DERIVED` |
+| §7 Feydy decomposition | prefix-sum decomposition of `alldifferent`; worked instance `[x2 ≥ 2] ∧ [x3 ≥ 2] → [x1 ≤ 1]` | bound change | **schema**, needs E1 + E4 | `QUOTED` |
+
+**The paper proves no explanation minimal**, and that is measured, not assumed: C2's
+`grep -c -i 'minimal'` over the preprint returns **1** hit, "minimal change" to an algorithm
+(`_literature/alldifferent.md`, "How this file was produced"). The calibration below therefore
+compares on **implication strength**, not on the validator's minimality.
+
+**Citation correction carried from C2.** The Hall-set explanations are in *this* paper (ACSC
+2012), not in *Explaining flow-based propagation* (CPAIOR 2012); the CPAIOR paper touches
+`alldifferent` only as an instance of a `gcc` flow network, and that is [`gcc.md`](gcc.md)'s
+Example 4. `CHRISTMAS_LIST.md:116` was already right. `QUOTED` (both papers fetched).
+
+Alongside the sourced shapes, this repo's own pricing: `CHRISTMAS_LIST.md:116` says the Hall-set explanation
 needs **E4** — "decompose via occurrence cardinalities `Σ_i [x_i=v] ≤ 1` and reason across
 them" — and calls `alldifferent` "the single best test case for the whole project". That is
 this repo's own assessment of the gap, not a claim about what the paper says.
@@ -133,7 +151,9 @@ good"). This is the clearest example in the repo of the floor/strength distincti
 
 The one generated rule is sound and minimal at the sizes `docs/VALIDATOR.md` enumerates
 (`n, m ∈ {2,3,4}`, all nine pairs, with a store sweep at `n, m ≤ 3`). That is a floor: no
-premise is droppable, and the rule is still weak enough to fire only at `n = 2`. The
+premise is droppable, and the rule is still weak enough to fire only at `n = 2` — strictly
+weaker than Downing, Feydy and Stuckey's §4 rule for every `n ≥ 3`, which the Calibration
+section below establishes and which no verdict this validator can issue would have revealed. The
 soundness verdict also rests on a **hand-encoded** ground semantics (`all X_i distinct`,
 transcribed from `explenation generator.ml:808-809` and cross-checked against gccat's
 `Calldifferent` closure properties), not on one derived from the generator's `ind_op` data —
@@ -141,15 +161,55 @@ transcribed from `explenation generator.ml:808-809` and cross-checked against gc
 
 ## Calibration (W3-T5, D-0013)
 
-**Verdict: pending C2.**
+**Verdict: weaker than published.** Against §4 — the one published rule this method could
+have matched. §5 and §6 are **out of reach**, and §7 is a near miss behind E1 + E4.
 
-The comparison cannot be written until the published rule shape is sourced into
-`catalog/_literature/alldifferent.md`. What can be said without it, from this repo alone:
-`CHRISTMAS_LIST.md:116` prices the weak pairwise rule at **E0** (works today) and the Hall-set
-explanation at **E4**, so the repo's own prior is that the generated rule will come out
-*weaker* than the published one. That prior is written down here so that the eventual
-calibration either confirms or contradicts something, rather than being read off the result.
-Per D-0013, "generated rule is sound but strictly weaker" is a **result**, not a failure.
+**The axis is implication strength** (the papers' own order; the minimality axis was retired
+when C2 measured that no paper claims it — `docs/ROADMAP.md:99`).
+
+| | premise | conclusion |
+|---|---|---|
+| published, §4 | `X_h = t` for **one** `h ≠ i` | `X_i ≠ t` |
+| generated, rule 1 | `X_{i'} = t` for **every** `i' ≠ i` | `X_i ≠ t` |
+
+Our premise implies theirs — a conjunction over all `i' ≠ i` entails the single literal at any
+witness `h`. Theirs does not imply ours once there are two other variables. So the published
+rule fires whenever ours does and, for `n ≥ 3`, in strictly more states: **ours is strictly
+weaker**, and the comparison is settled at every arity, not sampled.
+
+- **`n = 2`** — the two rules **coincide**. The conjunction has exactly one conjunct.
+- **`n ≥ 3`** — strictly weaker, and in the sharpest way available: the premise asserts that
+  `n−1 ≥ 2` variables all take `t`, which **contradicts `alldifferent` itself**. The rule is
+  sound and can never fire. The published rule fires on the first variable fixed.
+
+**The validator cannot see any of this, and that is the wave's headline.** Rule 1 is
+`SOUND and MINIMAL` at `n, m ≤ 4` (my own run, below) and is dead at every `n ≥ 3`. It escapes
+even the `VACUOUS` flag, because that flag asks whether *any* store in the enumerated scope
+satisfies the premises (`docs/VALIDATOR.md:227-228`) and `n = 2` is in scope. **Sound and
+minimal is a floor, not strength** — `catalog/README.md` asserts that sentence, and this is the
+measurement behind it, against Downing, Feydy and Stuckey §4.
+
+**§5 and §6: out of reach, and E4 is necessary but not sufficient.** Both quantify their
+premises over an object that exists only at propagation time — a Hall set `H` with endpoints
+`a, b` found by a union-find sweep (§5), and the node sets of an SCC of the residual graph of a
+bipartite matching (§6). C2 classifies both `per-propagation`. The printer quantifies over
+declared index sets and has no expression for either. Counting across sums (E4) would supply
+the *counting* argument; it would not supply a run-time set to quantify over. Same negative
+result as [`gcc.md`](gcc.md) reaches for the flow rule.
+
+**This sharpens the Scope section above.** That section says `X_i = t` is unreachable here and
+that E4 is what it needs. True of a rule of *this method's kind*; but the published rule that
+concludes an equality is §6, Example 6.4 (`[x1 ≠ 2] → [x1 = 1]`, `QUOTED`), and it comes from an
+SCC, not from a sum. E4 is not the route to the published equality rule.
+
+**§7 is the near miss**, and the only published `alldifferent` explanation that comes out of a
+decomposition at all. It needs **E1** (integer auxiliaries `c[i]`, `s[i]`) **plus E4**
+(`c[i] = Σ_j bool2int(x[j] = i)` reasons across two sums of the same Booleans) — C2's reading,
+independently matched by `CHRISTMAS_LIST.md:116`. Its reach is stated in the paper: value
+consistency plus Hall intervals aligned to the ends of `min(E)..max(E)` (`QUOTED`) — so even
+reaching §7 would not reach §5.
+
+Per D-0013, "sound but strictly weaker than Downing's" is a **result**, not a failure.
 
 ## Gaps
 
@@ -158,16 +218,20 @@ Per D-0013, "generated rule is sound but strictly weaker" is a **result**, not a
 | — | nothing blocks the rule that ships; the decomposition is fully encodable today |
 | `G8` | `all_different_except`/`_except_0`: `ind_set` names only whole predefined ranges — it cannot express "a named range minus one point" |
 | `G10` | `symmetric_all_different`: no variable in index position, `X_{X_i}` |
+| — | the published §5/§6 rules are blocked by no *gap*: they quantify over run-time objects, so **E4 is necessary but not sufficient** (calibration, from C2) |
+| — | the published §7 rule needs **E1** (integer auxiliaries) **plus E4**, not E4 alone |
 
 Extensions: **E0** for the shipped rule, **E4** for the Hall-set explanation
-(`CHRISTMAS_LIST.md:116`).
+(`CHRISTMAS_LIST.md:116`) — with the calibration caveat above, which sharpens that pricing
+rather than contradicting it.
 Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering. `decomps/all_different.md`
 argues both gaps but numbers them under its own pre-consolidation scheme (`G6`, `G8`); the
 numbers above are the consolidated ones and supersede those labels.
 
 ## How this entry was produced
 
-- `make validate` (run 2026-09-21, this session) → `---- cata/alldifferent.tex (1 rules) ----`,
+- `make validate` (re-run 2026-09-21 by session C3; verdicts identical to C1's run)
+  → `---- cata/alldifferent.tex (1 rules) ----`,
   `rule 1/1 X_i != t <= X_i' = t`, `VERDICT : SOUND and MINIMAL`. Run totals: **34 rules
   checked in 11 entries: 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of
   scope**, 19/19 encoding invariants holding, all 11 controls behaving.
@@ -179,6 +243,11 @@ numbers above are the consolidated ones and supersede those labels.
 - `explenation generator.ml:808-809, 869, 880` read, not run → the decomposition and the
   emitting call.
 - `CHRISTMAS_LIST.md:116, 266` read → citation and solver columns.
+- `catalog/_literature/alldifferent.md` read, not fetched → every statement about the paper in
+  the "Published explanation" and "Calibration" sections, with C2's tags carried across. **No
+  paper was fetched by this session**, and no provenance tag was upgraded.
+- The `n = 2` / `n ≥ 3` split in Calibration is **reasoning about the two premises, not a
+  measurement**: our premise is a conjunction over `i' ≠ i`, theirs is one conjunct of it.
 
 **Discrepancy noted, not fixed (this session does not own those files).**
 `decomps/all_different.md` states the shipped rule as `X_i ≠ t ← ∃i'≠i: X_i'=t` and cites
