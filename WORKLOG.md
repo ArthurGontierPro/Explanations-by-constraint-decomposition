@@ -67,6 +67,8 @@ session picks it up.
 | W2-T5 §11 + shape consolidation + D-0011 relabelling | `decomps/**`, `docs/DECOMP_FORMAT_NOTES.md` | W3-D (2026-09-18) | 2026-09-18 |
 | `CHRISTMAS_LIST.md` repairs (4 recorded issues) | `CHRISTMAS_LIST.md` | W3-C (2026-09-18) | 2026-09-18 |
 | W1-T11(a) + priority ranking | `tools/mzn_coverage.py`, `docs/COVERAGE.md` | orchestrator (2026-09-21) | 2026-09-21 |
+| Catalog: format + first entries | `catalog/**` (new) | C1 (2026-09-21) | 2026-09-21 |
+| Catalog: sourcing the published explanations | `catalog/_literature/**` (new) | C2 (2026-09-21) | 2026-09-21 |
 
 _W3-C RELEASED (`1e7dc67`): index coverage 113/118 → **118/118**. W3-D RELEASED (`04d800a`, `1d25c45`, `b083974`): the corpus is complete — **12 shapes + 3 modifiers cover 55 constraints**. W3-S RELEASED (`790bfa7`, `fbb95c7`, `47bb4ef`, `576c718`). **Wave three is closed. Nothing is claimed.**_
 

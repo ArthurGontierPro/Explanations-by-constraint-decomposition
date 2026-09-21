@@ -335,3 +335,23 @@ fragment it covers.
 
 **What it costs.** The first ~28 entries are ones where the answer is already known, so coverage
 of the 118 (D-0010) starts slower. That is the price of every later tier-A claim being credible.
+
+### 2026-09-21 — the catalog's "complete", proposed against D-0008 (still OPEN)
+
+The author asked whether a *complete* catalog is the right long-term goal. Agreed, with the
+word sharpened, because two different things are called complete in this repo:
+
+- **Complete coverage (the catalog's goal, achievable):** every MiniZinc global has an entry
+  stating what the literature gives, what solvers implement, what this method generates, and —
+  where it generates nothing — which gap blocks it. "Nothing generated, blocked on G6" is a
+  complete entry. 118 of 118 entries with a known, honest status is a checkable target, and
+  `tools/mzn_coverage.py` already measures the denominator.
+- **Complete enumeration (D-0008's question, not achievable in general):** every valid
+  explanation of every event of every constraint. The candidate definition — all prime
+  implicates for a fixed event and literal vocabulary — is exponential for some entries even
+  at fixed arity, which D-0008 already records as its first problem.
+
+**The catalog should claim the first and never the second**, and an entry that lists some rules
+must not read as though it lists all of them. This does not close D-0008: the per-entry question
+of what "complete for this constraint" means is still open, and D-0013's calibration results are
+the evidence that will settle it.
