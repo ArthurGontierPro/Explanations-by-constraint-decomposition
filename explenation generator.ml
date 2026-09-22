@@ -1007,6 +1007,59 @@ let alldiffexc = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); R
                   Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oni)])]
 
 
+(*==========================================================================
+  G3, TESTED rather than argued (session X-max, 2026-09-22).
+
+  decomps/maximum.md and catalog/maximum.md both said: "Both conjuncts compare
+  two decision variables (m and x_i) ... No decomposition can be authored in
+  the current encoding -- this is not a derivation gap, it is a missing
+  primitive."  THAT CLAIM IS WRONG, and it is wrong because it fixes on ONE
+  decomposition of maximum, the direct one:
+
+      forall i: m >= x_i    and    exists i: m = x_i
+
+  which does compare two variables.  But the generator's BC events already ARE
+  the order encoding, and under the order encoding maximum is stated entirely
+  with variable-against-value literals:
+
+      m >= t   <=>   \/_i (x_i >= t)          (equivalently m < t <=> /\_i x_i < t)
+
+  Every atom here is `variable {>=,<} threshold`, which is exactly what
+  Global_event (_,_,_,BC) means.  So the shape is gccn's three-step channel --
+  reify the array literals, combine them, channel the combination into a SECOND
+  global variable -- with rule4 (disjunction) where gccn uses rule6 (Boolean
+  sum >=):
+
+      D1  rule1   X_i >= t  <=>  B1_{i,t}                (BC)
+      D2  rule4   B2_t      <=>  \/_{i in [[1,n]]} B1_{i,t}
+      D3  rule1   O >= t    <=>  B2_t                    (BC)
+
+  D2 is byte-for-byte nvalues' constraint 2 with a BC B1 instead of an AC one;
+  D3 is gccn's constraint 3 with a single value index instead of (t,p).  No new
+  constructor, no new schema, no new printer case: `maximum` is authorable with
+  the language exactly as it stands, and the "missing primitive" reading is
+  refuted by this value existing and generating rules.
+
+  WHAT IS BORROWED, AND WHAT IT COSTS.  `m` is printed as `O`, because var_name
+  (line 3) has no constructor meaning "this constraint's own scalar bound"; O is
+  gcc's occurrence variable and printvartex routes it down the same
+  printglobal_eventtex path as X.  That is gap G2 -- a legibility cost on a
+  borrowed letter, already recorded, not a blocker.  A second, smaller G2 cost:
+  m carries ONE index (the threshold t), so `left` in printglobal_eventtex is
+  empty and the literal prints as `O_{} \geq t` rather than `O \geq t`.  Empty
+  braces are a no-op in LaTeX, so the artifact is well-formed; the braces are
+  still noise and they are the printer's, not the decomposition's.
+
+  WHAT G3 REALLY BLOCKS, then: not maximum, but the constraints whose var-var
+  comparison does NOT factor through a shared threshold.  m >= x_i factors (both
+  sides are thresholded independently and the order encoding joins them);
+  x_i = y_{p_i}, a variable-valued INDEX, does not.  See the report for the
+  sharpened statement.
+  ========================================================================*)
+let maxi   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
+
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
 let xac = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], AC)
@@ -1021,6 +1074,9 @@ let x3ac= Global_event (true, X, [Ind (I 1, []); Ind (T 1, []);Ind (R 1, [])], A
   xacx excludes all_different_except's exempt value v from [[1,m]].*)
 let xacv = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DPar ("\\{v\\}",D 2))])], AC)
 let xacx = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DExc (D 2,[EPar "v"]))])], AC)
+(*G3 seed: maximum's own bound variable. One index -- the threshold t -- because
+  m is a scalar, so this is `O >= t` with no array position. Borrowed letter: G2.*)
+let mbc = Global_event (true, O, [Ind (T 1, [])], BC)
 
 let _ = explain xbc incr
 
@@ -1069,6 +1125,28 @@ let _ = caveat := [
   "counterexamples, all of them at n = 1), so this entry inherits alldifferent's";
   "verdict and its weakness, including firing only when the others are already pinned." ];
     explainall [xacx] alldiffexc "cata/alldifferent_except.tex"
+
+let _ = caveat := [
+  "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";
+  "with NO variable-vs-variable atom, by using the order encoding the BC events";
+  "already are -- m >= t <=> \\/_i (x_i >= t). decomps/maximum.md's claim that no";
+  "decomposition is authorable in this language was WRONG; it held only for the";
+  "direct reading (forall i: m >= x_i, exists i: m = x_i).";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured";
+  "instead by exhaustive check over ALL assignments for every n,m in {1,2,3,4,5} --";
+  "n = 1 INCLUDED, which is where the shipped alldifferent rule fails (W1-T19).";
+  "ALL FOUR RULES SOUND, no counterexample: firing counts at n,m <= 4 are";
+  "359 / 652 / 1592 / 192 in file order; at n,m <= 5, 4173 / 10488 / 23903 / 2296;";
+  "at n = 1 alone 20 / 10 / 20 / 10 firings and 0 failures. ALL FOUR MINIMAL: every";
+  "premise, dropped, produces a counterexample. Cross-checked by a store sweep over";
+  "all domain stores for n,m in {1,2,3} (277 / 1908 / 4379 / 196 firing stores, 0";
+  "counterexamples); the two instruments agree. No rule here binds an index twice,";
+  "so there is no quantifier-ambiguity reading to resolve (D-0009).";
+  "G2 COST, stated: m is printed as O -- var_name has no constructor for a";
+  "constraint's own scalar bound, so gcc's occurrence letter is borrowed -- and it";
+  "prints as `O_{} >= t` because m has no array position and printglobal_eventtex";
+  "emits the subscript unconditionally. Both are legibility, not soundness." ];
+    explainall [xbc;mbc] maxi "cata/maximum.tex"
 
 (*W1-T3 — the run's own census. Nothing here changes a rule; it stops the
   generator from being silent about what it discarded.*)

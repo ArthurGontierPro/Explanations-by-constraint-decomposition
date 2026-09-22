@@ -1,0 +1,25 @@
+$$\frac{X_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{} \geq t}{X_{i} \geq t}$$ $$\frac{O_{}<t}{X_{i}<t}$$ $$\frac{X_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}$$ $$\frac{X_{i}<t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{}<t}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{} \geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written
+%% with NO variable-vs-variable atom, by using the order encoding the BC events
+%% already are -- m >= t <=> \/_i (x_i >= t). decomps/maximum.md's claim that no
+%% decomposition is authorable in this language was WRONG; it held only for the
+%% direct reading (forall i: m >= x_i, exists i: m = x_i).
+%% NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured
+%% instead by exhaustive check over ALL assignments for every n,m in {1,2,3,4,5} --
+%% n = 1 INCLUDED, which is where the shipped alldifferent rule fails (W1-T19).
+%% ALL FOUR RULES SOUND, no counterexample: firing counts at n,m <= 4 are
+%% 359 / 652 / 1592 / 192 in file order; at n,m <= 5, 4173 / 10488 / 23903 / 2296;
+%% at n = 1 alone 20 / 10 / 20 / 10 firings and 0 failures. ALL FOUR MINIMAL: every
+%% premise, dropped, produces a counterexample. Cross-checked by a store sweep over
+%% all domain stores for n,m in {1,2,3} (277 / 1908 / 4379 / 196 firing stores, 0
+%% counterexamples); the two instruments agree. No rule here binds an index twice,
+%% so there is no quantifier-ambiguity reading to resolve (D-0009).
+%% G2 COST, stated: m is printed as O -- var_name has no constructor for a
+%% constraint's own scalar bound, so gcc's occurrence letter is borrowed -- and it
+%% prints as `O_{} >= t` because m has no array position and printglobal_eventtex
+%% emits the subscript unconditionally. Both are legibility, not soundness.
