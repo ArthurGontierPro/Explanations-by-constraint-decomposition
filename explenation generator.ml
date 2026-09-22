@@ -1214,6 +1214,45 @@ let minim  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
               Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
               Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 
+(*==========================================================================
+  A-1, 2026-09-22 -- `span`, on the strength of docs/G3-AUDIT.md (commit
+  abadc0f), which calls it "the cheapest entry in the audit": span's halves ARE
+  minimum and maximum, both of which now ship.
+
+  decomps/span.md's own header says the opposite -- "`span` has no shape and is
+  listed among the G3-blocked constraints" -- and it says so because it inherited
+  decomps/maximum.md's retracted claim. This value refutes it the same way maxi
+  refuted the original: by existing.
+
+  S = min_i start_i  is `minim` verbatim; E = max_i end_i is `maxi` verbatim.
+  They share no variable, so their six atomic constraints simply sit side by
+  side and `ctrs` separates them by name with no interaction at all.
+
+  FOUR LETTERS ARE SPENT, WHICH IS THE WHOLE COST, AND IT IS G2 ALL THE WAY:
+    X  the START array        (i,t)  -- printglobal_eventtex
+    O  the END array          (i,t)  -- printglobal_eventtex, gcc's letter
+    N  the span's own START S  (t)   -- nvalue's letter
+    V  the span's own END   E  (t)   -- element's letter
+  var_name (l.3) is a closed variant of seven names and exactly TWO of them
+  (X and O) route through printglobal_eventtex, which is the printer that can
+  carry an (array position, value) pair. So a constraint over two user arrays
+  spends BOTH of them, and a third array would have nowhere to go. That is the
+  first place G2 stops being a legibility cost and becomes a count: it is not
+  that the letters read badly, it is that there are two of them.
+  N and V print through the scalar path (`printitex (hd (index_list v))`), which
+  is correct here precisely BECAUSE S and E are scalars -- and note that this is
+  the same one-index printer that silently drops the second index for `count`
+  (see the comment above `ncvbc`). Used within its contract it is fine.
+  ========================================================================*)
+let spn    = [(*S = min_i start_i -- minim, on X/N*)
+              Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 2), id, id)]);
+              (*E = max_i end_i -- maxi, on O/V*)
+              Decomp (4, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 3), id, id)]);
+              Decomp (5, rule4, [Decomp_devent (true , (B 3), id, oni); Reified_devent (true, (B 4), id, i_out)]);
+              Decomp (6, rule1, [Global_devent (true ,  V   , id, id, BC); Reified_devent (true, (B 4), id, id)])]
+
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
 let xac = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], AC)
@@ -1231,6 +1270,11 @@ let xacx = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DExc (D
 (*G3 seed: maximum's own bound variable. One index -- the threshold t -- because
   m is a scalar, so this is `O >= t` with no array position. Borrowed letter: G2.*)
 let mbc = Global_event (true, O, [Ind (T 1, [])], BC)
+(*A-1 span seeds: the END array (a second user array, on gcc's letter) and the
+  span's own two scalar bounds S and E.*)
+let ebc = Global_event (true, O, [Ind (I 1, []); Ind (T 1, [])], BC)
+let sspan = Global_event (true, N, [Ind (T 1, [])], BC)
+let espan = Global_event (true, V, [Ind (T 1, [])], BC)
 (*A-1: count's occurrence-variable seed -- gcc's ngbc with the value index pinned to the parameter v.*)
 let ncvbc = Global_event (true, O, [Ind (T 1, [Set (T 1,IN,DPar ("\\{v\\}",D 2))]); Ind (P 1, [])], BC)
 
@@ -1380,6 +1424,42 @@ let _ = caveat := [
   "prints only the FIRST index, so a two-index count prints as `N = t` and silently";
   "drops p. Measured by running it, not read off the code." ];
     explainall [xacv;ncvbc] gccn "cata/count.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry, on the strength of docs/G3-AUDIT.md, which";
+  "calls span the cheapest entry in its audit: span's halves ARE minimum and maximum.";
+  "decomps/span.md still opens with `span has no shape and is listed among the";
+  "G3-blocked constraints`. THAT CLAIM IS WRONG and it is wrong by inheritance -- it";
+  "cites decomps/maximum.md's `missing primitive`, which X-max retracted on 2026-09-22.";
+  "S = min_i start_i is `minim` verbatim and E = max_i end_i is `maxi` verbatim; the";
+  "six atomic constraints share no variable, so they sit side by side and `ctrs`";
+  "separates them by name. No constructor, schema, printer case or index operator was";
+  "added -- only two seed events for the second array and the two scalar bounds.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by";
+  "exhaustive enumeration, for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED -- of every";
+  "start array with S = min and, separately, every end array with E = max. Sweeping the";
+  "halves separately is sound BECAUSE no rule mentions a variable of the other half;";
+  "the .tex above is the evidence for that, rule by rule.";
+  "ALL EIGHT RULES SOUND, no counterexample. Firings in file order at n,m <= 4:";
+  "2438 / 349 / 359 / 652 / 686 / 1098 / 1592 / 192; at n,m <= 5: 37329 / 4158 / 4173 /";
+  "10488 / 7995 / 18204 / 23903 / 2296; at n = 1 alone 35 / 20 / 35 / 20 / 35 / 20 /";
+  "35 / 20 firings and 0 failures. ALL EIGHT MINIMAL over the range.";
+  "CROSS-CHECK: the four end-array counts reproduce session X-max's cata/maximum.tex";
+  "figures EXACTLY (4173 / 10488 / 23903 / 2296 at n,m <= 5) and the four start-array";
+  "counts reproduce this session's cata/minimum.tex figures exactly. Two entries, one";
+  "instrument, numbers that had to agree and do.";
+  "Restricted to n = 1 alone, rules 2 and 3 have a vacuous universal premise that is";
+  "then droppable, so their minimality is a claim about the range swept, not n = 1.";
+  "G2, AND HERE IT STOPS BEING COSMETIC. Four letters are spent: X the start array, O";
+  "the end array, N the span's own S, V its own E. var_name has seven names and exactly";
+  "TWO of them (X and O) route through printglobal_eventtex, the only printer that can";
+  "carry an (array position, value) pair. A constraint over two user arrays spends both;";
+  "a third array would have nowhere to go. That is a COUNT, not a legibility complaint,";
+  "and it is the first entry in the catalog to hit it.";
+  "One consolation: because S and E really are scalars, the one-index scalar printer is";
+  "used within its contract and they print as `N >= t` and `V >= t` -- cleaner than";
+  "cata/maximum.tex's `O_{} >= t`, which borrows an array letter for a scalar." ];
+    explainall [xbc;ebc;sspan;espan] spn "cata/span.tex"
 
 let _ = caveat := [
   "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";
