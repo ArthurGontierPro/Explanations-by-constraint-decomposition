@@ -8,6 +8,12 @@ from `CHRISTMAS_LIST.md`'s own extension table (E0-E5), which this list refines 
 repeats.
 
 - **G1 — no way to carry a bare integer threshold into the printed rule.**
+  **CLOSED IN ONE DIRECTION ONLY, 2026-09-22** — G-1 landed it, U2 measured the limit.
+  `DCard` + `BPar("c",1)` gives the `c+1` witness set that a Boolean sum's **≤** direction
+  needs, demonstrated by `cata/at_most.tex` (1 rule, measured sound, not minimal). The **≥**
+  direction needs `|S| = n − c`, and `ind_bound = BInt of int | BPar of string*int`
+  (generator l.46) is a name plus a *literal* integer — so **`at_least`, `exactly` and the
+  `global_cardinality_low_up` pair are still blocked.**
   `at_least(n,x,v)`, `at_most(n,x,v)`, `exactly(n,x,v)` are each `rule1` + one of
   `rule5`/`rule6`/`rule7` with a single `Decomp_devent` and no `Reified_devent` — the same
   shape `alldifferent` already uses for its implicit "at most 1" (generator line 388). On an
@@ -84,7 +90,7 @@ generator.ml`, with line numbers, or off `docs/VALIDATOR.md`'s measurements.
 |---|---|---|---|
 | G6 | **2-D constant table read as a function**, `t = T[r,i]`. `Addcst` is 1-D | `table` | ext X1 |
 | G7 | **value set indexed by another index**, `t' ∈ D(t)`. `ind_set`'s `D2 of ind_name list` is the right hook and no decomposition uses it | `regular`, `mdd` | ext X2 |
-| G8 | **`ind_set` names only whole predefined ranges** — no subrange, no exclusion | `all_different_except*`, `inverse_in_range` | perm G6 |
+| G8 | **`ind_set` names only whole predefined ranges** — no subrange, no exclusion | `all_different_except*`, `inverse_in_range` | perm G6  **CLOSED 2026-09-22 (G-1): `DSub`, `DExc`, `DPar`.** Each renders its own containment, so admitting them is **not** a relaxation of W1-T2 — `D of int` and `D2` are untouched and still refused, which is why `range`, `roots`, `regular` and `table` are **not** unblocked by it. And `DSub` takes two *literal* `int` endpoints (l.49), so a window whose endpoints depend on a running index — `sliding_among`'s `[j, j+seq−1]` — remains inexpressible |
 | G9 | **no `Global ⇔ Global` channel schema**; `rule1` is fixed to `Global ⇔ Reified`, so every array-to-array channel re-derives `element`'s five-`Decomp` detour | `inverse`, `sort`, `arg_sort` | perm G7 |
 | G10 | **no variable in index position**, `X_{X_i}` | `symmetric_all_different`, `sort` | perm G8 |
 | G11 | **no weighted Boolean sum** — `rule5/6/7` count occurrences, with no coefficients | `cumulative`, `knapsack` | ext X5 |
