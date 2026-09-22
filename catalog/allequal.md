@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** — no literature + solver decomposes (`tools/mzn_coverage.py --rank`, ecodes `E0`) |
-| **Status** | `validated: sound and minimal at n,m <= 4` |
+| **Status** | `validated: sound and minimal at n,m ∈ {2,3,4}` |
 | **Generated** | 2 rules in `cata/allequal.tex` |
 | **Validator** | 2 `SOUND and MINIMAL`, 0 flagged |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:121` records "none" |
@@ -215,13 +215,15 @@ disagreement runs the other way (generator flags, validator finds one reading).
 
 ## Status
 
-**`validated: sound and minimal at n,m <= 4`**
+**`validated: sound and minimal at n,m ∈ {2,3,4}`**
 
 Established: at `n, m ∈ {2,3,4}` (all 9 pairs; store sweep `n, m ≤ 3`,
 `docs/VALIDATOR.md:184`), neither shipped rule is unsound under any reading the `.tex` admits,
 and neither has a droppable premise. The gccat cross-checks on the hand-encoded semantics also
 hold for this constraint: `all_equal contractible wrt VARIABLES`, `all_equal => increasing`,
 `all_equal => decreasing`, all `ok` in my run.
+
+**`n = 1` is unchecked.** `docs/VALIDATOR.md:184` enumerates the literal set `n, m ∈ {2,3,4}`; a one-element array is never built, so this verdict is silent about `n = 1` (W1-T19). That is not hypothetical — G-1's independent exhaustive sweep found 30 counterexamples at `n = 1` for `cata/alldifferent.tex`'s rule, which `make validate` certifies `SOUND and MINIMAL`.
 
 Not established, and not implied by that verdict: that either rule infers anything. One of the
 two readings is a tautology, the `.tex` does not choose, and under the useful reading the rule

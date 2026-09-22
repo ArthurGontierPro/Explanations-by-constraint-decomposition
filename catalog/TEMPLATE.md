@@ -168,8 +168,12 @@ Rendered from `cata/<file>.tex` (single line, no trailing newline; count with
 **`<status-legend value>`**
 
 `<Two or three sentences. What is and is not established. If the status is
-"validated: sound and minimal at n,m <= 4", add the floor caveat: sound and
-minimal means no premise is droppable, not that the rule is strong.>`
+"validated: sound and minimal at n,m ∈ {2,3,4}", add two caveats. The floor
+caveat: sound and minimal means no premise is droppable, not that the rule is
+strong. And the range caveat: docs/VALIDATOR.md:184 enumerates the literal set
+{2,3,4}, so n = 1 is unchecked (W1-T19). Write the range as a set, never as
+"n,m <= 4" -- that phrasing was swept out of this catalog on 2026-09-22
+because it claimed a size the validator never builds.>`
 
 ## Calibration (W3-T5, D-0013)
 

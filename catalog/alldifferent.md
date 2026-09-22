@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **D** — literature + native explaining propagator |
-| **Status** | `validated: sound and minimal at n,m <= 4` |
+| **Status** | `validated: sound and minimal at n,m ∈ {2,3,4}` |
 | **Generated** | 1 rule in `cata/alldifferent.tex` |
 | **Validator** | 1 `SOUND and MINIMAL`, 0 flagged |
 | **Calibration** | **weaker than published** (Downing et al. §4); the §5 and §6 rules are **out of reach** |
@@ -147,7 +147,7 @@ good"). This is the clearest example in the repo of the floor/strength distincti
 
 ## Status
 
-**`validated: sound and minimal at n,m <= 4`**
+**`validated: sound and minimal at n,m ∈ {2,3,4}`**
 
 The one generated rule is sound and minimal at the sizes `docs/VALIDATOR.md` enumerates
 (`n, m ∈ {2,3,4}`, all nine pairs, with a store sweep at `n, m ≤ 3`). That is a floor: no
@@ -158,6 +158,8 @@ soundness verdict also rests on a **hand-encoded** ground semantics (`all X_i di
 transcribed from `explenation generator.ml:808-809` and cross-checked against gccat's
 `Calldifferent` closure properties), not on one derived from the generator's `ind_op` data —
 `docs/VALIDATOR.md` names that as the outstanding exposure for every verdict it issues.
+
+**`n = 1` is unchecked, and here that is load-bearing.** `docs/VALIDATOR.md:184` enumerates the literal set `n, m ∈ {2,3,4}`, so the certificate above is silent about a one-element array (W1-T19). G-1's independent exhaustive sweep, which does run `n = 1`, found **30 counterexamples at `n = 1` for this very rule** — at `n = 1` the universally quantified premise is vacuously true and the rule concludes from nothing. Quoted from `cata/alldifferent_except.tex`'s `%% CAVEAT (G-1, 2026-09-22)` footer, which states it of "the SHIPPED alldifferent rule"; it is **not** a `make validate` figure, and it does not contradict one. Two instruments, two ranges.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -183,7 +185,7 @@ weaker**, and the comparison is settled at every arity, not sampled.
   sound and can never fire. The published rule fires on the first variable fixed.
 
 **The validator cannot see any of this, and that is the wave's headline.** Rule 1 is
-`SOUND and MINIMAL` at `n, m ≤ 4` (my own run, below) and is dead at every `n ≥ 3`. It escapes
+`SOUND and MINIMAL` at `n,m ∈ {2,3,4}` (my own run, below) and is dead at every `n ≥ 3`. It escapes
 even the `VACUOUS` flag, because that flag asks whether *any* store in the enumerated scope
 satisfies the premises (`docs/VALIDATOR.md:227-228`) and `n = 2` is in scope. **Sound and
 minimal is a floor, not strength** — `catalog/README.md` asserts that sentence, and this is the

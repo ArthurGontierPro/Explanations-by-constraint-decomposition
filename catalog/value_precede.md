@@ -64,7 +64,7 @@ Two notes on the row itself, neither a finding about the constraint:
 - **"the `increasing` entry that already works" uses a phrase this catalog forbids.**
   `catalog/README.md`, "Never write 'correct'", bans `correct` and `works` alike. The
   defensible statement about that entry is [`increasing`](increasing.md)'s own header row,
-  `validated: sound and minimal at n,m <= 4`. The row predates the validator; the same wording
+  `validated: sound and minimal at n,m ∈ {2,3,4}`. The row predates the validator; the same wording
   problem was fixed on `CHRISTMAS_LIST.md:193` on 2026-09-18 and this row was not swept with it.
 - **"Good early win" is still half right.** It is wrong that this is `increasing` again. It is
   right that, of the fourteen entries this session reviewed, this is the only one whose

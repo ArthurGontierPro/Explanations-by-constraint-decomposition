@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** — no literature + solver decomposes (`tools/mzn_coverage.py --rank`, ecodes `E0`) |
-| **Status** | `validated: sound and minimal at n,m <= 4` |
+| **Status** | `validated: sound and minimal at n,m ∈ {2,3,4}` |
 | **Generated** | 2 rules in `cata/increasing.tex` |
 | **Validator** | 2 `SOUND and MINIMAL`, 0 flagged |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:193` records "none specific" |
@@ -39,7 +39,7 @@ literature index.
 **Noted contradiction, not a finding about the literature.** That same row calls the entry
 "already correct in the repo". `catalog/README.md` ("Never write 'correct'") and `CLAUDE.md`
 both forbid that word for a catalog entry; the defensible statement is the one in the header
-table, `validated: sound and minimal at n,m <= 4`. The row predates the validator and its
+table, `validated: sound and minimal at n,m ∈ {2,3,4}`. The row predates the validator and its
 wording was not updated.
 
 ## Solver support
@@ -133,11 +133,13 @@ the validator's index-equation handling supplies the bound (its two `index equat
 
 ## Status
 
-**`validated: sound and minimal at n,m <= 4`**
+**`validated: sound and minimal at n,m ∈ {2,3,4}`**
 
 Both generated rules are sound and minimal at the enumerated sizes: `n, m ∈ {2,3,4}`, all 9
 pairs, with the store sweep at `n, m ≤ 3` (`docs/VALIDATOR.md:184`). No reading is ambiguous
 and the generator flags no D-0009 defect for this entry.
+
+**`n = 1` is unchecked.** `docs/VALIDATOR.md:184` enumerates the literal set `n, m ∈ {2,3,4}`; a one-element array is never built, so this verdict is silent about `n = 1` (W1-T19). That is not hypothetical — G-1's independent exhaustive sweep found 30 counterexamples at `n = 1` for `cata/alldifferent.tex`'s rule, which `make validate` certifies `SOUND and MINIMAL`.
 
 **Sound and minimal is a floor, not strength.** Minimality here means neither rule has a
 droppable premise — each has exactly one, and dropping it leaves an empty premise. It does not

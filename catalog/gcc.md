@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **C** — literature exists, solvers decompose it anyway |
-| **Status** | `validated: sound and minimal at n,m <= 4` |
+| **Status** | `validated: sound and minimal at n,m ∈ {2,3,4}` |
 | **Generated** | 4 rules in `cata/gcc.tex` |
 | **Validator** | 4 `SOUND and MINIMAL`, 0 flagged — **the only fully validated entry in the repo** |
 | **Calibration** | **out of reach** — the published rule is a run-time flow cut / SCC; these 4 rules answer a different question |
@@ -199,12 +199,14 @@ Same D-0009 double-binder flag as rule 3.
 
 ## Status
 
-**`validated: sound and minimal at n,m <= 4`**
+**`validated: sound and minimal at n,m ∈ {2,3,4}`**
 
 All four generated rules are sound and minimal at the enumerated sizes — `n, m ∈ {2,3,4}` for
 the assignment enumeration, with the store sweep held at `n = m = 2` because the occurrence
 variables multiply the store space (`docs/VALIDATOR.md`, "Sizes enumerated"). **This is the
 only entry in the repo where every rule passes.**
+
+**`n = 1` is unchecked.** `docs/VALIDATOR.md:184` enumerates the literal set `n, m ∈ {2,3,4}`; a one-element array is never built, so this verdict is silent about `n = 1` (W1-T19). That is not hypothetical — G-1's independent exhaustive sweep found 30 counterexamples at `n = 1` for `cata/alldifferent.tex`'s rule, which `make validate` certifies `SOUND and MINIMAL`.
 
 Three caveats, all of which apply to that sentence:
 
@@ -253,7 +255,7 @@ paper.)
 **The four rules answer a different question, and scoring them against the flow rule would
 hide that.** They channel between `X` literals and bounds on one occurrence variable, within a
 single sum, for one value `t` at a time. The published rule reasons *across* values, through
-the flow network — which is why it prunes where these cannot. `4 SOUND and MINIMAL at n,m ≤ 4`
+the flow network — which is why it prunes where these cannot. `4 SOUND and MINIMAL at n,m ∈ {2,3,4}`
 (my own run, below) is a complete answer to the first question and says nothing about the
 second. It is also the floor, not strength: rules 1 and 2 still name every other variable.
 

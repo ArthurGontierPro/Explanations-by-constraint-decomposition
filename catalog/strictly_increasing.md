@@ -17,7 +17,7 @@
 ## Read this first: the shift is free, and nothing has been run on it
 
 `strictly_increasing` is [`increasing`](increasing.md) with its threshold moved by one.
-[`increasing`](increasing.md) is **validated: sound and minimal at n,m ≤ 4**, 2 rules, 2
+[`increasing`](increasing.md) is **validated: sound and minimal at n,m ∈ {2,3,4}**, 2 rules, 2
 `SOUND and MINIMAL` — re-measured in this session's own `make validate` run, quoted below. The
 question this entry exists to settle is the one `docs/ROADMAP.md`'s framing leaves open:
 **does the strict variant cost a gap, or is the shift free?**
@@ -279,4 +279,4 @@ Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
    source was a task brief rather than a run, which `CLAUDE.md` distinguishes.
 3. **`decomps/increasing.md:26-27` says `CHRISTMAS_LIST.md` and the task brief "agree is
    already correct".** `catalog/README.md` bans that word for a catalog entry; the defensible
-   statement is `validated: sound and minimal at n,m <= 4`.
+   statement is `validated: sound and minimal at n,m ∈ {2,3,4}`.

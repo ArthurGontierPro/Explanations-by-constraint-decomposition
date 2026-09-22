@@ -46,18 +46,24 @@ Both claims are recorded in `docs/DECISIONS.md`, under the 2026-09-21 note appen
 
 ## Never write "correct"
 
-A rule in this catalog is `validated: sound and minimal at n,m <= 4`, or `flagged`, or
+A rule in this catalog is `validated: sound and minimal at n,m ∈ {2,3,4}`, or `flagged`, or
 `generated, unvalidated`, or `not validatable`. It is never "correct" and never "works".
 
 And **sound and minimal is a floor, not strength.** Minimality means no premise can be
 dropped without losing soundness. It does not mean the rule is useful:
 `cata/alldifferent.tex`'s one rule is sound and minimal and only ever fires at `n = 2`.
 
+And **the range is a set, not a bound.** The validator enumerates `n, m ∈ {2,3,4}`; `n = 1` is
+unchecked. That is not pedantry: G-1's independent exhaustive sweep found **30 counterexamples
+at `n = 1`** for the very `cata/alldifferent.tex` rule `make validate` certifies
+`SOUND and MINIMAL`. Two instruments, two ranges, no contradiction — but the certificate does
+not cover `n = 1` and must not be quoted as if it did.
+
 ## Status legend
 
 | status | means |
 |---|---|
-| `validated: sound and minimal at n,m <= 4` | every generated rule in the entry got `SOUND and MINIMAL` from `make validate`, at the sizes `docs/VALIDATOR.md` enumerates |
+| `validated: sound and minimal at n,m ∈ {2,3,4}` | every generated rule in the entry got `SOUND and MINIMAL` from `make validate`, at the sizes `docs/VALIDATOR.md` enumerates. **The sizes are the literal set `{2,3,4}` (`docs/VALIDATOR.md:184`), so `n = 1` is unchecked** — the value used to read `n,m <= 4`, which overstated it; swept 2026-09-22, W1-T19 |
 | `partly validated` | some rules `SOUND and MINIMAL`, some flagged. The per-rule verdicts are in the entry |
 | `flagged` | every generated rule is flagged: `UNSOUND`, `AMBIGUOUS`, `VACUOUS`, `UNSOUND(firing)` or `NOT MINIMAL` |
 | `not validatable` | rules exist in `cata/` but the validator reports the entry out of scope, with a machine-printed reason (an undefined `D_k`, an unparsed index equation, an argument that appears in no atom) |

@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `global_cardinality` ranks **C** (`C literature + solver-decomposes`) |
-| **Status** | **resolves to [`gcc.md`](gcc.md)**, whose Status row reads `validated: sound and minimal at n,m <= 4` (read off that file, 2026-09-21). **No status-legend value is asserted for `global_cardinality_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`gcc.md`](gcc.md)**, whose Status row reads `validated: sound and minimal at n,m ∈ {2,3,4}` (read off that file, 2026-09-21). **No status-legend value is asserted for `global_cardinality_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/global_cardinality_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`gcc.md`](gcc.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`gcc.md`](gcc.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains global_cardinality, so `no published rule exists` is **not** claimed here |
@@ -178,7 +178,7 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`gcc.md`](gcc.md)** — that entry's Status row reads `validated: sound and minimal at n,m <= 4`.
+**resolves to [`gcc.md`](gcc.md)** — that entry's Status row reads `validated: sound and minimal at n,m ∈ {2,3,4}`.
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -227,7 +227,7 @@ gaps mean; none is attributed to `global_cardinality_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:67` read → the name, and that the snapshot carries
   names only.
 - `catalog/gcc.md` read, not run → the base entry's Status row, quoted above as
-  `validated: sound and minimal at n,m <= 4`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `validated: sound and minimal at n,m ∈ {2,3,4}`, and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `global_cardinality_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,

@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Tier** | **A** — no literature + solver decomposes (`tools/mzn_coverage.py --rank`, ecodes `E0`) |
-| **Status** | `validated: sound and minimal at n,m <= 4` |
+| **Status** | `validated: sound and minimal at n,m ∈ {2,3,4}` |
 | **Generated** | 2 rules in `cata/decreasing.tex` |
 | **Validator** | 2 `SOUND and MINIMAL`, 0 flagged |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:193` records "none specific" |
@@ -35,7 +35,7 @@ and `gcc` only.
 
 **Noted contradiction**, carried from [`increasing.md`](increasing.md): that row's phrase
 "already correct in the repo" uses a word `catalog/README.md` forbids. The defensible claim is
-`validated: sound and minimal at n,m <= 4`.
+`validated: sound and minimal at n,m ∈ {2,3,4}`.
 
 ## Solver support
 
@@ -127,11 +127,13 @@ is a byte-level reading, not an inference from the source.
 
 ## Status
 
-**`validated: sound and minimal at n,m <= 4`**
+**`validated: sound and minimal at n,m ∈ {2,3,4}`**
 
 Both rules are sound and minimal at `n, m ∈ {2,3,4}`, all 9 pairs, store sweep at `n, m ≤ 3`
 (`docs/VALIDATOR.md:184`). No ambiguous reading; the generator flags no D-0009 defect for this
 entry.
+
+**`n = 1` is unchecked.** `docs/VALIDATOR.md:184` enumerates the literal set `n, m ∈ {2,3,4}`; a one-element array is never built, so this verdict is silent about `n = 1` (W1-T19). That is not hypothetical — G-1's independent exhaustive sweep found 30 counterexamples at `n = 1` for `cata/alldifferent.tex`'s rule, which `make validate` certifies `SOUND and MINIMAL`.
 
 **Floor, not strength.** Minimality means the single premise is not droppable. It does not
 rank this schema against a chained one, and it says nothing about whether a bounds propagator
