@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `encodable today, not encoded` — **G8 closed on 2026-09-22 and it was this entry's only wall.** Re-decided by U2, 2026-09-22. See Status |
-| **Generated** | no generator entry — there is no `cata/count.tex` |
-| **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `count` entry |
+| **Status** | **`generated, unvalidated`** *by this catalog's instrument* — `make validate` cannot see this file (**W1-T18**). Measured by a second instrument: all **4** shipped rules **SOUND** and **MINIMAL** at every `n,m ∈ {1,2,3,4,5}`, **`n = 1` included**. Was `encodable today, not encoded` until session A-1 encoded it, 2026-09-22 |
+| **Generated** | **4** rules in `cata/count.tex` — **new 2026-09-22** (session A-1), and **no decomposition value was added**: the file is `gccn` with both seeds pinned to the counted value |
+| **Validator** | **not covered — the validator cannot see this file.** `make validate` (run 2026-09-22) names no `count` entry, in scope or out: `validator.ml`'s lists are hardcoded and it never scans `cata/`. That is **W1-T18** |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:128` records `none specific` |
-| **Last measured** | 2026-09-21 for the tier, validator and scratch runs (below). **Status re-decided 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; no new run |
+| **Last measured** | 2026-09-22 (session A-1), `make check`, `make validate`, `grep -o '\frac' cata/count.tex \| wc -l`, and two exhaustive assignment sweeps — one of the shipped rules, one of the S3 authoring this entry specced. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
 
 ## Constraint
 
@@ -49,12 +49,25 @@ Verified 2026-09-21. The machine-filled stub read this correctly.
 
 ## Decomposition used here
 
-**Generator value:** none. `explenation generator.ml` has no `count` value.
-**Emitted by:** nothing — there is no `explainall … "cata/count.tex"` call.
+**Generator value:** **`gccn`, `explenation generator.ml:909` — the shipped `gcc`
+decomposition, unchanged and unextended.**
+**Emitted by:** `explainall [xacv;ncvbc] gccn "cata/count.tex"`, line **1382**. The two seeds
+are `xacv` (**1229**, `at_most`'s, which pins `X`'s value index to `{v}`) and `ncvbc`
+(**1235**, this session's only new value: `gcc`'s occurrence-variable seed with its value index
+pinned the same way).
+
+**`count(x,v,c)` is `gcc` at one value, and that is the whole entry.** `gccn`'s constraint 2 is
+`∑_i B1_{i,t} ≥ p ⇔ B2_{t,p}`; pin `t` to the parameter `v` and it *is* `count`'s defining
+constraint, written in the `BC` (order-encoding) vocabulary the generator already uses for
+every bounded variable. So this entry cost **one seed event and one `explainall` line** — no
+decomposition value, no constructor, no schema, no printer case.
 **Spec:** [`decomps/count.md`](../decomps/count.md); shape **S3** in `decomps/_shapes.md`
 ("reify-and-count with a **channelled** count variable").
 
-The specced chain is three atomic constraints:
+### The S3 chain this entry specced — written, run, and measured mostly vacuous
+
+Kept, because the negative result is the finding. The specced chain is three atomic
+constraints:
 
 1. `B_i ⇔ X_i = v` — `rule1`, AC, over `i ∈ [1,n]`.
 2. `B'_p ⇔ C = p` — `rule1`, AC, over the count values `p`. This is the channel `nvalues`
@@ -72,11 +85,55 @@ and `count` does not (there is exactly one target value `v`, not a set)". Droppi
 not free: it leaves the value family unbound on the reified side, and the printer requires a
 value index on every `X` literal. Measured — see "Scope of this entry", run (a).
 
+**And where it is wrong for a second, deeper reason, measured 2026-09-22.** With the value
+index supplied by `at_most`'s `DPar ("{v}", D 2)` seed and the count channel written on `gcc`'s
+`O` letter, the S3 chain compiles and emits **5 rules** — and a sweep over every `X ∈ [1,m]^n`,
+every `v` and every `n,m ∈ {1,…,5}` scores them:
+
+| # | rule | firings | failures | verdict |
+|---|---|---|---|---|
+| 1 | `∀i: X_i ≠ v`, `c = p`  ⊢  `X_i = v` | **0** | 0 | **VACUOUS** |
+| 2 | `∀i: X_i = v`, `c = p`  ⊢  `X_i ≠ v` | 225 | **225** | **UNSOUND** |
+| 3 | `∀i: X_i ≠ v` and `∀i: X_i = v`  ⊢  `c = p` | **0** | 0 | **VACUOUS** |
+| 4 | `∀i: X_i = v`  ⊢  `c ≠ p` | 225 | **75** | **UNSOUND** |
+| 5 | `∀i: X_i ≠ v`  ⊢  `c ≠ p` | 39228 | 0 | **SOUND**, minimal |
+
+**The cause is `rule7`, not the spec's arithmetic and not a gap.** `rule5` and `rule6` reach the
+summed family through `apprim`/`napprim`, which builds a sibling index `i'` *constrained to
+differ* from the conclusion's own index — that is where `alldifferent`'s and `gcc`'s
+`∀i' ≠ i` comes from. `rule7` uses `apforall`/`napforall` instead, and its own source carries
+`(*incohérent?*)` on those very lines (`explenation generator.ml:443-444`). The premise
+therefore quantifies over **all** of `[[1,n]]`, *including* the index the conclusion is about,
+and reads `∀i: X_i ≠ v` beside a conclusion `X_i = v`. It contradicts itself, so it never
+fires.
+
+**This is W1-T9 defect 3 in a different schema.** That defect made `gcc`'s rules 1–2 vacuous
+for the analogous reason — a universal binder where a free parameter was meant — and was
+repaired by changing the *index operator*. Here the binder is chosen by the *schema*, so
+repairing it means editing `rule7`, which changes every entry that uses it (`gcc`, `nvalues`,
+`roots`, `range`, `among`). **Not patched on the strength of one entry**; recorded here and in
+the source comment above `ncvbc`.
+
 ## Scope of this entry
 
-**Events the generator was asked to explain:** none in the repository. Three **scratch runs**
-(bounded in "How this entry was produced") asked the generator for the four events
-`X_i = t`, `X_i ≠ t`, `N = p`, `N ≠ p`, over three authorings of S3.
+**Events the generator was asked to explain, in the shipped entry:** **four** — `X_i = v`,
+`X_i ≠ v`, `c ≥ p`, `c < p` — from the seeds `xacv` and `ncvbc`. Read off the
+`%% generator diagnostics (W1-T3)` footer of `cata/count.tex`:
+
+| event | candidates | rules emitted | dropped |
+|---|---|---|---|
+| `X_{i}=t, t ∈ {v}` | 1 | **1** | none |
+| `X_{i} ≠ t, t ∈ {v}` | 1 | **1** | none |
+| `O_{t} ≥ p, t ∈ {v}` | 1 | **1** | none; **binds `i` twice (D-0009)** |
+| `O_{t}<p, t ∈ {v}` | 1 | **1** | none; **binds `i` twice (D-0009)** |
+
+No `F` discard, no cycle cut, no duplicate, no undefined index set. The two D-0009 flags are
+inherited from `cata/gcc.tex` verbatim — the same two rules carry them there — and are not
+introduced by pinning the value.
+
+**Historical, kept: the three 2026-09-21 scratch runs** (bounded in "How this entry was
+produced") asked the generator for the four events `X_i = t`, `X_i ≠ t`, `N = p`, `N ≠ p`, over
+three authorings of S3.
 
 **(a) The spec as written** — steps 1-3, no intermediate step, reified side
 `imap [foralli;p_out]` / `imap [i_out;forallp]`:
@@ -115,12 +172,70 @@ fixing G5 does not unblock `count`, because G8 blocks it first.
 
 ## Generated rules
 
-**None in this repository.** `cata/count.tex` does not exist; `grep -o '\\frac'` has no file to
-read. The rules quoted above are scratch output and are not catalog artifacts.
+`grep -o '\frac' cata/count.tex | wc -l` → **4**, measured 2026-09-22.
+
+| # | rule | verdict (second instrument; **not** `make validate`) |
+|---|---|---|
+| 1 | `∀i'≠i ∈ [[1,n]]: X_{i'} ≠ v`, `c ≥ p`  ⊢  `X_i = v` | **SOUND**, **MINIMAL** |
+| 2 | `∀i'≠i ∈ [[1,n]]: X_{i'} = v`, `c < p`  ⊢  `X_i ≠ v` | **SOUND**, **MINIMAL** |
+| 3 | `∀i ∈ [[1,n]]: X_i = v`  ⊢  `c ≥ p` | **SOUND**, **MINIMAL** |
+| 4 | `∀i ∈ [[1,n]]: X_i ≠ v`  ⊢  `c < p` | **SOUND**, **MINIMAL** |
+
+Rule 1 is the one that does work during search: the count is known to be at least `p ≥ 1` and
+every other variable has been shown incapable of taking `v`, so this one must take it. Rule 2 is
+its dual. Rules 3 and 4 are the count variable's own two directions.
+
+### How the verdicts were obtained
+
+**This session's own sweep, not `make validate`.** Exhaustive enumeration of every
+`X ∈ [1,m]^n` with `c = #{i : X_i = v}`, for every `v ∈ [1,m]` and every `n, m ∈ {1,2,3,4,5}` —
+**`n = 1` included**. `v` is swept as part of the model (it is a parameter of the constraint);
+the free indices are `i` and `p`, each over `[[1,n]]`.
+
+**0 counterexamples on all four rules at every size swept.** Firings at `n,m ≤ 4`:
+**736 / 200 / 100 / 2018**; at `n,m ≤ 5`: **10571 / 600 / 225 / 39228**; at `n = 1` alone:
+**15 / 40 / 15 / 40** firings, **0** failures.
+
+**Minimality** by dropping each premise in turn: every drop produces counterexamples
+(79068 / 185860 for rule 1, 79068 / 825 for rule 2, 96876 for rule 3, 26841 for rule 4 at
+`n,m ≤ 5`), so all four are minimal over the range. Restricted to `n = 1` **alone**, rules 1
+and 2 have a vacuous universal premise which is then droppable — the same qualification
+[`minimum`](minimum.md) and [`member`](member.md) carry, and it does not touch soundness.
+
+**On the two D-0009 flags.** Rules 3 and 4 bind `i` twice, and the footer says so. Both
+bindings are the same `∀i ∈ [[1,n]]` over the same set, so the two readings coincide and the
+sweep is unambiguous; what is wrong is the LaTeX, which is redundant. Inherited from
+[`gcc`](gcc.md), where the identical pair carries the identical flag.
+
+### The two authorings, side by side
+
+This is the entry's most transferable result, so it is stated once, plainly:
+
+| | S3 as specced (`rule7`, exact count) | shipped (`gccn`, order-encoded count) |
+|---|---|---|
+| decomposition value needed | a new one | **none** — `gccn` unchanged |
+| rules | 5 | 4 |
+| sound | **1** | **4** |
+| vacuous | 2 | 0 |
+| unsound | 2 | 0 |
+
+**The difference is entirely `rule7` versus `rule6`,** i.e. `apforall` versus `apprim` on the
+summed family. A constraint whose natural reading is an *equality* on a count is better served
+here by the two *inequality* directions the order encoding gives, because those are the schemas
+whose sibling index excludes the conclusion's own.
 
 ## Status
 
-**`encodable today, not encoded`**
+**`generated, unvalidated`** — by this catalog's instrument. `make validate` cannot see this
+file (**W1-T18**); the verdicts above come from a sweep written for this entry.
+
+**This entry has now held three statuses.** `nothing generated — blocked on G8` until
+2026-09-22 morning; `encodable today, not encoded` after G8 closed; `generated, unvalidated`
+since session A-1 encoded it the same day. The middle one lasted hours, which is the pattern
+[`strictly_increasing`](strictly_increasing.md#the-status-this-entry-used-to-carry-and-what-its-life-cycle-shows)
+records: it is the one legend value a session closes by typing.
+
+**Historical, kept — what the block was and how it fell.**
 
 **This status changed on 2026-09-22 and the previous one — `nothing generated — blocked on G8` —
 is retired, not softened.** G8 was closed that day (session G-1, commits `4547daf` and
@@ -162,13 +277,21 @@ line. **Nothing here was run.** This is a reading of the generator's types and o
 demonstrators G-1 shipped, not a measurement: no value was authored, no artifact was produced,
 and no rule of this constraint has been seen, let alone judged.
 
+> **RUN 2026-09-22, and the prediction was half right.** The three steps above do compile and
+> do emit — the `DPar ("{v}", D 2)` seed is exactly what was needed, and the count channel does
+> conclude about `c`. But **four of the five rules it emits are vacuous or unsound**, for the
+> `rule7` reason set out under "Decomposition used here". What was shipped instead needs no new
+> decomposition value at all. The prediction was right about the *encodability* and silent about
+> the *quality*, which is precisely the distinction `encodable today, not encoded` is not
+> allowed to blur.
+
 ## Calibration (W3-T5, D-0013)
 
 **Verdict: no published rule exists.**
 
-`CHRISTMAS_LIST.md:128` names no paper. Independently, with 0 rules in the repository there is
-no premise to place in an implication order, so the verdict would be unavailable even if a
-shape were sourced. Note, as `catalog/at_most.md` does, that this is a statement about the
+`CHRISTMAS_LIST.md:128` names no paper. There are **4** rules in the repository as of
+2026-09-22, so the second half of this verdict's old justification ("0 rules, nothing to order")
+no longer applies; the first half stands on its own and is what the verdict rests on. Note, as `catalog/at_most.md` does, that this is a statement about the
 *row*: the same file cites Downing, Feydy and Stuckey 2012 for `global_cardinality`
 (`:127`), and `count` is a one-value `global_cardinality`. Nobody has read that paper for this
 purpose; `catalog/_literature/gcc.md` sources it for `gcc` and its content is not transferred
@@ -180,8 +303,9 @@ here.
 |---|---|
 | `G8` | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). It was the binding one, measured: `ind_set` named only whole predefined ranges, so the counted value `v` had no one-element set and `D_4` was refused by W1-T2. `DPar` now writes it — see Status. The row is kept because the measurement above it was real |
 | — (unnumbered) | **the printer requires a value index on every `X` literal** — the parameter reading of `v` raises `Failure "hd"` at `explenation generator.ml:512`. Measured twice (here and under [`at_most.md`](at_most.md)); it is in neither `docs/DECOMP_FORMAT_NOTES.md` nor `docs/ROADMAP.md`, and it is the sibling of W1-T10 and W1-T15 in the same printer |
-| `G2` | `var_name` is the closed variant `X \| B of int \| T \| I \| V \| N \| O` (`explenation generator.ml:3`) and has no letter for "the count of a given value", so `count`'s own `c` must borrow `N` (`nvalue`'s) or `O` (`gcc`'s). Mechanically harmless in one file; it means the printed letter is another constraint's |
-| `G5` | **not `count`'s.** G5 is the shipped `among`'s missing count channel; S3 has the channel, and run (b) measured it concluding about `N` |
+| `G2` | **paid, twice, and one half of it is a printer bug found by paying it.** `var_name` (`explenation generator.ml:3`) has no letter for "the count of a given value", so `c` borrows `O`. It also carries the value index, printing `O_{t} ≥ p, t ∈ {v}` — `gcc`'s notation, not `count`'s `c ≥ p`. **`N` cannot be borrowed instead:** `printvartex`'s `N` case prints `printitex (hd (index_list v))`, the **first** index only, so a two-index count variable prints as `N = t` and silently drops `p`. Measured by running it, 2026-09-22, not read off the code. `O` routes through `printglobal_eventtex` and prints both |
+| `G5` | **not `count`'s.** G5 is the shipped `among`'s missing count channel; the shipped `gccn` authoring has the channel by construction, and rules 3–4 conclude about `c` |
+| — (unnumbered, new 2026-09-22) | **`rule7` binds the summed family universally where `rule5`/`rule6` exclude the conclusion's own index** (`apforall` vs `apprim`, `explenation generator.ml:443-444`, where the source already says `(*incohérent?*)`). Measured here: it makes 4 of the S3 authoring's 5 rules vacuous or unsound. It is a **rule-engine** defect, not a format gap, and it is why this entry ships `rule6`'s order-encoded pair instead |
 | `G1` | not binding: `count`'s comparison is against a *variable*, which the channel carries, not against a bare constant |
 | `G3` | only for the general MiniZinc form with `v` a variable |
 
@@ -191,6 +315,34 @@ which it was not when this entry was written.
 Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 
 ## How this entry was produced
+
+### 2026-09-22 (session A-1) — what changed
+
+- `explenation generator.ml` edited (this session owns it): **no decomposition value added.**
+  One seed, `ncvbc`, at line **1235**; one `caveat` block and `explainall` call at **1382**;
+  one long source comment recording the `rule7` measurement. Run under OCaml 5.1.1 in the
+  `baguette` switch; exit 0, empty stderr; `cata/count.tex` produced and committed.
+- `make check` (run 2026-09-22, redirected then grepped) → **GATE PASSED**, exit 0, no `FAIL`.
+  Every pre-existing non-orphaned `cata/*.tex` reproduces byte-for-byte, as does `exp.tex`; the
+  orphan set is unchanged. **The warning census moved by two**, at `-w +40+41+42` (36 → 38) and
+  `-w +a` (61 → 63): the new seed writes `O` and `T 1`, each ambiguous between `ind_name` and
+  `var_name` like every other such site. The census *reports*; it does not fail. The
+  `Makefile`'s expected-value line is now stale and the `Makefile` is not this session's.
+- `make validate` (run 2026-09-22, redirected then grepped) → **34 rules checked in 11 entries:
+  13 SOUND and MINIMAL, 21 flagged; 4 rules in 5 entries out of scope.** Unchanged, and it names
+  no `count` entry — the direct measurement of W1-T18.
+- **Two exhaustive assignment sweeps, both written and run by this session**, over every
+  `X ∈ [1,m]^n`, every `v` and every `n,m ∈ {1,2,3,4,5}`, `n = 1` included, with per-premise
+  droppability: one of the four shipped rules, one of the five the S3 authoring emits. All
+  counts above are quoted from those runs.
+- The S3 authoring was **written into the generator, compiled and run** before being replaced;
+  its value is preserved verbatim in the source comment above `ncvbc` so the negative result can
+  be reproduced without re-deriving it.
+- `grep -o '\frac' cata/count.tex | wc -l` → **4**.
+- Line numbers re-checked by `grep -n` after the final edit (W1-T14). **The 2026-09-21 numbers
+  below have moved**; they are left as written and dated.
+
+### 2026-09-21 — the original entry
 
 - `python3 tools/mzn_coverage.py --rank --json` (2026-09-21) → tier
   `A no-literature + solver-decomposes`, ecodes `["E0"]`, `CHRISTMAS_LIST.md` line 128.

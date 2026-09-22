@@ -1073,6 +1073,63 @@ let alldiffexc = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); R
   Nothing new was added for this entry -- not a constructor, not a schema, not
   a seed.
   ========================================================================*)
+(*==========================================================================
+  A-1, 2026-09-22 -- `count` needs NO new decomposition value. It is `gccn`
+  (:930) with both seed events pinned to one value, so the whole of this entry
+  is the seed `ncvbc` below and one explainall line.
+
+  catalog/count.md said `encodable today, not encoded` and specced shape S3:
+  rule1 + rule7 (Boolean sum =) + a count channel. THAT AUTHORING WAS WRITTEN
+  AND SWEPT BY THIS SESSION AND IT IS MOSTLY VACUOUS. For the record, so the
+  negative result is reproducible without re-deriving it:
+
+    let cnt = [Decomp (1, rule1, [Global_devent (true, X, id, id, AC);
+                                  Reified_devent (true, (B 1), id, id)]);
+               Decomp (2, rule7, [Decomp_devent (true, (B 1), id, oni);
+                                  Reified_devent (true, (B 2), imap [foralli;p_out],
+                                                              imap [i_out;pointp])]);
+               Decomp (3, rule1, [Global_devent (true, O, id, id, AC);
+                                  Reified_devent (true, (B 2), id, id)])]
+
+  emits 5 rules, and an exhaustive sweep over every X in [[1,m]]^n, every v and
+  every n,m in {1,2,3,4,5} scores them 2 VACUOUS, 2 UNSOUND, 1 SOUND:
+    C1 {forall i: X_i <> v}, C = p |- X_i = v          0 firings      VACUOUS
+    C2 {forall i: X_i = v},  C = p |- X_i <> v       225 fire, 225 fail UNSOUND
+    C3 {forall i: X_i <> v} and {forall i: X_i = v} |- C = p
+                                                       0 firings      VACUOUS
+    C4 {forall i: X_i = v}  |- C <> p                225 fire,  75 fail UNSOUND
+    C5 {forall i: X_i <> v} |- C <> p              39228 fire,   0 fail SOUND
+
+  THE CAUSE IS rule7, AND IT IS THE SAME DEFECT W1-T9 ALREADY FIXED ONCE.
+  rule5 and rule6 reach the summed family through `apprim`/`napprim`, which
+  builds a sibling i' CONSTRAINED TO DIFFER from the conclusion's own index.
+  rule7 uses `apforall`/`napforall` instead (see its own "incoherent?" comments
+  at :443-444), so the premise quantifies over ALL of [[1,n]] including the
+  index the conclusion is about -- `forall i: X_i <> v` beside `X_i = v`. The
+  premise contradicts the conclusion and the rule can never fire. That is
+  W1-T9 defect 3 in a different schema: gcc's rules went VACUOUS for the
+  analogous reason (a universal binder where a free parameter was meant) and
+  were repaired by changing the OP; repairing rule7 means changing the SCHEMA,
+  which is a rule-engine change and not this session's to make on the strength
+  of one entry. Recorded, not patched.
+
+  WHAT IS SHIPPED INSTEAD, and why it is still `count`. The count variable's
+  BC literal c >= p is the order encoding of the same variable, and
+  `sum_i B1_{i,t} >= p <=> B2_{t,p}` -- gccn's constraint 2 -- IS count's
+  defining constraint once t is pinned. So `count(x,v,c)` is `gcc` at one
+  value, and the two seeds say exactly that: xacv pins X's value index to
+  {v} (at_most's seed, reused), ncvbc pins the occurrence variable's. Four
+  rules, all SOUND, measured below.
+
+  G2, paid twice and stated: c is printed as O, because var_name has no letter
+  for "the count of a given value"; and the count literal carries the value
+  index t, printing `O_{t} >= p, t in {v}`, which is gcc's notation rather than
+  count's `c >= p`. Both are legibility. NOTE that this is also why `N` is NOT
+  used here: printvartex's N case (:594) prints `hd (index_list v)` -- the FIRST
+  index only -- so a two-index count variable prints as `N = t`, silently
+  dropping p. Measured by running it. O routes through printglobal_eventtex and
+  prints both.
+  ========================================================================*)
 let member = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni)])]
 
@@ -1174,6 +1231,8 @@ let xacx = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DExc (D
 (*G3 seed: maximum's own bound variable. One index -- the threshold t -- because
   m is a scalar, so this is `O >= t` with no array position. Borrowed letter: G2.*)
 let mbc = Global_event (true, O, [Ind (T 1, [])], BC)
+(*A-1: count's occurrence-variable seed -- gcc's ngbc with the value index pinned to the parameter v.*)
+let ncvbc = Global_event (true, O, [Ind (T 1, [Set (T 1,IN,DPar ("\\{v\\}",D 2))]); Ind (P 1, [])], BC)
 
 let _ = explain xbc incr
 
@@ -1290,6 +1349,37 @@ let _ = caveat := [
   "constraint does not force is. Restricted to n = 1 alone the premise is droppable";
   "here (15 firings either way), so minimality is a statement about the range swept." ];
     explainall [xacv] member "cata/member.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry, and it added NO decomposition value:";
+  "`count(x,v,c)` is `gcc` at one value, so this file is `gccn` (the shipped gcc";
+  "decomposition, unchanged) with both seed events pinned to the parameter v.";
+  "catalog/count.md said `encodable today, not encoded` and specced shape S3 --";
+  "rule1 + rule7 (Boolean sum =) + a count channel. THAT AUTHORING WAS WRITTEN AND";
+  "SWEPT TOO, and it is mostly vacuous: 5 rules, 2 VACUOUS (0 firings), 2 UNSOUND";
+  "(225/225 and 75/225 failures), 1 SOUND. The cause is rule7, which reaches the";
+  "summed family through apforall/napforall where rule5 and rule6 use apprim, so its";
+  "premise quantifies over ALL of [[1,n]] INCLUDING the index the conclusion is about";
+  "and contradicts it. That is W1-T9 defect 3 in a different schema; repairing it is a";
+  "rule-engine change, recorded in the source comment above `ncvbc`, not patched here.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by";
+  "exhaustive enumeration of every X in [[1,m]]^n, every v in [[1,m]] and every";
+  "n,m in {1,2,3,4,5} -- n = 1 INCLUDED.";
+  "ALL FOUR SHIPPED RULES SOUND, no counterexample. Firings at n,m <= 4:";
+  "736 / 200 / 100 / 2018 in file order; at n,m <= 5, 10571 / 600 / 225 / 39228;";
+  "at n = 1 alone 15 / 40 / 15 / 40 firings and 0 failures. ALL FOUR MINIMAL over the";
+  "range. Restricted to n = 1 alone, rules 1 and 2 have a vacuous universal premise";
+  "that is then droppable, so their minimality is a claim about the range swept.";
+  "RULES 3 AND 4 BIND i TWICE and the diagnostics footer says so (D-0009). Both";
+  "bindings are the same `forall i in [[1,n]]` over the same set, so the two readings";
+  "coincide and the sweep is unaffected -- but the LaTeX is still redundant, and this";
+  "is inherited from gcc verbatim, not introduced here.";
+  "G2 COST, paid twice: c prints as O (var_name has no letter for a count), and the";
+  "literal carries the value index, so it reads `O_{t} >= p, t in {v}` -- gcc's";
+  "notation, not count's `c >= p`. N cannot be used instead: printvartex's N case";
+  "prints only the FIRST index, so a two-index count prints as `N = t` and silently";
+  "drops p. Measured by running it, not read off the code." ];
+    explainall [xacv;ncvbc] gccn "cata/count.tex"
 
 let _ = caveat := [
   "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";
