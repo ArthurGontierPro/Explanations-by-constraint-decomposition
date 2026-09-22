@@ -15,7 +15,7 @@
 
 > ## ⚠ Both shipped rules are unsound
 >
-> `cata/among.tex` contains **two rules and both of them are wrong**. Measured by exhaustive
+> `cata/among.tex` contains **two rules and both of them are unsound**. Measured by exhaustive
 > check over all stores at `n,m ≤ 4` and all `s`: **rule 1 fires in 3374 cases and fails in all
 > 3374**; **rule 2 fires in 16832 cases and fails in 4462**. Do not use either. They are
 > flagged in the artifact's own `%% CAVEAT` footer — the loud-failure behaviour W1-T3
@@ -28,11 +28,11 @@
 
 **And the cause is `G5`, not `G8`.** That distinction is the point of this entry. `G8` — the
 gap that used to empty this file — is closed: the value set `s` is now sayable and prints.
-Closing it is what let these two rules be emitted at all. It could not make them right,
-because what is wrong with them was never the set: ctr 3 channels `among`'s count variable
+Closing it is what let these two rules be emitted at all. It could not make them sound,
+because what is unsound about them was never the set: ctr 3 channels `among`'s count variable
 nowhere, so any rule this decomposition can state is a rule about `X` alone, and `among`
 restricts `X` only *jointly* with its count. **A gap being closed is not a rule being
-correct, and this entry is the standing example.**
+sound, and this entry is the standing example.**
 
 ## Constraint
 
@@ -99,7 +99,7 @@ subset**, which prints its own containment (`s,~s \subseteq \llbracket1,m\rrbrac
 therefore accepted by `ind_set_defined` (`explenation generator.ml:520-525`) without relaxing
 W1-T2: `D of int` beyond 3 and `D2` are still refused, which is why `table`, `regular`, `roots`
 and `range` still emit nothing. That is **G8**, closed, and the generator's own comment at
-`:933-941` says in terms that it fixes the set and not the rules.
+`:933-941` says in terms that it makes the set sayable and leaves the rules as they were.
 
 **Step 3 is unchanged and is where the entry's whole problem lives.** It is a *single*
 `Decomp_devent` with no `Reified_devent`, the same "implicit constant" shape `alldifferent`
@@ -193,7 +193,7 @@ legend's condition for this status. Three things to keep straight:
 - **The verdicts are not the validator's.** `make validate` puts this entry out of scope and
   judges nothing; the `UNSOUND` verdicts are G-1's exhaustive check at `n,m ≤ 4`, recorded in
   the artifact's `%% CAVEAT` footer. This entry says "measured", never "validated".
-- **`G8` is closed and the rules are still wrong.** The previous status here was
+- **`G8` is closed and the rules are still unsound.** The previous status here was
   `nothing generated — blocked on G8`; that status is retired because the block is gone, not
   because the situation improved. Arguably it got worse: an entry that generated nothing made
   no false claim, and this one ships two.
@@ -217,8 +217,8 @@ is an assertion, not a blank.
 **The arrival of two rules does not move it, and would not even if a paper surfaced.**
 Calibration compares premises on implication strength between *sound* rules; an unsound rule
 has no place in that order, because it fires in states where the constraint does not entail its
-conclusion. So the correct reading of this entry against any future published `among`
-explanation is: nothing to compare yet, for a new reason.
+conclusion. So this entry stands, against any future published `among` explanation, where it
+stood before: nothing to compare yet, for a new reason.
 
 ## Gaps
 

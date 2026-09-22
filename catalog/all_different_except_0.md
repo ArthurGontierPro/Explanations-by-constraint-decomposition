@@ -5,19 +5,20 @@
 > and no claim of that kind is made anywhere in this catalog.** See
 > `catalog/README.md`, "What the catalog claims".
 
-**This entry shares a row, a spec, a shape and a gap with
+**This entry shares a row, a spec, a shape and — until 2026-09-22 — a gap with
 [`all_different_except`](all_different_except.md).** Everything below that is not specific to
-the excepted value being fixed at `0` is stated there and not duplicated here; the difference
-is one sentence and it is in "Decomposition used here".
+the excepted value being fixed at `0` is stated there and not duplicated here. **The sibling
+now generates a rule and this variant still does not**, and the difference is no longer a gap:
+see "Decomposition used here".
 
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G8` |
-| **Generated** | no generator entry — there is no `cata/all_different_except_0.tex` |
-| **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `all_different_except_0` entry |
+| **Status** | `encodable today, not encoded` — **changed 2026-09-22.** `G8` closed, nothing was authored for this variant, so there is no gap left to name |
+| **Generated** | **0** — there is no `cata/all_different_except_0.tex` and no generator value for it. The sibling's artifact, `cata/alldifferent_except.tex`, is schematic in the excepted parameter |
+| **Validator** | out of scope: no artifact. My `make validate` run (2026-09-22) names no entry under this name — and would not see one if it existed, since `validator.ml`'s lists are hardcoded and it never scans `cata/` (**W1-T18**) |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:117` records `none` |
-| **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, `explenation generator.ml` read |
+| **Last measured** | 2026-09-22, `make check`, `make validate`, `ls cata/`, and reads of `explenation generator.ml` and `cata/alldifferent_except.tex` |
 
 ## Constraint
 
@@ -35,7 +36,9 @@ section `1. AllDifferent family`.
 list marks it an alias with empty literature and solver cells. `docs/COVERAGE.md:137-139` names
 that row as one of three in the file with no E-code, and `catalog/count_fn.md` records
 (measured 2026-09-21) that the line it gives for it, 118, is stale and the row is at **120**.
-Nothing in this entry rests on that row.
+Nothing in this entry rests on that row. **Note that the generator's new artifact is spelled
+`cata/alldifferent_except.tex`** — the alias spelling — which is a coincidence of the `cata/`
+naming convention, not a statement that the artifact is the `_0` variant.
 
 ## Published explanation
 
@@ -58,9 +61,8 @@ Stuckey 2012) is **not** transferred here.
 | Choco LCG | absent |
 
 Source: `CHRISTMAS_LIST.md:117`, solver cell `decomp **[G]**`; legend at
-`CHRISTMAS_LIST.md:106-109`. Verified 2026-09-21. The machine-filled stub read this correctly.
-The row covers both `_except` and `_except_0`, so the cells are shared; the `[G]` is Geas'
-native propagator.
+`CHRISTMAS_LIST.md:106-109`. Verified 2026-09-21. The row covers both `_except` and
+`_except_0`, so the cells are shared; the `[G]` is Geas' native propagator.
 
 ## Decomposition used here
 
@@ -73,18 +75,24 @@ native propagator.
 excluded value is the constant `0` rather than a parameter, so the summed value family is
 `[1,m] \ {0}` — a *fixed* hole instead of an instance-dependent one.
 
-**And that difference buys nothing here.** `ind_set` is `D of int | D2 of ind_name list`
-(`explenation generator.ml:6`); `ind_set_defined` (`:459`) admits `D 1`, `D 2`, `D 3` and
-`printind_set_int` (`:460`) prints them as `[1,n]`, `[1,m]`, `[1,n]`. There is no fourth
-constructor and no fourth defined set, so a *constant* exclusion is as unnameable as a
-parameter one — **G8 is indifferent to whether the hole is known at authoring time**, because
-the blocker is the absence of a set-former, not the absence of a value. This is worth stating
-because `_except_0` is the variant one would expect to be the easy special case, and it is not.
+**That difference used to buy nothing, because neither hole could be written. Now both can.**
+`ind_set` gained `DExc of ind_set * ind_elt list` (`explenation generator.ml:50`), and
+`ind_elt` is `EInt of int | EInd of ind_name | EPar of string` (`:47`) — so the sibling's
+`DExc (D 2, [EPar "v"])` has a constant counterpart, `DExc (D 2, [EInt 0])`, already supported
+by both `ind_set_defined` (`:520-525`) and `printind_set` (`:535`). **Nothing in the repository
+writes it.** There is no `alldiffexc0` value and no `explainall … "cata/all_different_except_0.tex"`
+call, which is exactly the condition `catalog/README.md`'s legend added
+`encodable today, not encoded` for: do not invent a G-number for it.
 
-A second reason it is not easier: the value range the printer names is `D 2`, printed `[1,m]`
-(`:460`), and `0` is not in it — so the "hole" would have to be punched in a range that does not
-contain it, or the range respelled. Neither is expressible. **This paragraph is read off
-`:460`, not measured.**
+**One wrinkle survives the fix, and it is a naming problem, not a gap.** The value range the
+printer names is `D 2`, rendered `\llbracket1,m\rrbracket` (`:526`), and `0` is not in it. So
+`DExc (D 2, [EInt 0])` would print `[1,m] \ {0}` — a hole punched in a range that does not
+contain it. The rule would still be sound (excluding a value that is not there excludes
+nothing, and the constraint's real content is `all_different` on `[1,m]`), but it would say
+something misleading, and the honest encoding respells the range instead. **This paragraph is
+read off `:526` and `:535`, not measured.** It is the same class of problem as W1-T2's
+"`D_4` means a different set in each decomposition": index sets are named, not defined, from
+the printer's side.
 
 ## Scope of this entry
 
@@ -95,23 +103,37 @@ contain it, or the range respelled. Neither is expressible. **This paragraph is 
 |---|---|---|---|
 | — | — | — | no artifact exists |
 
-See [`all_different_except.md`](all_different_except.md), "Scope of this entry", for why
-dropping the guard does not give a usable partial entry: it gives `all_different`, whose rule
-is unsound for this constraint at the excepted value.
+**What the artifact would look like, without asserting that it would be identical.** The
+sibling's one rule is schematic in the excepted parameter:
+`X_i ≠ t, t ∈ [1,m] \ {v} ⊣ X_{i'} = t ∀i' ≠ i`. This constraint is that schema at `v = 0`,
+and at `v = 0` the side condition is vacuous over `[1,m]` — see the wrinkle above. **G-1's
+exhaustive check ran "over all `n,m ≤ 4` and all `v`"; the footer does not say which values `v`
+ranged over, and `0 ∉ [1,m]`, so its soundness figures are not carried into this entry.**
 
 ## Generated rules
 
-**None.** `cata/all_different_except_0.tex` does not exist.
+**None.** `cata/all_different_except_0.tex` does not exist (`ls cata/`, 2026-09-22: 18 files,
+none under this name).
 
 ## Status
 
-**`nothing generated — blocked on G8`** — the same gap, for the same reason, as
-[`all_different_except`](all_different_except.md), whose Status section states it in full with
-its three source lines. The `_0` variant adds no gap of its own and removes none: see
-"Decomposition used here" for why fixing the excepted value to a constant does not help.
+**`encodable today, not encoded`**
 
-`docs/DECOMP_FORMAT_NOTES.md:80` names `all_different_except*` — the star covering both — as
-the constraint that hit G8.
+The status changed on 2026-09-22 and the previous one — `nothing generated — blocked on G8` —
+is retired. `G8` is closed: `DExc` names a range minus listed constants, `EInt` supplies the
+constant, and the sibling entry demonstrates the whole mechanism on a parameter. What is
+missing here is **an authoring step nobody has taken**, not a capability. `catalog/README.md`'s
+legend says to use this value rather than invent a G-number for exactly that situation.
+
+Two things this status does not claim. It does not claim the resulting rule would be sound —
+nothing has been generated, so nothing has been measured, and the sibling's figures are not
+transferable (see "Scope"). And it does not claim the encoding would be *clean*: the
+`0 ∉ [1,m]` wrinkle above is real and would want the range respelled, which `DSub` can now do
+and which nobody has done either.
+
+**What the variant would inherit if it were authored**, from the sibling, measured there:
+one rule and not two (the `X_i = t` direction needs **E4**), soundness only for `n ≥ 2`, and a
+premise naming every other variable, so it fires only at `n = 2`.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -120,41 +142,55 @@ the constraint that hit G8.
 `CHRISTMAS_LIST.md:117` names no paper, and with 0 rules there is no premise to place in an
 implication order. Not `pending sourcing`, and **not** a transfer of `catalog/alldifferent.md`'s
 verdict against Downing et al. §4 — see [`all_different_except.md`](all_different_except.md),
-"Calibration", where the non-transfer is argued once.
+"Calibration", where the non-transfer is argued once and where the arrival of a generated rule
+is recorded as not changing it.
 
 ## Gaps
 
 | gap | what it blocks here |
 |---|---|
-| `G8` | **the binding one and the only one.** No subrange, no exclusion — and no relief from the hole being the constant `0` rather than a parameter |
+| `G8` | **closed 2026-09-22.** `DExc (D 2, [EInt 0])` is writable and printable today; nothing writes it. That is why the status is `encodable today, not encoded` and why no gap is named in it |
 | `E4` | not a gap — the missing `X_i = t` direction, inherited from `all_different` and unchanged by G8 |
 | `G1` | not binding: the threshold is `all_different`'s invisible 1 and this variant does not vary it |
+| — (not a gap) | **the printed range `[1,m]` does not contain `0`**, so the natural encoding states a vacuous exclusion. A naming problem in `printind_set_int` (`:526`), the same family as W1-T2's per-decomposition `D_k`; `DSub` is the machinery that would respell the range |
+| — (not a gap) | **W1-T18**: even with an artifact, `make validate` would not see it |
 
 Extensions: **E0** — `CHRISTMAS_LIST.md:117`, verbatim: "**E0**, same shape with a guard on the
-excepted value". Closing G8 belongs to **E2**/W2-T1.
-Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
+excepted value". Now true of the machinery as well as the schema.
+Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering; **G8 at line 87**,
+re-measured today — this entry previously cited `:80`).
 
 ## How this entry was produced
 
-- `python3 tools/mzn_coverage.py --rank --json` (2026-09-21) → tier
-  `A no-literature + solver-decomposes`, ecodes `["E0"]`, `CHRISTMAS_LIST.md` line 117,
-  section `1. AllDifferent family` — the same row as `all_different_except`.
-- `make validate` (2026-09-21, redirected then grepped) → `== 34 rules checked in 11 entries:
-  13 SOUND and MINIMAL, 21 flagged ==`; no line names an `all_different_except_0` entry.
+- `ls cata/` (2026-09-22) → 18 files; **no `all_different_except_0.tex`**, and a new
+  `alldifferent_except.tex`, which is the sibling's artifact and not this one's.
+- `make check` (run 2026-09-22, redirected then grepped) → `GATE PASSED`, with
+  `ok alldifferent_except.tex (1 frac-occurrences)`. Nothing under this entry's name appears.
+- `make validate` (run 2026-09-22, redirected then grepped) → `== 34 rules checked in 11
+  entries: 13 SOUND and MINIMAL, 21 flagged ==`, `== 4 rules in 5 entries out of scope ==`; no
+  line names this entry.
+- `explenation generator.ml` read, not run: `:46-52` (`ind_bound`, `ind_elt`, `ind_set` — six
+  constructors now, where this entry used to quote two), `:520-525` (`ind_set_defined`),
+  `:526` (`printind_set_int`, the three named ranges and the W1-T2 raise), `:533`
+  (`printind_set`'s `D2` raise), `:535` (`printind_set`'s `DExc` case), `:1006-1007`
+  (`alldiffexc`), `:1023` (`xacx`). All line numbers measured today (W1-T14).
+- `cata/alldifferent_except.tex` read, not run → the sibling's rule and its `%% CAVEAT` footer,
+  including the phrase "all `v`" that this entry declines to read as covering `v = 0`.
 - `CHRISTMAS_LIST.md:117`, `:120`, `:116`, `:106-109` read → this row, the alias row, the
   `all_different` citation and the solver legend.
 - `tools/data/minizinc-2.10.1-globals.txt:19` read → the name.
-- `explenation generator.ml` read, not run: `:6` (`ind_set`), `:459-460` (`ind_set_defined` and
-  the three printed ranges), `:464` (`printind_set`'s `D2` raise), `:808-809` (`alldiff`).
-- `docs/DECOMP_FORMAT_NOTES.md:80` read → G8 and the `all_different_except*` attribution.
-- `decomps/all_different.md` read → the family spec and its "`0` for the `_0` variant" reading.
+- `catalog/README.md` read → the status legend, including `encodable today, not encoded` and
+  its instruction not to invent a gap number for this case.
 - `catalog/all_different_except.md` (this session's sibling entry) read → everything this entry
   defers to rather than restating.
-- **No scratch run.** As for the sibling: the substitution that matters has no `ind_set` value
-  to write, so there is nothing to hand the generator.
+- **No scratch run.** The substitution that matters is now writable, but writing it means
+  adding a value and an `explainall` call to `explenation generator.ml`, which is the rule
+  engine and is not this session's file.
 - **Not fetched, not read:** the MiniZinc library (not vendored) and any paper. No web access.
 
 **Discrepancies noted, not fixed.** The three recorded in
-[`all_different_except.md`](all_different_except.md) apply here unchanged — `decomps/all_different.md`'s
-pre-consolidation "G6" for what is now **G8**, its `printind_set` line number (375, measured
-**462-464**), and its `"setfils"` symptom, which W1-T2 replaced with a raise.
+[`all_different_except.md`](all_different_except.md) apply here unchanged, with one correction
+that was checked today rather than inherited: **`decomps/all_different.md` no longer says
+"G6"** — it was fixed on 2026-09-21 to say `G8` with a note. What is stale in it now is that it
+presents G8 as blocking, and that it quotes `ind_set` as two constructors at generator line 6
+(measured today: six, at `:48-52`).
