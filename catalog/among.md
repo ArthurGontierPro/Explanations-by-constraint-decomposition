@@ -13,8 +13,7 @@
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:129` records `none` |
 | **Last measured** | 2026-09-22, `make check`, `make validate`, `grep -o '\frac' cata/among.tex \| wc -l`, and reads of `cata/among.tex` and `explenation generator.ml`. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
 
-> ## ⚠ Both shipped rules are unsound
->
+> **⚠ BOTH SHIPPED RULES ARE UNSOUND.**
 > `cata/among.tex` contains **two rules and both of them are unsound**. Measured by exhaustive
 > check over all stores at `n,m ≤ 4` and all `s`: **rule 1 fires in 3374 cases and fails in all
 > 3374**; **rule 2 fires in 16832 cases and fails in 4462**. Do not use either. They are
