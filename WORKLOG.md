@@ -94,6 +94,8 @@ session picks it up.
 | Review the channelling/order stubs + `table` (12) | those `catalog/<name>.md` only | R6 (2026-09-21) | 2026-09-21 |
 | Compile the catalog into one readable LaTeX document | `tools/catalog_tex.py`, `catalog/catalog.tex`, `.gitignore` | T1 (2026-09-22) | 2026-09-22 |
 | Try to decompose `maximum` with the current language — **rule engine, sole owner** | `explenation generator.ml`, `cata/maximum.tex`, `decomps/maximum.md`, `catalog/maximum.md`, `catalog/minimum.md` | X-max (2026-09-22) | 2026-09-22 |
+| Author every constraint now believed authorable — **rule engine, sole owner** | `explenation generator.ml`, the `cata/*.tex` it creates, and only the `catalog/*.md` of constraints it ships | A-1 (2026-09-22) | 2026-09-22 |
+| Re-audit G3's blocked set with the factoring test (W1-T20) | `docs/G3-AUDIT.md` (new) — **no entry edits** | A-2 (2026-09-22) | 2026-09-22 |
 | Put the published explanations into the document | `tools/catalog_tex.py`, `catalog/catalog.tex` | T2 (2026-09-22) | 2026-09-22 |
 | Close G1 and G8 in the generator — **rule engine, sole owner** | `explenation generator.ml` + the goldens it regenerates | G-1 (2026-09-22) | 2026-09-22 |
 | Re-measure the four entries G-1's new rules made stale | `catalog/at_most.md`, `catalog/all_different_except.md`, `catalog/all_different_except_0.md`, `catalog/among.md` | U1 (2026-09-22) | 2026-09-22 |
