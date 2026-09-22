@@ -1688,3 +1688,47 @@ confirmed by measurement rather than assumed.
 `make check` passes. Two tool defects fixed on the way: `tools/catalog_index.py` printed the
 wrong arity range into the generated index and could not resolve an entry whose artifact has a
 different basename.
+
+### 2026-09-22 — X-max (decompose `maximum` with what we have) — CLOSED. **It generated.**
+
+**The "missing primitive" claim in `decomps/maximum.md` was wrong, and the experiment cost one
+session.** `maximum` is authorable in the language exactly as it stands — **no constructor, no
+schema, no printer case, no index operator added.** `BC` events *are* the order encoding, so
+`m ≥ t ⇔ ⋁_i (x_i ≥ t)` contains no variable-vs-variable atom anywhere. Encoded as `gccn`'s
+three-step channel with `rule4` in place of `rule6`; constraint 2 is `nvalues`' ctr 2 with a BC
+`B1`, constraint 3 is `gccn`'s ctr 3 with one value index.
+
+**4 events → 4 rules, clean on every diagnostic** — no `F`, no cycle cut, no empty premise, no
+double-bound index, no undefined set. Rule 1 is the textbook one:
+`{∀i' ≠ i: X_{i'} < t, O ≥ t} ⊢ X_i ≥ t`.
+
+**All four measured SOUND and MINIMAL**, exhaustive assignment sweep over every
+`n,m ∈ {1,2,3,4,5}` **including `n = 1`**, 0 counterexamples; every premise, dropped, yields a
+counterexample; cross-checked by a full store sweep at `{1,2,3}` with both instruments agreeing.
+`n = 1` is safe here because rule 1's *other* premise `O ≥ t` carries the content when the ∀ goes
+vacuous — which is exactly the structure `alldifferent`'s rule lacks.
+
+**The sharpened G3, which is the real output of this experiment:** a variable-vs-variable
+comparison blocks a decomposition **only when it does not factor through a shared threshold**.
+`m ≥ x_i` factors — both sides are independently expressible against `t`, and the order encoding
+rejoins them. `x_i = y_{p_i}` does not — the obstruction is a variable-valued *index*, and no `t`
+states both sides separately. **So G3's honest blocked set is `sort`/`arg_sort`/
+`symmetric_all_different`, not `maximum`/`minimum`/`arg_max`/`arg_min`/`span`**, and the
+25-entry width predates the test. Now **W1-T20**.
+
+**`minimum` is one word away** and the obvious dual is *false*: `m ≤ t ⇔ ⋀_i x_i ≤ t` is wrong
+(`min ≤ t` iff **some** `x_i ≤ t`). In this generator's `≥` vocabulary the right one is
+`m ≥ t ⇔ ⋀_i (x_i ≥ t)` — `maxi` with `rule3` for `rule4`. Run in a scratch copy: 4 dual rules,
+all sound and minimal at `{1..5}`. Not shipped, because `cata/minimum.tex` was outside its
+ownership. **`arg_max`/`arg_min` move from "no shape" to "shape exists, output needs work"** —
+14 rules over 6 events including `{I=i, O ≥ t} ⊢ X_i ≥ t`, but `I=i` is F-blocked exactly as
+`element`'s is, 11 branches are cycle-cut and ≥2 bind `i` twice.
+
+**Gate:** `make check` exit 0, all 17 non-orphaned pre-existing entries plus `exp.tex`
+byte-identical. `make validate` unmoved with *and without* the new file, `grep -c maximum` → 0 —
+**the cleanest direct measurement of W1-T18 anyone has produced.**
+
+**Corrected here from its discrepancy list:** `CLAUDE.md` and the `Makefile` said "2 rules in 5
+entries out of scope"; today's run says **4**, with or without the new entry. `CHRISTMAS_LIST.md`
+routed max/min through E2 where the evidence says E0. Warning census 35 → 36, 60 → 61, one new
+ambiguous `O`.
