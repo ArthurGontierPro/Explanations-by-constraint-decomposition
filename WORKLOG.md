@@ -93,6 +93,7 @@ session picks it up.
 | Compile the catalog into one readable LaTeX document | `tools/catalog_tex.py`, `catalog/catalog.tex`, `.gitignore` | T1 (2026-09-22) | 2026-09-22 |
 | Put the published explanations into the document | `tools/catalog_tex.py`, `catalog/catalog.tex` | T2 (2026-09-22) | 2026-09-22 |
 | Close G1 and G8 in the generator — **rule engine, sole owner** | `explenation generator.ml` + the goldens it regenerates | G-1 (2026-09-22) | 2026-09-22 |
+| Re-measure the four entries G-1's new rules made stale | `catalog/at_most.md`, `catalog/all_different_except.md`, `catalog/all_different_except_0.md`, `catalog/among.md` | U1 (2026-09-22) | 2026-09-22 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
