@@ -17,7 +17,9 @@ rule is read at generation time from the repo:
     priority tier. Reached through `tools/catalog_index.py`'s `load_ranking`,
     so this script and the index agree by construction rather than by
     coincidence, and the basename <-> release-global mapping is that script's
-    `ALIAS` table, not a second copy of it.
+    `ALIAS` table, not a second copy of it. Where a catalog entry and its
+    artifact do not share a basename, `CATA_ALIAS` below maps the one to the
+    other; that is a different question from `ALIAS`'s and is asked here.
   - `catalog/*.md`                  -- the uniform six-row header table at the
     top of every entry (Tier / Status / Generated / Validator / Calibration /
     Last measured). An entry whose table does not parse is REPORTED, never
@@ -97,6 +99,23 @@ HEADER_ROW_RE = re.compile(
 # grouping key being the first code loses nothing.
 BLOCK_RE = re.compile(r"blocked on\s+\**\s*(G\d+|E\d+)")
 ENCODABLE = "encodable today, not encoded"
+
+# catalog/<entry>.md  ->  cata/<artifact>.tex, where the two do NOT share a
+# basename. `tools/catalog_index.py`'s ALIAS maps a cata basename to a RELEASE
+# GLOBAL; this maps a CATALOG ENTRY basename to a cata basename, which is a
+# different question and the one this script asks when it looks for an entry's
+# rules. Without a row here the entry is reported as having no artifact at all,
+# which is a false negative, not a missing feature.
+#
+# `all_different_except` is the release global's spelling and the entry is named
+# for it; `explenation generator.ml:1071` writes the artifact as
+# `cata/alldifferent_except.tex`, following the `alldifferent` file it is a
+# one-line variation of. Both spellings are deliberate in their own file, so the
+# mapping lives here rather than either being renamed. Added 2026-09-22 (U2),
+# from U1's cross-session request in `WORKLOG.md`.
+CATA_ALIAS = {
+    "all_different_except": "alldifferent_except",
+}
 
 RULE_RE = re.compile(r"\$\$(.*?)\$\$", re.S)
 DIAG_LINE_RE = re.compile(r"^%%\s?(.*)$", re.M)
@@ -768,7 +787,8 @@ def collect(validate_log=None):
         tier_key = tier_of.get(global_name) if global_name else None
         status = fields.get("Status", "")
 
-        cata_path = cata.get(base)
+        cata_base = CATA_ALIAS.get(base, base)
+        cata_path = cata.get(cata_base)
         rules, diag, frac = ([], [], None)
         if cata_path:
             rules, diag, frac = read_cata(cata_path)
@@ -776,7 +796,7 @@ def collect(validate_log=None):
                 disagreements.append(
                     "%s: cata/%s.tex has %d `\\frac` but %d `$$...$$` groups; "
                     "the rules printed here are the $$ groups"
-                    % (base, base, frac, len(rules)))
+                    % (base, cata_base, frac, len(rules)))
 
         # --- cross-check the entry's own numbers against the artifacts ------
         written = fields.get("Generated", "")
@@ -785,18 +805,18 @@ def collect(validate_log=None):
         # cata/*.tex (`disjunctive` points at cata/cumulative.tex and says so).
         # Only compare when the cell is talking about this entry's own file.
         named = set(re.findall(r"cata/([A-Za-z0-9_]+)\.tex", written))
-        talks_about_self = (not named) or (base in named)
+        talks_about_self = (not named) or (cata_base in named)
         if wm and talks_about_self:
             n_written = int(wm.group(1))
             if frac is not None and n_written != frac:
                 disagreements.append(
                     "%s: entry's Generated row says %d rules, "
                     "`grep -o '\\frac' cata/%s.tex | wc -l` gives %d"
-                    % (base, n_written, base, frac))
+                    % (base, n_written, cata_base, frac))
             if frac is None and n_written != 0:
                 disagreements.append(
                     "%s: entry's Generated row says %d rules, but there is no "
-                    "cata/%s.tex at all" % (base, n_written, base))
+                    "cata/%s.tex at all" % (base, n_written, cata_base))
 
         vr = vrules.get(base, [])
         sound = sum(1 for r in vr
@@ -840,6 +860,11 @@ def collect(validate_log=None):
             "missing": missing,
             "path": path,
             "cata_path": cata_path,
+            # The artifact's own basename, which is `base` for every entry but
+            # the CATA_ALIAS ones. Every `cata/<name>.tex` this document PRINTS
+            # comes from here, so the document never names a file that is not
+            # the one it read.
+            "cata_base": cata_base,
             "rules": rules,
             "diag": diag,
             "frac": frac,
@@ -1171,7 +1196,7 @@ def render_entry(r, L):
         w("\\textbf{Generated rules} --- this project's output, copied "
           "verbatim from \\texttt{cata/%s.tex} (%d, counted as occurrences of "
           "\\texttt{\\textbackslash{}frac}).\\par"
-          % (esc(r["base"]), r["frac"]))
+          % (esc(r["cata_base"]), r["frac"]))
         for k, body in enumerate(r["rules"], 1):
             v = next((x for x in r["verdicts"] if x["n"] == k), None)
             if v and v["verdict"]:
@@ -1185,7 +1210,7 @@ def render_entry(r, L):
             w("")
             w("{\\small\\textbf{Generated rule %d of %d} --- "
               "\\texttt{cata/%s.tex}, this project's generator. %s\\par}"
-              % (k, len(r["rules"]), esc(r["base"]), tag))
+              % (k, len(r["rules"]), esc(r["cata_base"]), tag))
             if v and v["counterexample"]:
                 w("{\\small\\textit{counterexample:} %s\\par}"
                   % md_to_tex(v["counterexample"]))
@@ -1193,12 +1218,12 @@ def render_entry(r, L):
     elif r["cata_path"]:
         w("")
         w("\\textbf{Generated rules} --- \\texttt{cata/%s.tex} exists and "
-          "emits none." % esc(r["base"]))
+          "emits none." % esc(r["cata_base"]))
     elif r["lit"]:
         w("")
         w("\\textbf{Generated rules} --- none. There is no "
           "\\texttt{cata/%s.tex}; the only explanation rules in this entry "
-          "are the published ones below." % esc(r["base"]))
+          "are the published ones below." % esc(r["cata_base"]))
 
     if r["oos"] and r["oos"].get("reason"):
         w("")
