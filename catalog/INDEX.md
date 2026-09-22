@@ -1,7 +1,7 @@
 <!--
   catalog/INDEX.md -- GENERATED. Do not hand-edit.
   Regenerate with: python3 tools/catalog_index.py
-  Generated: 2026-09-21
+  Generated: 2026-09-22
   Source: tools/catalog_index.py (reads tools/mzn_coverage.py --json,
   catalog/*.md, cata/*.tex, and `make validate`'s output; see that
   script's ALIAS table for the cata/catalog basename <-> MiniZinc
@@ -22,12 +22,12 @@ every regeneration, never hand-typed -- see the header comment for how.
   A **reviewed** entry is one a person wrote against `catalog/TEMPLATE.md`.
   **The entry count is never printed without this split** -- 118 / 118 with
   0 of them stubs is a claim about filenames, not about work done.
-- have any generated rule (`cata/*.tex`, `\frac` count > 0): **8 / 118**
+- have any generated rule (`cata/*.tex`, `\frac` count > 0): **11 / 118**
 - have any validated (SOUND and MINIMAL) rule: **6 / 118**
 
 | tier | globals | entries | reviewed | stubs | generated rules | validated |
 |---|---:|---:|---:|---:|---:|---:|
-| A | 43 | 43 | 43 | 0 | 5 | 4 |
+| A | 43 | 43 | 43 | 0 | 8 | 4 |
 | B | 8 | 8 | 8 | 0 | 0 | 0 |
 | C | 9 | 9 | 9 | 0 | 1 | 1 |
 | D | 19 | 19 | 19 | 0 | 2 | 1 |
@@ -36,6 +36,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 
 ## Warnings from this run
 
+- no alias entry at all for basename 'alldifferent_except' (add it to ALIAS in tools/catalog_index.py)
 - UNMATCHED: 'atleastnvalues' has no corresponding release global (see ALIAS comment for why)
 - UNMATCHED: 'atmostnvalues' has no corresponding release global (see ALIAS comment for why)
 - UNMATCHED: 'sum' has no corresponding release global (see ALIAS comment for why)
@@ -44,15 +45,15 @@ every regeneration, never hand-typed -- see the header comment for how.
 
 | constraint | tier | catalog entry | kind | generated rules | validated | blocking gap |
 |---|---|---|---|---:|---:|---|
-| `all_different_except` | A | [all_different_except](all_different_except.md) | reviewed | — | — | G8 |
+| `all_different_except` | A | [all_different_except](all_different_except.md) | reviewed | 1 | — | G8 |
 | `all_different_except_0` | A | [all_different_except_0](all_different_except_0.md) | reviewed | — | — | G8 |
 | `all_equal` | A | [allequal](allequal.md) | reviewed | 2 | 2 | — |
 | `alternative` | A | [alternative](alternative.md) | reviewed | — | — | G3 |
-| `among` | A | [among](among.md) | reviewed | 0 | out of scope | G8 |
+| `among` | A | [among](among.md) | reviewed | 2 | out of scope | G8 |
 | `arg_sort` | A | [arg_sort](arg_sort.md) | reviewed | — | — | G10 |
 | `arg_val` | A | [arg_val](arg_val.md) | reviewed | — | — | — |
 | `at_least` | A | [at_least](at_least.md) | reviewed | — | — | G1 |
-| `at_most` | A | [at_most](at_most.md) | reviewed | — | — | G1 |
+| `at_most` | A | [at_most](at_most.md) | reviewed | 1 | — | G1 |
 | `bin_packing` | A | [bin_packing](bin_packing.md) | reviewed | — | — | G11 |
 | `bin_packing_capa` | A | [bin_packing_capa](bin_packing_capa.md) | reviewed | — | — | G11 |
 | `bin_packing_load` | A | [bin_packing_load](bin_packing_load.md) | reviewed | — | — | G11 |
@@ -88,7 +89,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `writes` | A | [writes](writes.md) | reviewed | — | — | G18 |
 | `writes_seq` | A | [writes_seq](writes_seq.md) | reviewed | — | — | G18 |
 | `inverse` | B | [inverse](inverse.md) | reviewed | — | — | — |
-| `inverse_in_range` | B | [inverse_in_range](inverse_in_range.md) | reviewed | — | — | G8 |
+| `inverse_in_range` | B | [inverse_in_range](inverse_in_range.md) | reviewed | — | — | — |
 | `lex_greater` | B | [lex_greater](lex_greater.md) | reviewed | — | — | G3 |
 | `lex_greatereq` | B | [lex_greatereq](lex_greatereq.md) | reviewed | — | — | G3 |
 | `maximum` | B | [maximum](maximum.md) | reviewed | — | — | G3 |
@@ -124,9 +125,9 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `var_perm_sym` | D | [var_perm_sym](var_perm_sym.md) | reviewed | — | — | G3 |
 | `var_sqr_sym` | D | [var_sqr_sym](var_sqr_sym.md) | reviewed | — | — | G3 |
 | `among_fn` | unclassified | [among_fn](among_fn.md) | reviewed | — | — | G8 |
-| `bin_packing_load_fn` | unclassified | [bin_packing_load_fn](bin_packing_load_fn.md) | reviewed | — | — | — |
-| `count_fn` | unclassified | [count_fn](count_fn.md) | reviewed | — | — | — |
-| `distribute_fn` | unclassified | [distribute_fn](distribute_fn.md) | reviewed | — | — | — |
+| `bin_packing_load_fn` | unclassified | [bin_packing_load_fn](bin_packing_load_fn.md) | reviewed | — | — | G11 |
+| `count_fn` | unclassified | [count_fn](count_fn.md) | reviewed | — | — | G8 |
+| `distribute_fn` | unclassified | [distribute_fn](distribute_fn.md) | reviewed | — | — | G4 |
 | `global_cardinality_closed_fn` | unclassified | [global_cardinality_closed_fn](global_cardinality_closed_fn.md) | reviewed | — | — | G8 |
 | `global_cardinality_fn` | unclassified | [global_cardinality_fn](global_cardinality_fn.md) | reviewed | — | — | — |
 | `inverse_fn` | unclassified | [inverse_fn](inverse_fn.md) | reviewed | — | — | — |
@@ -166,7 +167,8 @@ every regeneration, never hand-typed -- see the header comment for how.
 ## What this index cannot show
 
 - **Whether a rule is right**, only whether the validator called it SOUND
-  and MINIMAL at n,m <= 4 (`docs/VALIDATOR.md`). Sound and minimal is a
+  and MINIMAL at n,m in {2,3,4} -- n=1 and m=1 are NOT checked
+  (`docs/VALIDATOR.md`, W1-T19). Sound and minimal is a
   floor, not strength -- see CLAUDE.md.
 - **Calibration against a published rule** (agrees/weaker/stronger/
   incomparable/out of reach) -- that verdict lives in each entry's own

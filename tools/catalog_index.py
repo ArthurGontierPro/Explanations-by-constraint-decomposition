@@ -101,6 +101,10 @@ CATALOG_NON_ENTRY_DIRS = {"_literature"}
 #     reach) -- do not fan this out to the five
 #     `global_cardinality*` siblings, that would flatter
 #     the index                                            -> gcc: global_cardinality
+# A catalog entry and its cata/ artifact do not always share a basename.
+# (2026-09-22: catalog/all_different_except.md <-> cata/alldifferent_except.tex)
+CATA_ALIAS = {"all_different_except": "alldifferent_except"}
+
 ALIAS = {
     "alldifferent": "all_different",
     "allequal": "all_equal",
@@ -205,6 +209,11 @@ def list_cata_files():
     for name in sorted(os.listdir(CATA_DIR)):
         if name.endswith(".tex"):
             out[name[:-4]] = os.path.join(CATA_DIR, name)
+    # An entry and its artifact do not always share a basename; register the
+    # entry's own name as a second key so lookups by entry name resolve.
+    for entry_name, cata_name in CATA_ALIAS.items():
+        if cata_name in out and entry_name not in out:
+            out[entry_name] = out[cata_name]
     return out
 
 
@@ -517,7 +526,11 @@ def render(rows, release_count, coverage_provenance, warnings, catalog_entries, 
     w("## What this index cannot show")
     w("")
     w("- **Whether a rule is right**, only whether the validator called it SOUND")
-    w("  and MINIMAL at n,m <= 4 (`docs/VALIDATOR.md`). Sound and minimal is a")
+    # W1-T19 (2026-09-22): the validator enumerates n,m in {2,3,4}; n=1 and m=1
+    # are never checked, and an independent sweep found 30 counterexamples at
+    # n=1 for a rule this certifies.  "n,m <= 4" overstated it.
+    w("  and MINIMAL at n,m in {2,3,4} -- n=1 and m=1 are NOT checked")
+    w("  (`docs/VALIDATOR.md`, W1-T19). Sound and minimal is a")
     w("  floor, not strength -- see CLAUDE.md.")
     w("- **Calibration against a published rule** (agrees/weaker/stronger/")
     w("  incomparable/out of reach) -- that verdict lives in each entry's own")
