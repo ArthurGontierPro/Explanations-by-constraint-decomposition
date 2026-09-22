@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `inverse` ranks **B** (`B no-literature + solver-native`) |
-| **Status** | **resolves to [`inverse.md`](inverse.md)**, whose Status row reads `not reviewed` (read off that file, 2026-09-21). **No status-legend value is asserted for `inverse_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`inverse.md`](inverse.md)**, whose Status row reads `encodable today, not encoded` (re-read 2026-09-22; it read `not reviewed` when this entry was written, before the base was reviewed). **No status-legend value is asserted for `inverse_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/inverse_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`inverse.md`](inverse.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`inverse.md`](inverse.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains inverse, so `no published rule exists` is **not** claimed here |
@@ -178,7 +178,7 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`inverse.md`](inverse.md)** — that entry's Status row reads `not reviewed`.
+**resolves to [`inverse.md`](inverse.md)** — that entry's Status row reads `encodable today, not encoded` (re-read 2026-09-22).
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -227,7 +227,7 @@ gaps mean; none is attributed to `inverse_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:73` read → the name, and that the snapshot carries
   names only.
 - `catalog/inverse.md` read, not run → the base entry's Status row, quoted above as
-  `not reviewed`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `encodable today, not encoded`, and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `inverse_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,

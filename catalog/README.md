@@ -138,7 +138,7 @@ small entry; it is an entry with no findings in it, and it says so at the top:
 ```
 
 That banner is load-bearing three times over. It tells a reader the file is machine output;
-`tools/catalog_index.py` greps for it to report `(12 reviewed, 106 stubs)` instead of a bare
+`tools/catalog_index.py` greps for it to report e.g. `(12 reviewed, 106 stubs)` instead of a bare
 `118 / 118`; and `tools/catalog_stub.py` refuses to write over any `catalog/*.md` that lacks
 it, so a stub someone has reviewed and de-marked is safe from the next run.
 
@@ -161,7 +161,9 @@ and what makes the generator leave it alone.
 
 ## Coverage so far
 
-**118 of 118 files — 12 reviewed, 106 stubs.** Do not quote the first number without the
+**See `catalog/INDEX.md`, which is generated.** This paragraph used to carry hand-typed
+figures ("12 reviewed, 106 stubs"); they were stale within a day, which is the second time a
+hand-typed count in this file has rotted. Do not quote the first number without the
 split; see "Stubs" above for why.
 
 `catalog/INDEX.md` is generated (`python3 tools/catalog_index.py`) and carries the current

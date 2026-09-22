@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `bin_packing_load` ranks **A** (`A no-literature + solver-decomposes`) — it moved out of `- out of scope` under **D-0014** (2026-09-21), which decides scope by mechanism rather than family |
-| **Status** | **resolves to [`bin_packing_load.md`](bin_packing_load.md)**, whose Status row reads `not reviewed` (read off that file, 2026-09-21). **No status-legend value is asserted for `bin_packing_load_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`bin_packing_load.md`](bin_packing_load.md)**, whose Status row reads `nothing generated — blocked on G11` (re-read 2026-09-22; it read `not reviewed` when this entry was written, before the base was reviewed). **No status-legend value is asserted for `bin_packing_load_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/bin_packing_load_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`bin_packing_load.md`](bin_packing_load.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`bin_packing_load.md`](bin_packing_load.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains bin_packing_load, so `no published rule exists` is **not** claimed here |
@@ -181,7 +181,7 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`bin_packing_load.md`](bin_packing_load.md)** — that entry's Status row reads `not reviewed`.
+**resolves to [`bin_packing_load.md`](bin_packing_load.md)** — that entry's Status row reads `nothing generated — blocked on G11` (re-read 2026-09-22).
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -230,7 +230,7 @@ gaps mean; none is attributed to `bin_packing_load_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:35` read → the name, and that the snapshot carries
   names only.
 - `catalog/bin_packing_load.md` read, not run → the base entry's Status row, quoted above as
-  `not reviewed`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `nothing generated — blocked on G11`, and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `bin_packing_load_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,

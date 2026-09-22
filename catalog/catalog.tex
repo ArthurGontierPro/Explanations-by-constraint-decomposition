@@ -1,6 +1,6 @@
 %% catalog/catalog.tex -- GENERATED. Do not hand-edit.
 %% Regenerate with: python3 tools/catalog_tex.py
-%% Generated: 2026-09-22 from commit 2053069
+%% Generated: 2026-09-22 from commit 6d059ce
 %% Source: tools/catalog_tex.py, which reads tools/mzn_coverage.py
 %% --json (via tools/catalog_index.py), catalog/*.md, cata/*.tex and
 %% the output of `make validate`. Every number below is computed on
@@ -41,7 +41,7 @@
 \vspace{0.6em}
 {\LARGE The catalog, in one document\par}
 \vspace{1.4em}
-{\large Generated 2026-09-22 from commit \texttt{2053069} by \texttt{python3 tools/catalog\_tex.py}.\par}
+{\large Generated 2026-09-22 from commit \texttt{6d059ce} by \texttt{python3 tools/catalog\_tex.py}.\par}
 \vspace{1.6em}
 \hrule
 \vspace{1.2em}
@@ -64,7 +64,7 @@
 \end{itemize}
 \vspace{0.6em}
 {\bfseries Entries blocked, by the code their Status row names first:}\par
-\texttt{G1}~6, \texttt{G2}~3, \texttt{G3}~24, \texttt{G4}~1, \texttt{G6}~1, \texttt{G7}~6, \texttt{G8}~13, \texttt{G10}~3, \texttt{G11}~4, \texttt{G12}~1, \texttt{G14}~3, \texttt{G15}~2, \texttt{G17}~2, \texttt{G18}~3, \texttt{E1}~1, \texttt{E2}~2, \texttt{E5}~8, \texttt{E6}~13, \texttt{E7}~3.
+\texttt{G1}~6, \texttt{G2}~3, \texttt{G3}~24, \texttt{G4}~2, \texttt{G6}~1, \texttt{G7}~6, \texttt{G8}~14, \texttt{G10}~3, \texttt{G11}~5, \texttt{G12}~1, \texttt{G14}~3, \texttt{G15}~2, \texttt{G17}~2, \texttt{G18}~3, \texttt{E1}~1, \texttt{E2}~2, \texttt{E5}~8, \texttt{E6}~13, \texttt{E7}~3.
 \end{titlepage}
 \tableofcontents
 \clearpage
@@ -134,7 +134,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{bin\_\allowbreak{}packing} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
 \texttt{bin\_\allowbreak{}packing\_\allowbreak{}capa} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
 \texttt{bin\_\allowbreak{}packing\_\allowbreak{}load} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
-\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn} & unclassified & resolves to bin\_packing\_load.md, whose Status row reads... & --- & 0 & --- \\
+\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn} & unclassified & resolves to bin\_packing\_load.md, whose Status row reads... & --- & 0 & \texttt{G11} \\
 \texttt{bounded\_\allowbreak{}path} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{circuit} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{circuit\_\allowbreak{}opt} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
@@ -142,7 +142,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{cost\_\allowbreak{}mdd} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
 \texttt{cost\_\allowbreak{}regular} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
 \texttt{count} & A & nothing generated --- blocked on G8 --- the same wall as am... & --- & 0 & \texttt{G8} \\
-\texttt{count\_\allowbreak{}fn} & unclassified & resolves to count.md, whose Status row reads not review... & --- & 0 & --- \\
+\texttt{count\_\allowbreak{}fn} & unclassified & resolves to count.md, whose Status row reads nothing ge... & --- & 0 & \texttt{G8} \\
 \texttt{cumulative} & D & not validatable & 2 & 0 & --- \\
 \texttt{cumulative\_\allowbreak{}opt} & C & nothing generated --- blocked on G2 --- and on everything t... & --- & 0 & \texttt{G2} \\
 \texttt{cumulatives} & C & nothing generated --- blocked on G14 --- and on everything... & --- & 0 & \texttt{G14} \\
@@ -159,7 +159,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{disjunctive\_\allowbreak{}strict} & D & nothing generated --- blocked on G1 & --- & 0 & \texttt{G1} \\
 \texttt{disjunctive\_\allowbreak{}strict\_\allowbreak{}opt} & D & nothing generated --- blocked on G2 & --- & 0 & \texttt{G2} \\
 \texttt{distribute} & A & nothing generated --- blocked on G4 --- and on G8 for the c... & --- & 0 & \texttt{G4} \\
-\texttt{distribute\_\allowbreak{}fn} & unclassified & resolves to distribute.md, whose Status row reads not r... & --- & 0 & --- \\
+\texttt{distribute\_\allowbreak{}fn} & unclassified & resolves to distribute.md, whose Status row reads nothi... & --- & 0 & \texttt{G4} \\
 \texttt{element} & A & partly validated & 6 & 2 & --- \\
 \texttt{exactly} & A & nothing generated --- blocked on G1 --- and on G8 for the c... & --- & 0 & \texttt{G1} \\
 \texttt{geost} & out of scope & nothing generated --- blocked on E6/E7/E2 (unresolved, se... & --- & 0 & \texttt{E6} \\
@@ -172,7 +172,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{increasing} & A & validated: sound and minimal at n,m <= 4 & 2 & 2 & --- \\
 \texttt{int\_\allowbreak{}set\_\allowbreak{}channel} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
 \texttt{inverse} & B & encodable today, not encoded --- no gap blocks this decom... & --- & 0 & --- \\
-\texttt{inverse\_\allowbreak{}fn} & unclassified & resolves to inverse.md, whose Status row reads not revi... & --- & 0 & --- \\
+\texttt{inverse\_\allowbreak{}fn} & unclassified & resolves to inverse.md, whose Status row reads encodabl... & --- & 0 & --- \\
 \texttt{inverse\_\allowbreak{}in\_\allowbreak{}range} & B & nothing generated --- blocked on G8 --- and, like inverse,... & --- & 0 & \texttt{G8} \\
 \texttt{inverse\_\allowbreak{}set} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
 \texttt{knapsack} & A & nothing generated --- blocked on G11 --- and on G4, G12, G1... & --- & 0 & \texttt{G11} \\
@@ -213,7 +213,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{sliding\_\allowbreak{}among} & A & nothing generated --- blocked on G8 --- twice over, and on... & --- & 0 & \texttt{G8} \\
 \texttt{sliding\_\allowbreak{}sum} & A & nothing generated --- blocked on G12 --- and on G13, which... & --- & 0 & \texttt{G12} \\
 \texttt{sort} & A & nothing generated --- blocked on G10 --- and on G9 and G3;... & --- & 0 & \texttt{G10} \\
-\texttt{sort\_\allowbreak{}fn} & unclassified & resolves to sort.md, whose Status row reads not reviewe... & --- & 0 & --- \\
+\texttt{sort\_\allowbreak{}fn} & unclassified & resolves to sort.md, whose Status row reads encodable t... & --- & 0 & --- \\
 \texttt{span} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
 \texttt{steiner} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{strict\_\allowbreak{}lex2} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
@@ -242,12 +242,8 @@ constraint & tier & status & rules & s+m & block \\
 \section{Disagreements between computed and written numbers}
 Each line is a number this run computed from an artifact next to a number written into a file. Neither side is preferred here; the disagreement is reported so it can be settled by whoever owns the file.
 \begin{itemize}\setlength{\itemsep}{0pt}
-\item bin\_packing\_load\_fn: quotes bin\_packing\_load.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G11''
-\item catalog/README.md's ``Coverage so far'' says 118 of 118 files -- 12 reviewed, 106 stubs; grepping every catalog/*.md for the stub marker today gives 121 entry files, 121 reviewed, 0 stubs
-\item count\_fn: quotes count.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G8 --- the same wall as among, measure...''
-\item distribute\_fn: quotes distribute.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G4 --- and on G8 for the counted value...''
-\item inverse\_fn: quotes inverse.md's Status as ``not reviewed''; that row now reads ``encodable today, not encoded --- no gap blocks this decomposition; no...''
-\item sort\_fn: quotes sort.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G10 --- and on G9 and G3; see Status....''
+\item inverse\_fn: quotes inverse.md's Status as ``encodable today, not encoded''; that row now reads ``encodable today, not encoded --- no gap blocks this decomposition; no...''
+\item sort\_fn: quotes sort.md's Status as ``encodable today, not encoded''; that row now reads ``nothing generated --- blocked on G10 --- and on G9 and G3; see Status....''
 \end{itemize}
 \section{Entries that did not parse}
 None. All 121 entry files carry the full six-row header table \texttt{catalog/TEMPLATE.md} mandates.
@@ -860,8 +856,8 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
 \entryfield{Blocking gap}{\texttt{G3}}
 \entryfield{Entry}{\texttt{catalog/var\_sqr\_sym.md}}
-\subsection*{\texttt{G4} \ \normalsize(1)}
-\addcontentsline{toc}{subsection}{\texttt{G4} (1)}
+\subsection*{\texttt{G4} \ \normalsize(2)}
+\addcontentsline{toc}{subsection}{\texttt{G4} (2)}
 \subsubsection*{\texttt{distribute}}
 \label{entry:distribute}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecodes \texttt{E0}, \texttt{E3} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
@@ -872,6 +868,16 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
 \entryfield{Blocking gap}{\texttt{G4}}
 \entryfield{Entry}{\texttt{catalog/distribute.md}}
+\subsubsection*{\texttt{distribute\_\allowbreak{}fn}}
+\label{entry:distribute-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{distribute} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{distribute.md}}, whose Status row reads \texttt{nothing generated --- blocked on G4} (re-read 2026-09-22; it read \texttt{not reviewed} when this entry was written, before the base was reviewed). \textbf{No status-legend value is asserted for \texttt{distribute\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/distribute\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{distribute.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{distribute.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains distribute, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:132} and \texttt{catalog/distribute.md}}
+\entryfield{Blocking gap}{\texttt{G4}}
+\entryfield{Entry}{\texttt{catalog/distribute\_fn.md}}
 \subsection*{\texttt{G6} \ \normalsize(1)}
 \addcontentsline{toc}{subsection}{\texttt{G6} (1)}
 \subsubsection*{\texttt{table}}
@@ -956,8 +962,8 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
 \entryfield{Blocking gap}{\texttt{G7}}
 \entryfield{Entry}{\texttt{catalog/value\_precede\_chain.md}}
-\subsection*{\texttt{G8} \ \normalsize(11)}
-\addcontentsline{toc}{subsection}{\texttt{G8} (11)}
+\subsection*{\texttt{G8} \ \normalsize(12)}
+\addcontentsline{toc}{subsection}{\texttt{G8} (12)}
 \subsubsection*{\texttt{all\_\allowbreak{}different\_\allowbreak{}except}}
 \label{entry:all-different-except}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
@@ -1014,6 +1020,16 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and \textbf{three scratch generator runs} (below)}
 \entryfield{Blocking gap}{\texttt{G8}}
 \entryfield{Entry}{\texttt{catalog/count.md}}
+\subsubsection*{\texttt{count\_\allowbreak{}fn}}
+\label{entry:count-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{count} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{count.md}}, whose Status row reads \texttt{nothing generated --- blocked on G8} (re-read 2026-09-22; it read \texttt{not reviewed} when this entry was written, before the base was reviewed). \textbf{No status-legend value is asserted for \texttt{count\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/count\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{count.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{count.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains count, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:128} and \texttt{catalog/count.md}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/count\_fn.md}}
 \subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed}}
 \label{entry:global-cardinality-closed}
 \entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
@@ -1106,8 +1122,8 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
 \entryfield{Blocking gap}{\texttt{G10}}
 \entryfield{Entry}{\texttt{catalog/symmetric\_all\_different.md}}
-\subsection*{\texttt{G11} \ \normalsize(4)}
-\addcontentsline{toc}{subsection}{\texttt{G11} (4)}
+\subsection*{\texttt{G11} \ \normalsize(5)}
+\addcontentsline{toc}{subsection}{\texttt{G11} (5)}
 \subsubsection*{\texttt{bin\_\allowbreak{}packing}}
 \label{entry:bin-packing}
 \entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E8}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
@@ -1138,6 +1154,16 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:176} read, \texttt{docs/DECISIONS.md} D-0014 read}
 \entryfield{Blocking gap}{\texttt{G11}}
 \entryfield{Entry}{\texttt{catalog/bin\_packing\_load.md}}
+\subsubsection*{\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn}}
+\label{entry:bin-packing-load-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{bin\_packing\_load} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes}) --- it moved out of \texttt{- out of scope} under \textbf{D-0014} (2026-09-21), which decides scope by mechanism rather than family}
+\entryfield{Status}{\textbf{resolves to \texttt{bin\_packing\_load.md}}, whose Status row reads \texttt{nothing generated --- blocked on G11} (re-read 2026-09-22; it read \texttt{not reviewed} when this entry was written, before the base was reviewed). \textbf{No status-legend value is asserted for \texttt{bin\_packing\_load\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/bin\_packing\_load\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{bin\_packing\_load.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{bin\_packing\_load.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains bin\_packing\_load, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:176} and \texttt{catalog/bin\_packing\_load.md}}
+\entryfield{Blocking gap}{\texttt{G11}}
+\entryfield{Entry}{\texttt{catalog/bin\_packing\_load\_fn.md}}
 \subsubsection*{\texttt{knapsack}}
 \label{entry:knapsack}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecodes \texttt{E1}, \texttt{E8}, \texttt{E9} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
@@ -1293,6 +1319,26 @@ The current input format can already express the decomposition and no gap blocks
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/inverse.md}}
+\subsubsection*{\texttt{inverse\_\allowbreak{}fn}}
+\label{entry:inverse-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{inverse} ranks \textbf{B} (\texttt{B no-literature + solver-native})}
+\entryfield{Status}{\textbf{resolves to \texttt{inverse.md}}, whose Status row reads \texttt{encodable today, not encoded} (re-read 2026-09-22; it read \texttt{not reviewed} when this entry was written, before the base was reviewed). \textbf{No status-legend value is asserted for \texttt{inverse\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/inverse\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{inverse.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{inverse.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains inverse, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:199} and \texttt{catalog/inverse.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/inverse\_fn.md}}
+\subsubsection*{\texttt{sort\_\allowbreak{}fn}}
+\label{entry:sort-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{sort} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{sort.md}}, whose Status row reads \texttt{encodable today, not encoded} (re-read 2026-09-22; it read \texttt{not reviewed} when this entry was written, before the base was reviewed). \textbf{No status-legend value is asserted for \texttt{sort\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/sort\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{sort.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{sort.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains sort, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:198} and \texttt{catalog/sort.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/sort\_fn.md}}
 \subsubsection*{\texttt{strictly\_\allowbreak{}decreasing}}
 \label{entry:strictly-decreasing}
 \entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_increasing})}
@@ -1621,26 +1667,6 @@ Tier \texttt{out of scope} in \texttt{tools/mzn\_coverage.py}'s ranking --- set 
 \clearpage
 \section{Remaining entries}
 No generated rule, no blocking code in the Status row, and a tier inside scope. Most are the \texttt{\_fn} function variants, whose Status defers to the base entry rather than asserting one.
-\subsubsection*{\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn}}
-\label{entry:bin-packing-load-fn}
-\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{bin\_packing\_load} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes}) --- it moved out of \texttt{- out of scope} under \textbf{D-0014} (2026-09-21), which decides scope by mechanism rather than family}
-\entryfield{Status}{\textbf{resolves to \texttt{bin\_packing\_load.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{bin\_packing\_load\_fn} itself}, and this entry generates nothing of its own}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/bin\_packing\_load\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{bin\_packing\_load.md}}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
-\entryfield{Calibration}{\textbf{resolves to \texttt{bin\_packing\_load.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains bin\_packing\_load, so \texttt{no published rule exists} is \textbf{not} claimed here}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:176} and \texttt{catalog/bin\_packing\_load.md}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/bin\_packing\_load\_fn.md}}
-\subsubsection*{\texttt{count\_\allowbreak{}fn}}
-\label{entry:count-fn}
-\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{count} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
-\entryfield{Status}{\textbf{resolves to \texttt{count.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{count\_fn} itself}, and this entry generates nothing of its own}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/count\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{count.md}}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
-\entryfield{Calibration}{\textbf{resolves to \texttt{count.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains count, so \texttt{no published rule exists} is \textbf{not} claimed here}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:128} and \texttt{catalog/count.md}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/count\_fn.md}}
 \subsubsection*{\texttt{disjunctive}}
 \label{entry:disjunctive}
 \entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2}}
@@ -1651,16 +1677,6 @@ No generated rule, no blocking code in the Status row, and a tier inside scope. 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/cumulative.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/disjunctive.md}}
-\subsubsection*{\texttt{distribute\_\allowbreak{}fn}}
-\label{entry:distribute-fn}
-\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{distribute} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
-\entryfield{Status}{\textbf{resolves to \texttt{distribute.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{distribute\_fn} itself}, and this entry generates nothing of its own}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/distribute\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{distribute.md}}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
-\entryfield{Calibration}{\textbf{resolves to \texttt{distribute.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains distribute, so \texttt{no published rule exists} is \textbf{not} claimed here}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:132} and \texttt{catalog/distribute.md}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/distribute\_fn.md}}
 \subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}fn}}
 \label{entry:global-cardinality-fn}
 \entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{global\_cardinality} ranks \textbf{C} (\texttt{C literature + solver-decomposes})}
@@ -1671,16 +1687,6 @@ No generated rule, no blocking code in the Status row, and a tier inside scope. 
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:127} and \texttt{catalog/gcc.md}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/global\_cardinality\_fn.md}}
-\subsubsection*{\texttt{inverse\_\allowbreak{}fn}}
-\label{entry:inverse-fn}
-\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{inverse} ranks \textbf{B} (\texttt{B no-literature + solver-native})}
-\entryfield{Status}{\textbf{resolves to \texttt{inverse.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{inverse\_fn} itself}, and this entry generates nothing of its own}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/inverse\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{inverse.md}}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
-\entryfield{Calibration}{\textbf{resolves to \texttt{inverse.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains inverse, so \texttt{no published rule exists} is \textbf{not} claimed here}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:199} and \texttt{catalog/inverse.md}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/inverse\_fn.md}}
 \subsubsection*{\texttt{nvalue\_\allowbreak{}fn}}
 \label{entry:nvalue-fn}
 \entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{nvalue} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
@@ -1691,14 +1697,4 @@ No generated rule, no blocking code in the Status row, and a tier inside scope. 
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:130} and \texttt{catalog/nvalues.md}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/nvalue\_fn.md}}
-\subsubsection*{\texttt{sort\_\allowbreak{}fn}}
-\label{entry:sort-fn}
-\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{sort} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
-\entryfield{Status}{\textbf{resolves to \texttt{sort.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{sort\_fn} itself}, and this entry generates nothing of its own}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/sort\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{sort.md}}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
-\entryfield{Calibration}{\textbf{resolves to \texttt{sort.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains sort, so \texttt{no published rule exists} is \textbf{not} claimed here}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:198} and \texttt{catalog/sort.md}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/sort\_fn.md}}
 \end{document}

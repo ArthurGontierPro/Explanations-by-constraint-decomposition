@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `count` ranks **A** (`A no-literature + solver-decomposes`) |
-| **Status** | **resolves to [`count.md`](count.md)**, whose Status row reads `not reviewed` (read off that file, 2026-09-21). **No status-legend value is asserted for `count_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`count.md`](count.md)**, whose Status row reads `nothing generated — blocked on G8` (re-read 2026-09-22; it read `not reviewed` when this entry was written, before the base was reviewed). **No status-legend value is asserted for `count_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/count_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`count.md`](count.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`count.md`](count.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains count, so `no published rule exists` is **not** claimed here |
@@ -178,7 +178,7 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`count.md`](count.md)** — that entry's Status row reads `not reviewed`.
+**resolves to [`count.md`](count.md)** — that entry's Status row reads `nothing generated — blocked on G8` (re-read 2026-09-22).
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -227,7 +227,7 @@ gaps mean; none is attributed to `count_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:43` read → the name, and that the snapshot carries
   names only.
 - `catalog/count.md` read, not run → the base entry's Status row, quoted above as
-  `not reviewed`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `nothing generated — blocked on G8`, and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `count_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,
