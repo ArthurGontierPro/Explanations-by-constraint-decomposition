@@ -3,9 +3,53 @@ open List
 type var_name = X | B of int | T | I | V | N | O
 (*index modifications*) 
 type ind_name = I of int | T of int | P of int | R of int
-type ind_set = D of int | D2 of ind_name list
 type ind_const = C of int 
 type ind_symbols = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ 
+(*==========================================================================
+  G1 and G8 — the two cheapest format gaps, closed together because they are
+  the same gap seen twice: an index set the decomposition wants to talk about
+  but the format cannot NAME, and a threshold the decomposition wants to talk
+  about but the format cannot CARRY.
+
+  G1 (docs/DECOMP_FORMAT_NOTES.md): "no way to carry a bare integer threshold
+  into the printed rule ... the constant is never captured as an event, index,
+  or anything else the printer walks -- it lives only as an OCaml literal baked
+  into which schema gets called". rule5/rule6/rule7 ARE "Boolean sum <=/>=/= c"
+  and nothing anywhere holds that c. So at_most(c,x,v), at_least, exactly and
+  alldifferent's implicit 1 all print rules that never mention their own bound.
+
+  G8: "ind_set names only whole predefined ranges -- no subrange, no exclusion".
+  D of int is an opaque per-decomposition counter, so D 4 is the row set in
+  table.tex and the value set in among.tex; W1-T2 rightly refuses to print any
+  of them. D2 of ind_name list has no printer at all (that is G7).
+
+  The fix for both is to make ind_set a SET TERM that prints its own definition,
+  rather than a name the artifact would have to define elsewhere:
+
+    DSub  (parent,a,b)        a literal subrange, [[a,b]]
+    DExc  (parent,elts)       parent minus listed constants and/or indices
+    DPar  (name,parent)       a named parameter subset: "s, s subset of [[1,m]]"
+    DCard (name,parent,op,b)  as DPar plus a cardinality: "..., |S| = c+1"
+
+  DCard is where the threshold lives, and it is what closes G1: the bound is an
+  ind_bound value carried inside the index data, so the printer walks it and it
+  reaches the LaTeX. ind_bound is BInt for a literal and BPar (name,offset) for
+  a symbolic parameter, because the bound a rule needs is not always the bound
+  in the signature -- at_most's witness set has c+1 elements, not c (see the
+  atmost decomposition below for why).
+
+  These four print their own meaning, so ind_set_defined accepts them: they are
+  not D_4. The W1-T2 refusal is untouched for D of int and D2, which still name
+  nothing -- table, regular, roots and range are deliberately NOT changed here,
+  and their branches are still refused.
+  ========================================================================*)
+type ind_bound = BInt of int | BPar of string*int
+type ind_elt   = EInt of int | EInd of ind_name
+type ind_set = D of int | D2 of ind_name list
+             | DSub  of ind_set*int*int                       (*[[a,b]]*)
+             | DExc  of ind_set*ind_elt list                  (*parent \ {..}*)
+             | DPar  of string*ind_set                        (*named parameter subset*)
+             | DCard of string*ind_set*ind_symbols*ind_bound  (*named subset of given cardinality*)
 type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*) 
                   | Rel of ind_name*ind_symbols*ind_name (*I≠I2*) 
                   | Addint of ind_name*ind_name*ind_symbols*int (*I2=I+1*) 
@@ -110,7 +154,22 @@ let rec apply_op op il = match op with
   | OpSeq     l      -> fold_right (fun o acc -> apply_op o acc) l il
 
 let op_sym s = match s with PLUS->"+"|MINUS->"-"|IN->" in "|NEQ->"<>"|LEQ->"<="|GEQ->">="|EQ->"="
-let op_set s = match s with D a -> "D"^string_of_int a | D2 _ -> "D(list)"
+(*moved up from the LaTeX printer block: op_set and print_bound need it, and
+  both types are already in scope here, so `I` still resolves to ind_name.*)
+let printind_name_int a = match a with 1 -> "" | 2 -> "'" | 3 -> "''" | _ -> "_{"^string_of_int a^"}"
+let printind_name i = match i with I a -> "i"^printind_name_int a | T a -> "t"^printind_name_int a | P a -> "p"^printind_name_int a | R a -> "r"^printind_name_int a
+let print_bound b = match b with
+  | BInt k     -> string_of_int k
+  | BPar (s,0) -> s
+  | BPar (s,k) -> if k > 0 then s^"+"^string_of_int k else s^"-"^string_of_int (-k)
+let print_elt e = match e with EInt k -> string_of_int k | EInd i -> printind_name i
+let rec op_set s = match s with
+  | D a -> "D"^string_of_int a
+  | D2 _ -> "D(list)"
+  | DSub (_,a,b) -> "["^string_of_int a^","^string_of_int b^"]"
+  | DExc (p,es) -> op_set p^"\\{"^String.concat "," (map print_elt es)^"}"
+  | DPar (nm,p) -> nm^" subset of "^op_set p
+  | DCard (nm,p,sym,b) -> nm^" subset of "^op_set p^", |"^nm^"|"^op_sym sym^print_bound b
 let rec print_op op = match op with
   | OpId             -> "id"
   | OpOn     (f,d)   -> "on "^fam_letter f^" in "^op_set d
@@ -426,8 +485,6 @@ exception Generator_failure of string
 
 (*Print explanation in string*) 
 let rec printprim n = match n with 1 -> "" | _ ->"'"^printprim (n-1)
-let printind_name_int a = match a with 1 -> "" | 2 -> "'" | 3 -> "''" | _ -> "_{"^string_of_int a^"}"
-let printind_name i = match i with I a -> "i"^printind_name_int a | T a -> "t"^printind_name_int a | P a -> "p"^printind_name_int a | R a -> "r"^printind_name_int a
 (*==========================================================================
   W1-T2 — an index set the printer cannot define is REFUSED, not invented.
 
@@ -456,12 +513,28 @@ let printind_name i = match i with I a -> "i"^printind_name_int a | T a -> "t"^p
   rule and a diagnostics footer that names the sets — "no rule that this
   artifact can state" is a result, and a silent D_4 was not.
   ========================================================================*)
-let ind_set_defined s = match s with D 1 | D 2 | D 3 -> true | D _ -> false | D2 _ -> false
+(*G1/G8: the four new set formers are defined BY BEING PRINTED -- each renders
+  its own containment and, for DCard, its own cardinality -- so accepting them
+  here is not a relaxation of W1-T2. D of int and D2 are unchanged and still
+  refused, which is why table/regular/roots/range still emit nothing.*)
+let rec ind_set_defined s = match s with
+  | D 1 | D 2 | D 3 -> true | D _ -> false | D2 _ -> false
+  | DSub  (p,_,_)   -> ind_set_defined p
+  | DExc  (p,_)     -> ind_set_defined p
+  | DPar  (_,p)     -> ind_set_defined p
+  | DCard (_,p,_,_) -> ind_set_defined p
 let printind_set_int a = match a with 1 -> "\\llbracket1,n\\rrbracket" | 2 -> "\\llbracket1,m\\rrbracket" | 3 -> "\\llbracket1,n\\rrbracket"
   | _ -> raise (Generator_failure ("printind_set: index set D_"^string_of_int a^" is referenced but the printer defines no such set, and the D_k counter is per-decomposition so it cannot be defined here (W1-T2)"))
-let printind_set s = match s with
+let printcard_sym s = match s with
+  | EQ -> "=" | LEQ -> " \\leq " | GEQ -> " \\geq " | NEQ -> " \\neq "
+  | PLUS | MINUS | IN -> raise (Generator_failure "printind_set: a cardinality can only be compared with =, <=, >= or <> (G1)")
+let rec printind_set s = match s with
   | D a -> printind_set_int a
   | D2 _ -> raise (Generator_failure "printind_set: the D2 (index-list) set variant has no printer; it used to emit the literal string \"setfils\" (W1-T2, consolidated gap G7)" )
+  | DSub (_,a,b) -> "\\llbracket"^string_of_int a^","^string_of_int b^"\\rrbracket"
+  | DExc (p,es) -> printind_set p^" \\setminus \\{"^String.concat "," (map print_elt es)^"\\}"
+  | DPar (nm,p) -> nm^",~"^nm^" \\subseteq "^printind_set p
+  | DCard (nm,p,sym,b) -> nm^",~"^nm^" \\subseteq "^printind_set p^",~|"^nm^"|"^printcard_sym sym^print_bound b
 let printind_const_int a = match a with 1 -> "" | _ -> "_{"^string_of_int a^"}"
 let printind_const c = match c with C a -> "d"^printind_const_int a
 let printind_symbols s = match s with PLUS-> "+"|MINUS->"-"|IN->"∈"|NEQ->"≠"|LEQ->"<="|GEQ->">="|EQ->"=" 
