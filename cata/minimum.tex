@@ -1,0 +1,31 @@
+$$\frac{O_{} \geq t}{X_{i} \geq t}$$ $$\frac{X_{i'} \geq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{}<t}{X_{i}<t}$$ $$\frac{X_{i} \geq t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}$$ $$\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{}<t}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{} \geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (A-1, 2026-09-22). New entry. catalog/minimum.md said `encodable today,
+%% not encoded`: session X-max ran this decomposition in a scratch copy and discarded
+%% it. Encoded here, and re-measured by this session rather than quoted.
+%% The decomposition is `maxi` with rule3 (conjunction) in rule4's seat and NOTHING
+%% else changed: m >= t <=> /\_i (x_i >= t). The symbol-for-symbol dual
+%% m <= t <=> /\_i (x_i <= t) is FALSE -- min_i x_i <= t holds as soon as SOME x_i
+%% does -- so the connective flips and the relation does not.
+%% NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured
+%% instead by exhaustive enumeration of every assignment with O = min_i X_i and
+%% X_i in [[1,m]], for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED, which is where the
+%% shipped alldifferent rule fails (W1-T19).
+%% ALL FOUR RULES SOUND, no counterexample anywhere. Firing counts at n,m <= 4 are
+%% 2438 / 349 / 686 / 1098 in file order; at n,m <= 5, 37329 / 4158 / 7995 / 18204;
+%% at n = 1 alone 35 / 20 / 35 / 20 firings and 0 failures. ALL FOUR MINIMAL over the
+%% sweep range: every premise, dropped, produces a counterexample (drop counts at
+%% n,m <= 5: 48438 / 37950 and 37329 / 86388 / 7995).
+%% ONE HONEST QUALIFICATION, which maximum's dual does not have: restricted to n = 1
+%% ALONE, rule 2's first premise (forall i' <> i: X_i' >= t) is vacuous and droppable,
+%% so minimality of rule 2 is a statement about the range swept, not about n = 1.
+%% Soundness is unaffected -- rule 2's other premise O < t carries the content.
+%% Firing counts are per (assignment, free index) pair, and an index the rule itself
+%% quantifies is NOT free: rules 3 and 4 range over t only, rules 1 and 2 over (i,t).
+%% G2 COST, inherited from maximum verbatim: m is printed as O -- var_name has no
+%% constructor for a constraint's own scalar bound -- and as `O_{} >= t`, because m
+%% has no array position and printglobal_eventtex emits the subscript unconditionally.

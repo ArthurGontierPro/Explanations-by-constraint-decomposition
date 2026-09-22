@@ -1060,6 +1060,33 @@ let maxi   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
               Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
 
+(*==========================================================================
+  A-1, 2026-09-22 -- `minimum`, the one-word dual of `maxi`.
+
+  catalog/minimum.md (X-max, 2026-09-22) said `encodable today, not encoded`:
+  the decomposition had been written and run in a scratch copy but nothing in
+  the repository carried it. It is carried here. Before X-max, BOTH this file's
+  entry and decomps/maximum.md said "No decomposition can be authored in the
+  current encoding -- this is not a derivation gap, it is a missing primitive";
+  that claim is retracted for `minimum` by this value existing.
+
+  THE OBVIOUS DUAL IS FALSE, and this is the only subtlety in the line.
+  `maxi` is  m >= t  <=>  \/_i (x_i >= t).  Flipping the connective to /\ and
+  keeping >= gives
+
+      m >= t  <=>  /\_i (x_i >= t)
+
+  which IS minimum, because min_i x_i >= t iff every x_i >= t.  The tempting
+  symbol-for-symbol dual, m <= t <=> /\_i (x_i <= t), is WRONG: min_i x_i <= t
+  holds as soon as SOME x_i <= t.  The generator's positive BC atom is >= and
+  not <=, so the connective is what changes and the relation is what stays --
+  rule3 (conjunction) in the seat rule4 (disjunction) holds for `maxi`, and
+  nothing else differs between the two values.
+  ========================================================================*)
+let minim  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)])]
+
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
 let xac = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], AC)
@@ -1147,6 +1174,34 @@ let _ = caveat := [
   "prints as `O_{} >= t` because m has no array position and printglobal_eventtex";
   "emits the subscript unconditionally. Both are legibility, not soundness." ];
     explainall [xbc;mbc] maxi "cata/maximum.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry. catalog/minimum.md said `encodable today,";
+  "not encoded`: session X-max ran this decomposition in a scratch copy and discarded";
+  "it. Encoded here, and re-measured by this session rather than quoted.";
+  "The decomposition is `maxi` with rule3 (conjunction) in rule4's seat and NOTHING";
+  "else changed: m >= t <=> /\\_i (x_i >= t). The symbol-for-symbol dual";
+  "m <= t <=> /\\_i (x_i <= t) is FALSE -- min_i x_i <= t holds as soon as SOME x_i";
+  "does -- so the connective flips and the relation does not.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured";
+  "instead by exhaustive enumeration of every assignment with O = min_i X_i and";
+  "X_i in [[1,m]], for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED, which is where the";
+  "shipped alldifferent rule fails (W1-T19).";
+  "ALL FOUR RULES SOUND, no counterexample anywhere. Firing counts at n,m <= 4 are";
+  "2438 / 349 / 686 / 1098 in file order; at n,m <= 5, 37329 / 4158 / 7995 / 18204;";
+  "at n = 1 alone 35 / 20 / 35 / 20 firings and 0 failures. ALL FOUR MINIMAL over the";
+  "sweep range: every premise, dropped, produces a counterexample (drop counts at";
+  "n,m <= 5: 48438 / 37950 and 37329 / 86388 / 7995).";
+  "ONE HONEST QUALIFICATION, which maximum's dual does not have: restricted to n = 1";
+  "ALONE, rule 2's first premise (forall i' <> i: X_i' >= t) is vacuous and droppable,";
+  "so minimality of rule 2 is a statement about the range swept, not about n = 1.";
+  "Soundness is unaffected -- rule 2's other premise O < t carries the content.";
+  "Firing counts are per (assignment, free index) pair, and an index the rule itself";
+  "quantifies is NOT free: rules 3 and 4 range over t only, rules 1 and 2 over (i,t).";
+  "G2 COST, inherited from maximum verbatim: m is printed as O -- var_name has no";
+  "constructor for a constraint's own scalar bound -- and as `O_{} >= t`, because m";
+  "has no array position and printglobal_eventtex emits the subscript unconditionally." ];
+    explainall [xbc;mbc] minim "cata/minimum.tex"
 
 (*W1-T3 — the run's own census. Nothing here changes a rule; it stops the
   generator from being silent about what it discarded.*)

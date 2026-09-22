@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **B** — `B no-literature + solver-native`, ecodes `['E2']` (shared row with `maximum`) |
-| **Status** | `encodable today, not encoded` — **there is no gap to name**. The decomposition is `maximum`'s with one constructor changed; it was written and run in a scratch copy of the generator, and it works (below). It is not in `explenation generator.ml` and there is no `cata/minimum.tex` |
-| **Generated** | **0** rules shipped. **4** rules in the scratch run, all sound and minimal — not committed, because `cata/minimum.tex` was outside session X-max's ownership |
-| **Validator** | out of scope: nothing in `cata/` to validate. It would be out of reach anyway — `validator.ml`'s entry lists are hardcoded and it never scans `cata/` (**W1-T18**) |
+| **Status** | `generated, unvalidated` *by this catalog's instrument* — `make validate` cannot see this file (**W1-T18**). Measured by a second instrument: all **4** rules **SOUND** over every assignment at every `n,m ∈ {1,2,3,4,5}`, **`n = 1` included**, and all **4** **MINIMAL** over that range. See Validator. Was `encodable today, not encoded` until this session encoded it |
+| **Generated** | **4** rules in `cata/minimum.tex` — **new 2026-09-22** (session A-1), the artifact X-max ran in scratch and could not commit |
+| **Validator** | **not covered — the validator cannot see this file.** `make validate` (run 2026-09-22) names no `minimum` entry, in scope or out: `validator.ml`'s entry lists are hardcoded and it never scans `cata/`. That is **W1-T18** |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:196` records the literature column as `none found` |
-| **Last measured** | 2026-09-22, scratch run of a modified generator copy plus an exhaustive assignment sweep. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
+| **Last measured** | 2026-09-22 (session A-1), `make check`, `grep -o '\frac' cata/minimum.tex \| wc -l`, and this session's own exhaustive assignment sweep with per-premise droppability. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
 
 ## Constraint
 
@@ -53,9 +53,11 @@ cell reads, verbatim: **native** (`minimum.cpp`) **[C]**. Unlike its row-mate
 
 ## Decomposition used here
 
-**Generator value:** none, and that is now a matter of nobody having typed it rather than
-nobody having been able to.
-**Emitted by:** nothing. There is no `explainall … "cata/minimum.tex"` call.
+**Generator value:** `minim`, `explenation generator.ml:1086`.
+**Emitted by:** `explainall [xbc;mbc] minim "cata/minimum.tex"`, line **1204**. The seed
+`mbc` — the constraint's own bound variable as a one-index `BC` event — is line **1106**; it
+was added for [`maximum`](maximum.md) and is not `maximum`-specific, which is the whole
+reason this entry cost one line.
 **Spec:** `decomps/maximum.md`, which covers this name and, since 2026-09-22, states the
 decomposition rather than declaring it impossible.
 **Shape:** [`maximum`](maximum.md)'s three-step channel with `rule3` (∧) in place of `rule4`
@@ -75,15 +77,19 @@ word changed from `maxi`.
 
 ## Scope of this entry
 
-**Events the generator was asked to explain:** **none in the shipped generator.** In the
-scratch run, four — `X_i ≥ t`, `X_i < t`, `O ≥ t`, `O < t` — the same seeds `maximum` uses.
+**Events the generator was asked to explain:** four — `X_i ≥ t`, `X_i < t`, `O ≥ t`, `O < t`
+— the same two seeds `maximum` uses, `xbc` and `mbc`.
 
 | event | candidates | rules emitted | dropped |
 |---|---|---|---|
-| `X_{i} \geq t` | 1 | **1** (scratch only) | none |
-| `X_{i}<t` | 1 | **1** (scratch only) | none |
-| `O_{} \geq t` | 1 | **1** (scratch only) | none |
-| `O_{}<t` | 1 | **1** (scratch only) | none |
+| `X_{i} \geq t` | 1 | **1** | none |
+| `X_{i}<t` | 1 | **1** | none |
+| `O_{} \geq t` | 1 | **1** | none |
+| `O_{}<t` | 1 | **1** | none |
+
+No `F` discard, no branch cut by cycle detection, no duplicate, no undefined index set, no
+empty premise, no index bound twice — the same clean sheet [`maximum`](maximum.md) has, read
+off the `%% generator diagnostics (W1-T3)` footer of `cata/minimum.tex`.
 
 ### The claim this entry overturns
 
@@ -101,11 +107,9 @@ overturns, and why it was wrong"; it is not repeated here.
 
 ## Generated rules
 
-**None shipped.** There is no `cata/minimum.tex`.
+`grep -o '\frac' cata/minimum.tex | wc -l` → **4**, measured 2026-09-22.
 
-**In the scratch run** (session X-max, 2026-09-22: a copy of `explenation generator.ml` with
-the value above added and one `explainall` call; run to completion, output read, copy
-discarded). Four rules, the exact duals of `maximum`'s:
+The exact duals of `maximum`'s, in file order:
 
 | # | rule | verdict (second instrument; **not** `make validate`) |
 |---|---|---|
@@ -114,36 +118,65 @@ discarded). Four rules, the exact duals of `maximum`'s:
 | 3 | `∀i ∈ [[1,n]]: X_i ≥ t`  ⊢  `O ≥ t` | **SOUND**, **MINIMAL** |
 | 4 | `∃i ∈ [[1,n]]: X_i < t`  ⊢  `O < t` | **SOUND**, **MINIMAL** |
 
-Measured by exhaustive enumeration of every assignment satisfying `O = min_i X_i` with
-`X_i ∈ [1,m]`, for every `n, m ∈ {1,2,3,4,5}` — **`n = 1` included**, which is where the
-shipped `alldifferent` rule was found to fail (`catalog/README.md`, W1-T19). **0
-counterexamples** on all four; firing counts **37329 / 4158 / 7995 / 18204**; every premise
-needed, so none is droppable and all four are minimal. Same instrument as
-[`maximum`](maximum.md), whose entry describes it in full.
+Rule 2 is the useful one and is the mirror of `maximum`'s rule 1: the bound is strictly below
+`t` and every *other* variable is at least `t`, so this variable must carry the bound. Rules 3
+and 4 are the bound's own two directions; rule 1 is the cheap downward propagation.
 
-**These verdicts describe a rule set that is not in the repository.** They are here so that
-whoever lands `minimum` knows what to expect and can tell a regression from a surprise — not
-as a claim about a shipped artifact. Nothing here is "validated" and nothing here is
-"correct".
+### How the verdicts were obtained
+
+**This session's own sweep, not `make validate`, and not X-max's numbers quoted.** Exhaustive
+enumeration of every assignment satisfying `O = min_i X_i` with `X_i ∈ [1,m]`, for every
+`n, m ∈ {1,2,3,4,5}` — **`n = 1` included**, which is where the shipped `alldifferent` rule
+was found to fail (`catalog/README.md`, W1-T19).
+
+**0 counterexamples on all four rules, at every size swept.** Firing counts at `n,m ≤ 4`:
+**2438 / 349 / 686 / 1098**; at `n,m ≤ 5`: **37329 / 4158 / 7995 / 18204**; at `n = 1` alone:
+**35 / 20 / 35 / 20** firings, **0** failures.
+
+A firing is one *(assignment, free index)* pair, and an index the rule itself quantifies is
+**not** free: rules 3 and 4 range over `t` only, rules 1 and 2 over `(i,t)`. Stating this
+matters — counting rules 3 and 4 over `(i,t)` as well inflates them to 37329 / 86388 and is
+the first number this session computed before fixing the instrument. With the convention
+fixed, the `n,m ≤ 5` counts reproduce session X-max's scratch figures **exactly**, which is
+the cross-check that the two instruments agree.
+
+**Minimality** was measured by dropping each premise in turn and re-running: every drop
+produces a counterexample, so no premise is droppable and all four rules are minimal over the
+range swept. Drop counts at `n,m ≤ 5`: rule 1 **48438** failures, rule 2 **37950** and
+**37329**, rule 3 **86388**, rule 4 **7995**. The `i ∈ [[1,n]]` conjunct is the range
+declaration of the conclusion's own free index, not a premise literal, and is not counted —
+the reading `catalog/maximum.md` and `catalog/at_most.md` both state.
+
+**One qualification `maximum` does not need.** Restricted to `n = 1` **alone**, rule 2's first
+premise `∀i'≠i: X_{i'} ≥ t` is vacuously true and therefore droppable, so rule 2's minimality
+is a statement about the range swept and not about `n = 1` in isolation. Soundness at `n = 1`
+is unaffected — the other premise `O < t` carries the content, exactly as `maximum`'s rule 1
+is saved at `n = 1` by its `O ≥ t`. This is said out loud because the catalog has been burned
+by an `n = 1` hole once already.
 
 ## Status
 
-**`encodable today, not encoded`**
+**`generated, unvalidated`** — by this catalog's instrument, exactly as
+[`maximum`](maximum.md) is, and for the same reason: `make validate` cannot see the file.
 
-`catalog/README.md` added this status on 2026-09-21 for exactly this situation: "the current
-format can already express the decomposition, but nothing in the generator does it, so **there
-is no gap to name**. Use this rather than inventing a G-number to satisfy the row above."
-`minimum` is now its second case, after `strictly_increasing`/`strictly_decreasing`, and it is
-a stronger case than those: the decomposition has been written and run, not merely judged
-expressible.
+Three things this status does and does not say:
 
-**It is not `nothing generated — blocked on G3`**, which is what this file said before
-2026-09-22. Nor is it `generated, unvalidated` — nothing is generated in the repository.
+1. **It is not `validated: sound and minimal at n,m ∈ {2,3,4}`.** That legend entry means
+   every rule got `SOUND and MINIMAL` from `make validate`, and no rule here went through
+   `make validate` at all. Borrowing the string would misattribute the measurement.
+2. **It is not the legend's plain "nobody has looked" either.** Somebody looked, over a wider
+   range than the validator's (`{1,2,3,4,5}` rather than `{2,3,4}`), with per-premise
+   droppability. The catalog has no status for that; inventing a seventh is not the fix,
+   making `make validate` see new entries (**W1-T18**) is.
+3. **It is no longer `encodable today, not encoded`**, which is what this file said between
+   2026-09-22 morning and this session, nor `nothing generated — blocked on G3`, which is what
+   it said before that. The first retraction was X-max's, the second is this session's, and
+   they are different kinds: G3 was a claim about the *language*, `not encoded` a claim about
+   the *repository*. Only the second was ever fixable by typing.
 
-**What it takes to land:** one `let minim = …` in the decomposition table, one
-`let _ = explainall [xbc;mbc] minim "cata/minimum.tex"`, one regenerated golden, and the
-`%% CAVEAT` numbers above. `mbc`, the scalar-bound seed event, already exists
-(`explenation generator.ml:1079`) — it was added for `maximum` and is not `maximum`-specific.
+**`encodable today, not encoded` was a true status that stayed true for a few hours.** That is
+the pattern worth recording: it names work nobody has done, so it is the one status in the
+legend that a session can close by doing it rather than by discovering something.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -163,9 +196,9 @@ web-searching ahead of the index.
 
 | gap | what it blocks here |
 |---|---|
-| `G3` | **nothing. Refuted for this constraint** by the scratch run, on the same evidence as [`maximum`](maximum.md). `m ≤ x_i` factors through a shared threshold; the order encoding performs the factoring; no variable-vs-variable atom survives |
-| `G2` | the **legibility cost**, unchanged and inherited: `m` would print as `O` (`var_name`, `explenation generator.ml:3`, has no constructor for a constraint's own scalar bound) and as `O_{} ≥ t` with empty subscript braces. Both LaTeX no-ops, neither a blocker |
-| — | **not a gap: nobody has written the two lines.** That is what `encodable today, not encoded` means |
+| `G3` | **nothing. Refuted for this constraint** by the shipped artifact, on the same evidence as [`maximum`](maximum.md). `m ≤ x_i` factors through a shared threshold; the order encoding performs the factoring; no variable-vs-variable atom survives |
+| `G2` | the **legibility cost**, inherited and now actually paid: `m` **does** print as `O` (`var_name`, `explenation generator.ml:3`, has no constructor for a constraint's own scalar bound) and **does** print as `O_{} ≥ t` with empty subscript braces. Both LaTeX no-ops, neither a blocker |
+| — | **not a gap: `make validate` cannot see this entry.** That is **W1-T18**, a tool limitation |
 
 Extensions: `CHRISTMAS_LIST.md:196` routes this constraint through **E2** ("var-var atoms").
 On this evidence **`minimum` needs no extension** — it is E0, and the E2 routing is a
@@ -174,20 +207,29 @@ the discrepancy is reported.
 
 ## How this entry was produced
 
-- A copy of `explenation generator.ml` in a scratch directory, with `minim` added and one
-  `explainall` call; run under OCaml 5.1.1 in the `baguette` switch; exit 0, empty stderr;
-  `cata/minimum.tex` produced and read. **The copy was discarded and nothing in the
-  repository was changed by it** — `cata/minimum.tex` was outside session X-max's ownership.
+- `explenation generator.ml` edited (this session owns it): decomposition value `minim` added
+  at line **1086**, `caveat` block and `explainall` call at **1204**. Run under OCaml 5.1.1 in
+  the `baguette` switch; exit 0, empty stderr; `cata/minimum.tex` produced and committed.
 - An exhaustive assignment sweep over `O = min_i X_i` for every `n,m ∈ {1,2,3,4,5}`,
-  including `n = 1`, with per-premise droppability; counts quoted from the run.
-- `make check` and `make validate` were run for this session's shipped change
-  ([`maximum`](maximum.md)) and are recorded there. Neither is affected by this entry, which
-  ships nothing.
+  including `n = 1`, with per-premise droppability, **written and run by this session**;
+  counts quoted from the run, not from X-max's report. They agree with X-max's at `n,m ≤ 5`.
+- `make check` (run 2026-09-22, redirected then grepped) → **GATE PASSED**, exit 0, **20**
+  `ok` lines and no `FAIL`. All **18** pre-existing non-orphaned `cata/*.tex` reproduce
+  byte-for-byte, as does `exp.tex`; `minimum.tex` is the 19th and is new, reported at 4
+  frac-occurrences; the orphan set is unchanged (`sum.tex`, still skipped). **The warning
+  census did not move**: 0 / 6 / 36 / 61, identical to the pre-change run — `minim` introduces
+  no new constructor site.
+- `make validate` (run 2026-09-22, redirected then grepped) → **34 rules checked in 11
+  entries: 13 SOUND and MINIMAL, 21 flagged; 4 rules in 5 entries out of scope.** Identical to
+  the run before this change, and `grep -ci minimum` over it → **0**: the validator never names
+  this entry. That is the direct measurement of W1-T18.
 - `CHRISTMAS_LIST.md:196`, `:106-109` read → the literature cell, the solver cell and its
   `minimum.cpp` parenthetical, the legend.
 - `tools/data/minizinc-2.10.1-globals.txt:94` read → the name.
-- `explenation generator.ml` read → `var_name` at line **3**, `mbc` at **1079**, `maxi` at
-  **1059**. Line numbers verified by `grep -n` after this session's final edit, per W1-T14.
+- `explenation generator.ml` read → `var_name` at line **3**, `maxi` at **1059**, `minim` at
+  **1086**, `mbc` at **1106**. Line numbers verified by `grep -n` after this session's final
+  edit, per W1-T14. **`mbc` moved from 1079 to 1106** when `minim` and its comment were
+  inserted above it; the previous version of this file quoted 1079 and was right when written.
 - **The Tier row was not re-measured**; it is carried from the 2026-09-21
   `python3 tools/mzn_coverage.py --rank --json` run recorded in the previous version of this
   file.
@@ -199,6 +241,8 @@ the discrepancy is reported.
    edited; reported.
 3. **`decomps/_shapes.md`'s "Not covered by any shape" table** still lists `minimum` among
    five G3-blocked constraints. Not edited; reported.
+5. **The `Makefile`'s validator comment** says "2 rules in 5 entries" out of scope; measured
+   today it is **4**, unchanged by this entry. Stale number, not this session's file.
 4. **Inherited and kept from the previous version:** the stub's `Spec: none` field was wrong —
    this constraint is covered by `decomps/maximum.md`, whose title line names it.
    `tools/catalog_stub.py` matches filenames only.
