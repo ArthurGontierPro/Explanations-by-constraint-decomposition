@@ -91,6 +91,8 @@ session picks it up.
 | Review the lex/sequencing stubs (14) | those `catalog/<name>.md` only | R5 (2026-09-21) | 2026-09-21 |
 | Review the channelling/order stubs + `table` (12) | those `catalog/<name>.md` only | R6 (2026-09-21) | 2026-09-21 |
 | Compile the catalog into one readable LaTeX document | `tools/catalog_tex.py`, `catalog/catalog.tex`, `.gitignore` | T1 (2026-09-22) | 2026-09-22 |
+| Put the published explanations into the document | `tools/catalog_tex.py`, `catalog/catalog.tex` | T2 (2026-09-22) | 2026-09-22 |
+| Close G1 and G8 in the generator — **rule engine, sole owner** | `explenation generator.ml` + the goldens it regenerates | G-1 (2026-09-22) | 2026-09-22 |
 
 _**C1 RELEASED 2026-09-21.** `catalog/` created: `TEMPLATE.md`, `README.md`, and the first three entries (`alldifferent.md`, `cumulative.md`, `gcc.md`). Nothing outside `catalog/` was touched, and `catalog/_literature/**` was left untouched for C2. `make check` re-run: exit 0, gate passed. `make validate` re-run: **34 rules in 11 entries, 13 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**, 19/19 invariants, 11/11 controls. **C2 is still claimed.**_
 
@@ -1546,3 +1548,16 @@ legitimately reports rules living in `cata/cumulative.tex`, so the check only co
 cell names the entry's own file; and `cata/table.tex` has 0 rules but *is* one of the validator's
 11 entries, so counting entries by verdicts would have printed 10 for 11. Both are the kind of
 mismatch that would otherwise be "fixed" into a wrong number by a later session.
+
+### 2026-09-22 — the author's question: "where are the explanations?"
+
+Fair, and the answer is that there are **36 generated rules in 11 files, 13 validated**, and the
+document faithfully shows it. Two separate problems behind that, now dispatched separately:
+
+1. **The document omits explanations the repo already holds.** `catalog/_literature/` carries the
+   *published* rules for `alldifferent`, `cumulative` and `gcc`, sourced with QUOTED provenance,
+   and `tools/catalog_tex.py` never reads that directory — **my brief to T1 did not mention it**.
+   T2 fixes that.
+2. **The generator emits almost nothing**, and T1's own gap census says why: **G3 blocks 24
+   constraints, G8 blocks 13, G1 blocks 6.** G-1 closes the two cheapest (G1 and G8), which is
+   the shortest path from a status list to a catalog of actual rules.
