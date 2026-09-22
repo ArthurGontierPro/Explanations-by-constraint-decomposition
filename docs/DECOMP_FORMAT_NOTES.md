@@ -58,7 +58,13 @@ repeats.
   **not** factor: the obstruction there is a variable-valued *index*, and no `t` states both
   sides separately. So the honest blocked set is `sort` / `arg_sort` /
   `symmetric_all_different`, not `maximum` / `minimum` / `arg_max` / `arg_min` / `span`.
-  **The 25-entry width predates this test and is being re-audited (W1-T20).**
+  **RE-AUDITED 2026-09-22 (`docs/G3-AUDIT.md`): of the 25 claimants, 24 FACTOR, 0 do not, 1 is
+  uncertain (`arg_sort`) — G3's genuine blocked set is empty of its own claimants.** The lex
+  proof predates the `maximum` result: `incr` already ships `X_i ≤ X_{i+1}`, a var-var
+  comparison, validated 2/2. **The real blocker for the 15 lex entries is the `tied_i`
+  accumulated state (shape S5), never instantiated in the generator**, and `diffn`'s is
+  **G15**, not G3 — `OpShiftC` already ships in `cumul`. When an entry says "blocked on G3",
+  check it against the audit before believing it.
   `Global_event`/`ind_modifs` express `X_i = t` for `t` an index-derived domain value, never
   `X_i = Y_i` for two decision variables. This pilot sidesteps it by treating `count`'s `v` and
   `among`'s `s` as parameters (matching this project's own D-0003 choice to decompose for

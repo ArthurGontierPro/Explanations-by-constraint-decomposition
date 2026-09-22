@@ -201,7 +201,11 @@ resists extension — see D-0006.
   `I belongs to several types: ind_name var_name — The first one was selected.`
   `T` and `R` are likewise disambiguated by type. A site that means `var_name.I` (element's
   index variable) and gets `ind_name.I` is a silent semantic bug, not a compile error.
-- **`printind_name_list` and `printiopl_list` (lines 263–264) ignore their tail** — they
-  match `i::tl` and never use `tl`, so they print only the first index. The `…tex` siblings do
-  recurse, so this affects the plain-text path only. Two of the warnings at `-w +27+39` point
-  straight at it.
+- **`printind_name_list` ignores its tail, and it IS on the LaTeX path.** It matches `i::tl` and
+  never uses `tl` (l.553), so it prints only the first index — and **`printglobal_eventtex` calls
+  it at l.587.** There is **no `printind_name_listtex` sibling**; only `printiopl_list` has one.
+  This bullet said "plain-text path only" until 2026-09-22 and that was **wrong**. It has never
+  fired because `table` is the only shipped decomposition with a two-position index and it has
+  had 0 rules since W1-T2 — so the first matrix constraint that generates anything will silently
+  print `X_{r}` where `X_{r,i}` was meant. **W1-T21.** (This bullet cited lines 263–264 when it
+  was written; re-measure before citing — W1-T14.)
