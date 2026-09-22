@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **B** — `B no-literature + solver-native`, ecodes `['E2']` (shared row with `maximum`) |
-| **Status** | `nothing generated — blocked on G3` |
-| **Generated** | **0** rules — there is no `cata/minimum.tex` and no generator value for it |
-| **Validator** | out of scope: nothing to validate. `make validate` reads `cata/*.tex` and this constraint has no artifact there |
+| **Status** | `encodable today, not encoded` — **there is no gap to name**. The decomposition is `maximum`'s with one constructor changed; it was written and run in a scratch copy of the generator, and it works (below). It is not in `explenation generator.ml` and there is no `cata/minimum.tex` |
+| **Generated** | **0** rules shipped. **4** rules in the scratch run, all sound and minimal — not committed, because `cata/minimum.tex` was outside session X-max's ownership |
+| **Validator** | out of scope: nothing in `cata/` to validate. It would be out of reach anyway — `validator.ml`'s entry lists are hardcoded and it never scans `cata/` (**W1-T18**) |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:196` records the literature column as `none found` |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json` |
+| **Last measured** | 2026-09-22, scratch run of a modified generator copy plus an exhaustive assignment sweep. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
 
 ## Constraint
 
@@ -21,9 +21,8 @@
 `m = min_i(x_i)`: `m` is the smallest element of `x`.
 
 **Provenance of the signature:** not vendored in this repo.
-`tools/data/minizinc-2.10.1-globals.txt:94` carries the *name* only. The decomposition
-`∀i: m ≤ x_i` and `∃i: m = x_i` is quoted from `decomps/maximum.md`, which states it for this
-constraint; the MiniZinc type signature and argument order above are recall.
+`tools/data/minizinc-2.10.1-globals.txt:94` carries the *name* only. The MiniZinc type
+signature and argument order above are recall.
 
 ## Published explanation
 
@@ -44,159 +43,162 @@ session.
 
 | | |
 |---|---|
-| Chuffed | native — see the caveat below |
+| Chuffed | native (`minimum.cpp`) |
 | Geas | absent |
 | Choco LCG | `[C]` present |
 
 Source: `CHRISTMAS_LIST.md:196`, solver-column legend at `CHRISTMAS_LIST.md:106-109`. The
-cell reads, verbatim: **native** (`minimum.cpp`) **[C]**.
-
-**The named file is `minimum.cpp` and the row carries two constraint names.** So the
-citation directly supports "`minimum` has a native explaining propagator in Chuffed"; that
-`maximum` does too is an inference from the shared row, not from the parenthetical. It is a
-very likely inference — a max propagator is a min propagator with the sign flipped — but
-this entry marks it as an inference rather than letting the stub's flat `Chuffed | native`
-stand for a citation.
+cell reads, verbatim: **native** (`minimum.cpp`) **[C]**. Unlike its row-mate
+[`maximum`](maximum.md), *this* name is the one the parenthetical actually supports.
 
 ## Decomposition used here
 
-**Generator value:** none. There is no such value in `explenation generator.ml`
-(`grep -c -i 'minimum' 'explenation generator.ml'` → `0`) and no
-`explainall … "cata/minimum.tex"` call.
-**Emitted by:** nothing.
-**Spec:** `decomps/maximum.md` — titled `# maximum, minimum, arg_max, arg_min, sort,
-arg_sort`, so it covers this name, in its first section.
-**Shape: none.** `decomps/_shapes.md`'s "Not covered by any shape" table lists exactly five
-constraints — `maximum`, `minimum`, `arg_max`, `arg_min`, `span` — all attributed to
-**G3**, with the note that they "are not 'unshaped work'; they are a missing primitive".
+**Generator value:** none, and that is now a matter of nobody having typed it rather than
+nobody having been able to.
+**Emitted by:** nothing. There is no `explainall … "cata/minimum.tex"` call.
+**Spec:** `decomps/maximum.md`, which covers this name and, since 2026-09-22, states the
+decomposition rather than declaring it impossible.
+**Shape:** [`maximum`](maximum.md)'s three-step channel with `rule3` (∧) in place of `rule4`
+(∨):
+
+| ctr | schema | meaning |
+|---|---|---|
+| 1 | `rule1` | `X_i ≥ t ⇔ B1_{i,t}` (BC) |
+| 2 | `rule3` | `B2_t ⇔ ⋀_{i ∈ [[1,n]]} B1_{i,t}` |
+| 3 | `rule1` | `O ≥ t ⇔ B2_t` (BC) |
+
+**The dual is `m ≥ t ⇔ ⋀_i (x_i ≥ t)`, and this was checked rather than assumed** — the
+natural-looking `m ≤ t ⇔ ⋀_i x_i ≤ t` is **false**, since `min_i x_i ≤ t` holds iff *some*
+`x_i ≤ t`. The generator's positive `BC` atom is `≥`, not `≤`, so the conjunctive form is the
+one that fits the language, and `rule3` is the constructor that expresses it. One line, one
+word changed from `maxi`.
 
 ## Scope of this entry
 
-**Events the generator was asked to explain:** **none.** No decomposition of this name
-exists, so there is no `%% generator diagnostics (W1-T3)` footer and no candidate count.
-**Nor could one be authored**: this is the rarer case in the catalog where the blockage is
-upstream of the decomposition, not downstream of it.
+**Events the generator was asked to explain:** **none in the shipped generator.** In the
+scratch run, four — `X_i ≥ t`, `X_i < t`, `O ≥ t`, `O < t` — the same seeds `maximum` uses.
 
 | event | candidates | rules emitted | dropped |
 |---|---|---|---|
-| `X_{i} \geq t` / `M \geq t` (would be) | — | **0** | not run: both conjuncts compare two decision variables (G3) |
+| `X_{i} \geq t` | 1 | **1** (scratch only) | none |
+| `X_{i}<t` | 1 | **1** (scratch only) | none |
+| `O_{} \geq t` | 1 | **1** (scratch only) | none |
+| `O_{}<t` | 1 | **1** (scratch only) | none |
 
-**The block, verified against the type definitions rather than inferred.** Both conjuncts of
-`∀i: m ≤ x_i` and `∃i: m = x_i` compare `m` to `x_i` — **two decision variables** — never a
-variable against a domain-derived value. Reading the source:
+### The claim this entry overturns
 
-- `Global_event of bool*var_name*index list*consistancy` (`explenation generator.ml:50`)
-  carries **one** `var_name` and a list of `index`es;
-- `index` is `Ind of ind_name*ind_modifs list` (l.16) and `ind_name` is the closed enum
-  `I | T | P | R of int` (l.5);
-- the comparison target is therefore always an index-derived value — `printconstex` (l.509)
-  renders the event as `X_{…} = t` or `X_{…} ≥ t` with `t` an `ind_name`, and there is no
-  constructor anywhere in `event`, `decomp_event`, `ind_modifs` or `ind_op` that takes a
-  **second** `var_name` as the target.
+The previous version of this file said, quoting `decomps/maximum.md`:
 
-So the atom `m ≥ x_i` has no representation. `decomps/maximum.md` states this and this
-entry confirms it by the same method: **"No decomposition can be authored in the current
-encoding — this is not a derivation gap, it is a missing primitive."**
+> "No decomposition can be authored in the current encoding — this is not a derivation gap,
+> it is a missing primitive."
 
-**The one place in the repo that disagreed has been settled, and against the disagreement.**
-`decomps/span.md` claimed `span` was E0 by reusing `range`/`roots` as a ∀-bound-plus-∃-tight
-pair. `decomps/_shapes.md`'s "Contradictions" section resolves it: `range` and `roots` are
-Boolean **sums** (`rule6`/`rule7`), not quantifiers, so they are no precedent for min/max at
-all, and `span`'s min/max "is `minimum` under another name". The reading that stands is this
-one. That matters here because it means **no shipped entry is a template for `minimum`**,
-and a session looking for one will find `range`/`roots` and be misled.
+**That is false**, for `minimum` exactly as for `maximum`, and for the same reason: it
+reasoned from the direct decomposition (`∀i: m ≤ x_i`, `∃i: m = x_i`) and concluded about the
+constraint. The generator's `BC` literals already are the order encoding, under which the
+comparison between `m` and `x_i` **factors through a shared threshold** and every atom becomes
+variable-against-value. The full argument is in [`maximum`](maximum.md), "The claim this entry
+overturns, and why it was wrong"; it is not repeated here.
 
 ## Generated rules
 
-**None.** There is no `cata/minimum.tex` (`ls cata/` → 16 files, none of that name), so
-`grep -o '\frac'` has no file to count.
+**None shipped.** There is no `cata/minimum.tex`.
+
+**In the scratch run** (session X-max, 2026-09-22: a copy of `explenation generator.ml` with
+the value above added and one `explainall` call; run to completion, output read, copy
+discarded). Four rules, the exact duals of `maximum`'s:
+
+| # | rule | verdict (second instrument; **not** `make validate`) |
+|---|---|---|
+| 1 | `O ≥ t`  ⊢  `X_i ≥ t` | **SOUND**, **MINIMAL** |
+| 2 | `∀i'≠i ∈ [[1,n]]: X_{i'} ≥ t`, `O < t`  ⊢  `X_i < t` | **SOUND**, **MINIMAL** |
+| 3 | `∀i ∈ [[1,n]]: X_i ≥ t`  ⊢  `O ≥ t` | **SOUND**, **MINIMAL** |
+| 4 | `∃i ∈ [[1,n]]: X_i < t`  ⊢  `O < t` | **SOUND**, **MINIMAL** |
+
+Measured by exhaustive enumeration of every assignment satisfying `O = min_i X_i` with
+`X_i ∈ [1,m]`, for every `n, m ∈ {1,2,3,4,5}` — **`n = 1` included**, which is where the
+shipped `alldifferent` rule was found to fail (`catalog/README.md`, W1-T19). **0
+counterexamples** on all four; firing counts **37329 / 4158 / 7995 / 18204**; every premise
+needed, so none is droppable and all four are minimal. Same instrument as
+[`maximum`](maximum.md), whose entry describes it in full.
+
+**These verdicts describe a rule set that is not in the repository.** They are here so that
+whoever lands `minimum` knows what to expect and can tell a regression from a surprise — not
+as a claim about a shipped artifact. Nothing here is "validated" and nothing here is
+"correct".
 
 ## Status
 
-**`nothing generated — blocked on G3`**
+**`encodable today, not encoded`**
 
-`docs/DECOMP_FORMAT_NOTES.md:34` states G3 as "only variable-vs-domain-value comparisons
-exist, never variable-vs-variable", and `:88-89` adds that three independent families hit
-it — the counting pilot, `maximum`/`minimum`/`arg_max`/`arg_min`, and `lex_less` — which
-"make it load-bearing".
+`catalog/README.md` added this status on 2026-09-21 for exactly this situation: "the current
+format can already express the decomposition, but nothing in the generator does it, so **there
+is no gap to name**. Use this rather than inventing a G-number to satisfy the row above."
+`minimum` is now its second case, after `strictly_increasing`/`strictly_decreasing`, and it is
+a stronger case than those: the decomposition has been written and run, not merely judged
+expressible.
 
-**This is the strongest form of "nothing generated" in the catalog.** For
-[`inverse`](inverse.md) the value is writable and unwritten; for [`sort`](sort.md) an atom
-is unwritable but a shape exists; here there is **no shape**, because the first atom anyone
-would write cannot be typed. Closing G3 does not finish `minimum` either — somebody must
-then author the decomposition and decide how `∃i: m = x_i` is encoded, which the format's
-existing ∃ machinery (shape S4, `rule4`) can plausibly carry once the atom exists. That
-second step is unstarted.
+**It is not `nothing generated — blocked on G3`**, which is what this file said before
+2026-09-22. Nor is it `generated, unvalidated` — nothing is generated in the repository.
 
-**G2 applies to the name as well**: `var_name` (l.3) is `X | B of int | T | I | V | N | O`
-and none of its constructors means "this constraint's own scalar bound". `V` and `N` are
-`element`'s and `nvalue`'s. That is a legibility cost, not the blocker, and it is
-`docs/DECOMP_FORMAT_NOTES.md:23`'s G2 on a new constraint.
-
-**Nothing here is validated, flagged or refuted.** There is no artifact.
+**What it takes to land:** one `let minim = …` in the decomposition table, one
+`let _ = explainall [xbc;mbc] minim "cata/minimum.tex"`, one regenerated golden, and the
+`%% CAVEAT` numbers above. `mbc`, the scalar-bound seed event, already exists
+(`explenation generator.ml:1079`) — it was added for `maximum` and is not `maximum`-specific.
 
 ## Calibration (W3-T5, D-0013)
 
 **Verdict: no published rule.**
 
 `CHRISTMAS_LIST.md:196`'s literature column reads `none found`. Per `catalog/TEMPLATE.md`'s
-vocabulary that is `no published rule exists` — the searched-and-empty phrasing is stronger
-evidence for it than a bare `none`, not weaker. Not `pending sourcing`: no paper is cited.
+vocabulary that is `no published rule exists`. Not `pending sourcing`: no paper is cited.
 Not `out of reach`: that verdict needs a published premise to be out of reach of.
 
-**Worth recording beside it, because it changes what "no literature" means here:**
-`minimum` has a native explaining propagator in Chuffed and a `[C]` in Choco LCG. So, as
-with `element` and [`inverse`](inverse.md), explaining implementations exist without a paper
-describing them. Calibrating against an implementation is not possible from this repo: no
-solver source is vendored, and `CLAUDE.md` forbids web-searching ahead of the index.
+**Worth recording beside it:** `minimum` has a native explaining propagator in Chuffed —
+here the citation is direct, `minimum.cpp` — and a `[C]` in Choco LCG. So explaining
+implementations exist without a paper describing them. Calibrating against an implementation
+is not possible from this repo: no solver source is vendored, and `CLAUDE.md` forbids
+web-searching ahead of the index.
 
 ## Gaps
 
 | gap | what it blocks here |
 |---|---|
-| `G3` | **the wall, and a missing primitive rather than a derivation gap.** Only variable-vs-domain-value comparisons exist; `m ≥ x_i` compares two decision variables and cannot be typed (`docs/DECOMP_FORMAT_NOTES.md:34`, reinforced at `:88-89`; `decomps/_shapes.md`'s "Not covered by any shape" table) |
-| `G2` | a **legibility cost**: `var_name` (l.3) has no constructor for this constraint's own scalar bound, so `m` must borrow `V` or `N` (`docs/DECOMP_FORMAT_NOTES.md:23`) |
-| — | **not a gap: the decomposition is also unwritten.** Closing G3 leaves a second step nobody has taken |
+| `G3` | **nothing. Refuted for this constraint** by the scratch run, on the same evidence as [`maximum`](maximum.md). `m ≤ x_i` factors through a shared threshold; the order encoding performs the factoring; no variable-vs-variable atom survives |
+| `G2` | the **legibility cost**, unchanged and inherited: `m` would print as `O` (`var_name`, `explenation generator.ml:3`, has no constructor for a constraint's own scalar bound) and as `O_{} ≥ t` with empty subscript braces. Both LaTeX no-ops, neither a blocker |
+| — | **not a gap: nobody has written the two lines.** That is what `encodable today, not encoded` means |
 
-Extensions: **E2** (`CHRISTMAS_LIST.md:196`, route cell "**E2** (var-var atoms)").
-`CHRISTMAS_LIST.md:232-233` names `minimum` among the constraints E2 unlocks and calls E2
-the "biggest single unlock".
-Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
+Extensions: `CHRISTMAS_LIST.md:196` routes this constraint through **E2** ("var-var atoms").
+On this evidence **`minimum` needs no extension** — it is E0, and the E2 routing is a
+consequence of the retracted claim. `CHRISTMAS_LIST.md` is not this session's file to edit;
+the discrepancy is reported.
 
 ## How this entry was produced
 
-- `python3 tools/mzn_coverage.py --rank --json` → `minimum` in `B no-literature +
-  solver-native`, `ecodes: ['E2']`, `CHRISTMAS_LIST.md` line 196, section
-  `9. Ordering, sorting, channelling`.
-- `make validate` (run 2026-09-21, redirected then grepped) → 11 in-scope entries, none of
-  them this one. Totals: **34 rules checked in 11 entries: 13 SOUND and MINIMAL, 21
-  flagged; 2 rules in 5 entries out of scope.**
-- `ls cata/` → 16 files; no `minimum.tex`. `grep -c -i 'minimum' 'explenation generator.ml'`
-  → 0.
-- `explenation generator.ml` read, not run → `var_name` at **3**, `ind_name` at **5**,
-  `index` at **16**, `Global_event` at **50**, `printconstex` at **509**. These are the
-  evidence for G3 being a typing wall rather than an authoring gap.
-- `CHRISTMAS_LIST.md:196`, `:106-109` and `:232-233` read → the literature cell
-  (`none found`), the solver cell and its `minimum.cpp` parenthetical, the E2 route cell,
-  the legend, the "biggest single unlock" assessment.
+- A copy of `explenation generator.ml` in a scratch directory, with `minim` added and one
+  `explainall` call; run under OCaml 5.1.1 in the `baguette` switch; exit 0, empty stderr;
+  `cata/minimum.tex` produced and read. **The copy was discarded and nothing in the
+  repository was changed by it** — `cata/minimum.tex` was outside session X-max's ownership.
+- An exhaustive assignment sweep over `O = min_i X_i` for every `n,m ∈ {1,2,3,4,5}`,
+  including `n = 1`, with per-premise droppability; counts quoted from the run.
+- `make check` and `make validate` were run for this session's shipped change
+  ([`maximum`](maximum.md)) and are recorded there. Neither is affected by this entry, which
+  ships nothing.
+- `CHRISTMAS_LIST.md:196`, `:106-109` read → the literature cell, the solver cell and its
+  `minimum.cpp` parenthetical, the legend.
 - `tools/data/minizinc-2.10.1-globals.txt:94` read → the name.
-- `decomps/maximum.md` read → the two-conjunct decomposition and the "missing primitive"
-  statement; `decomps/_shapes.md` ("Not covered by any shape", and "Contradictions" 1 and 2)
-  read → the five unshaped constraints and the `span` resolution.
-- `docs/DECOMP_FORMAT_NOTES.md:23, 34, 88-89` read → G2, G3 and the "three independent
-  families" reinforcement.
-- **Nothing was compiled and no decomposition was written.** The source reading above is a
-  reading; the greps and `make validate` are runs.
+- `explenation generator.ml` read → `var_name` at line **3**, `mbc` at **1079**, `maxi` at
+  **1059**. Line numbers verified by `grep -n` after this session's final edit, per W1-T14.
+- **The Tier row was not re-measured**; it is carried from the 2026-09-21
+  `python3 tools/mzn_coverage.py --rank --json` run recorded in the previous version of this
+  file.
 
-**Discrepancies noted, and the ones in this file fixed.**
+**Discrepancies noted.**
 
-1. **Over-read stub field, corrected here: `Chuffed | native`.** The shared row's
-   parenthetical names `minimum.cpp`; attributing a Chuffed native to both names is an
-   inference from the row, and the entry now says so.
-2. **Wrong stub field, fixed here: `Spec: none — this constraint has no
-   `decomps/minimum.md`.`** It is covered by `decomps/maximum.md`, whose title line is
-   `# maximum, minimum, arg_max, arg_min, sort, arg_sort`. `tools/catalog_stub.py` matches
-   filenames only, so only the name that happens to match the file got a spec link.
-3. **`decomps/span.md`'s E0 claim is withdrawn by `decomps/_shapes.md`** and the file was
-   left in place for its next owner. Recorded here because a reader hunting a min/max
-   template will find it.
+1. **This file's own previous claim, retracted above.** Stated rather than overwritten.
+2. **`CHRISTMAS_LIST.md:196` routes `minimum` through E2.** On this evidence it is E0. Not
+   edited; reported.
+3. **`decomps/_shapes.md`'s "Not covered by any shape" table** still lists `minimum` among
+   five G3-blocked constraints. Not edited; reported.
+4. **Inherited and kept from the previous version:** the stub's `Spec: none` field was wrong —
+   this constraint is covered by `decomps/maximum.md`, whose title line names it.
+   `tools/catalog_stub.py` matches filenames only.
