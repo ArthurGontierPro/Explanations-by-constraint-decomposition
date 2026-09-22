@@ -1640,3 +1640,50 @@ file's numbered reasons beneath. That is the treatment the evidence deserved.
 **§1.3 "How much of the literature is here" is computed — 3 of 121 entries — and says in terms
 that it counts what this repo has sourced, not what the literature contains.** Without that line,
 three published rules could read as "the literature is covered".
+
+### 2026-09-22 — U1 and U2 (the entries G-1's change made stale) — CLOSED
+
+**U1** rewrote the four entries G-1's new rules touched: `at_most` → **flagged** (1 rule, sound,
+not minimal), `among` → **flagged** (2 rules, both unsound, with the G5-not-G8 point made three
+times), `all_different_except` → **generated, unvalidated**, `all_different_except_0` →
+**encodable today, not encoded** (`DExc (D 2, [EInt 0])` is writable and printable today, so no
+gap number needed inventing).
+
+**Its status choice for `all_different_except` is the model.** Not `flagged`, which asserts a
+verdict nobody issued; not `not validatable`, because the validator does not judge it out of
+scope — **it cannot see it** (W1-T18). The weakest *true* legend value carries the label and the
+prose carries what is known. It also declined to carry `alldifferent_except`'s figures into the
+`_0` entry, because the footer never says which values `v` ranged over and `0 ∉ [1,m]`.
+
+**And it found the thing that corrects every soundness claim in this repo: `docs/VALIDATOR.md:184`
+enumerates `n, m ∈ {2,3,4}`, not `n,m ≤ 4`.** `n = 1` and `m = 1` are never checked, and G-1's
+independent sweep found **30 counterexamples at `n = 1` for the shipped `alldifferent` rule** —
+which `make validate` certifies `SOUND and MINIMAL`. No contradiction: two instruments, two
+ranges, and the gap between them is exactly where a wrong rule hides. Now **W1-T19**.
+
+**U2** then swept both classes, and corrected my brief twice.
+
+1. **It refused to replace `n,m ≤ 4` everywhere**, because the phrase is *true* of the other
+   instrument — G-1's exhaustive check does run `n = 1`; that is how it found the 30
+   counterexamples. Rewriting its range would have falsified it. 11 files changed, 16 hits left
+   standing with the reason. That is the difference between a sweep and a `sed`.
+2. **It disagreed with U1 on `sliding_among`**, and it is right: `DSub` takes two *literal* `int`
+   endpoints (l.49), so a window at `[j, j+seq−1]` is still inexpressible. One of three
+   justifications withdrawn, the status kept.
+
+**The limit G-1's own report did not state: G1 is closed in one direction only.** `DCard` + `BPar`
+gives a sum's **≤** direction; the **≥** direction needs `|S| = n − c`, and `ind_bound` carries a
+literal integer. So `at_least`, `exactly` and the `global_cardinality_low_up` pair remain blocked.
+Recorded against G1 in the gap notes, where the next session will look.
+
+**Three-way split of the twenty G1/G8 entries:** now generable (`count`,
+`global_cardinality_closed`, `inverse_in_range`); still blocked with the real gap named
+(`at_least`, `exactly`, both `low_up` forms, `sliding_among`, `disjunctive_strict`); and **not
+stale at all** — `range`, `roots` and their `_fn` forms use `D of int`/`D2`, still refused,
+confirmed by measurement rather than assumed.
+
+**State after this wave:** 118/118 entries reviewed, **11 of 118 globals carry a generated rule**
+(was 8), 6 carry a validated one, `catalog/catalog.tex` is **72 pages** and compiles, and
+`make check` passes. Two tool defects fixed on the way: `tools/catalog_index.py` printed the
+wrong arity range into the generated index and could not resolve an entry whose artifact has a
+different basename.
