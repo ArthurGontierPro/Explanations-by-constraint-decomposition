@@ -1,0 +1,1704 @@
+%% catalog/catalog.tex -- GENERATED. Do not hand-edit.
+%% Regenerate with: python3 tools/catalog_tex.py
+%% Generated: 2026-09-22 from commit 2053069
+%% Source: tools/catalog_tex.py, which reads tools/mzn_coverage.py
+%% --json (via tools/catalog_index.py), catalog/*.md, cata/*.tex and
+%% the output of `make validate`. Every number below is computed on
+%% every run; none of it is hand-typed.
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks,bookmarks=true]{hyperref}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\sloppy
+
+\newcommand{\entryfield}[2]{{\raggedright\textbf{#1}\quad #2\par}}
+\newcommand{\diag}[1]{{\small\itshape\raggedright #1\par}}
+%% A rule is copied verbatim from cata/*.tex. Some are wider than the page;
+%% scaling the box down keeps every token of the rule rather than rewrapping,
+%% reformatting or truncating it.
+\newcommand{\rulebox}[1]{%
+  \[\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}%
+    {$\displaystyle #1$}\]}
+
+\begin{document}
+\begin{titlepage}
+\vspace*{2cm}
+{\Huge\bfseries Explanation rules by constraint decomposition\par}
+\vspace{0.6em}
+{\LARGE The catalog, in one document\par}
+\vspace{1.4em}
+{\large Generated 2026-09-22 from commit \texttt{2053069} by \texttt{python3 tools/catalog\_tex.py}.\par}
+\vspace{1.6em}
+\hrule
+\vspace{1.2em}
+{\large\bfseries What this document claims\par}
+\textbf{It claims complete \emph{coverage}.} Every one of the 118 MiniZinc globals gets an entry with an honest status --- including \texttt{nothing generated, blocked on G6} and \texttt{encodable today, not encoded}, both of which are complete entries, not a hole. 118 of 118 entries with a known status is a checkable target and \texttt{tools/mzn\_coverage.py} measures the denominator.
+
+\textbf{It never claims complete \emph{enumeration}.} An entry lists the rules this method generated for the events the generator was asked to explain. It does \textbf{not} list every valid explanation of the constraint. That set is exponential for some entries even at fixed arity, and what ``complete for this constraint'' should mean is still \textbf{D-0008, open}.
+
+\emph{Both paragraphs above are lifted verbatim from \texttt{catalog/README.md} at generation time.}
+\vspace{1.0em}
+\hrule
+\vspace{1.2em}
+{\large\bfseries Headline figures, computed at generation time\par}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{118} MiniZinc release globals (\texttt{tools/mzn\_coverage.py}, release \texttt{2.10.1}); \textbf{118} of them have a \texttt{catalog/*.md} entry.
+\item \textbf{121} entry files in \texttt{catalog/}: \textbf{121} reviewed, \textbf{0} still carrying the auto-stub marker. (\textbf{3} of the files match no release global.)
+\item \textbf{8} of the 118 release globals have any generated rule; those files hold \textbf{24} rules. Across all of \texttt{cata/*.tex} there are \textbf{36} rules in \textbf{11} files.
+\item \texttt{make validate} checked \textbf{34} rules in \textbf{11} entries: \textbf{13} \texttt{SOUND and MINIMAL} (in 6 entries), \textbf{21} flagged. A further \textbf{2} rules in \textbf{5} entries are out of scope for the validator.
+\item \emph{Sound and minimal is a floor, not strength.} Minimality is premise-droppability. \texttt{all\_different}'s one rule is sound and minimal and only ever fires at $n=2$.
+\end{itemize}
+\vspace{0.6em}
+{\bfseries Entries blocked, by the code their Status row names first:}\par
+\texttt{G1}~6, \texttt{G2}~3, \texttt{G3}~24, \texttt{G4}~1, \texttt{G6}~1, \texttt{G7}~6, \texttt{G8}~13, \texttt{G10}~3, \texttt{G11}~4, \texttt{G12}~1, \texttt{G14}~3, \texttt{G15}~2, \texttt{G17}~2, \texttt{G18}~3, \texttt{E1}~1, \texttt{E2}~2, \texttt{E5}~8, \texttt{E6}~13, \texttt{E7}~3.
+\end{titlepage}
+\tableofcontents
+\clearpage
+\section{How this document was made}
+Every figure, tier, status, verdict and rule below is read from the repository at generation time. Nothing is hand-typed, because a hand-typed number here is a number that will be wrong next week.
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Tiers: \texttt{python3 tools/mzn\_coverage.py --rank --json}, reached through \texttt{tools/catalog\_index.py}, whose \texttt{ALIAS} table maps a \texttt{cata/} basename to a release global name.
+\item Statuses, calibration verdicts and "last measured" lines: the six-row header table at the top of each \texttt{catalog/*.md}, reproduced in full rather than summarised.
+\item Rules: \texttt{cata/*.tex}, copied verbatim. This document does not re-render a rule, and the rule count is occurrences of \texttt{\textbackslash{}frac}, never \texttt{grep -c} and never \texttt{wc -l} (\texttt{CLAUDE.md}, ``Traps'').
+\item Verdicts: one \texttt{make validate} run, parsed from its own output.
+\item The claims paragraphs, the status legend and the calibration vocabulary: \texttt{catalog/README.md}.
+\end{itemize}
+A verdict is never written as ``correct''. The six status values and the six calibration verdicts below are the only vocabulary used.
+\subsection{Status legend}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.32\textwidth}>{\raggedright\arraybackslash}p{0.62\textwidth}@{}}
+\hline\endhead
+\texttt{validated: sound and minimal at n,m <= 4} & every generated rule in the entry got \texttt{SOUND and MINIMAL} from \texttt{make validate}, at the sizes \texttt{docs/VALIDATOR.md} enumerates \\[0.3em]
+\texttt{partly validated} & some rules \texttt{SOUND and MINIMAL}, some flagged. The per-rule verdicts are in the entry \\[0.3em]
+\texttt{flagged} & every generated rule is flagged: \texttt{UNSOUND}, \texttt{AMBIGUOUS}, \texttt{VACUOUS}, \texttt{UNSOUND(firing)} or \texttt{NOT MINIMAL} \\[0.3em]
+\texttt{not validatable} & rules exist in \texttt{cata/} but the validator reports the entry out of scope, with a machine-printed reason (an undefined \texttt{D\_k}, an unparsed index equation, an argument that appears in no atom) \\[0.3em]
+\texttt{generated, unvalidated} & rules exist and no verdict has been obtained. Distinct from \texttt{not validatable}: nobody has looked \\[0.3em]
+\texttt{nothing generated --- blocked on G<n>} & no decomposition is encodable, or the generator emits no rule. The gap number is required, not optional \\[0.3em]
+\texttt{encodable today, not encoded} & \textbf{added 2026-09-21.} The current format can already express the decomposition, but nothing in the generator does it, so \textbf{there is no gap to name}. Use this rather than inventing a G-number to satisfy the row above. First cases, found by R5: \texttt{strictly\_increasing} / \texttt{strictly\_decreasing}, a pure parameter shift on the validated \texttt{increasing} / \texttt{decreasing} pair --- \texttt{tplus}/\texttt{tmoin} already exist and the \texttt{Addint} printer case is already exercised \\[0.3em]
+\hline
+\end{longtable}
+\subsection{Calibration verdicts}
+A separate axis from the status legend: how a generated rule compares to the \emph{published} one, on implication strength. One of \texttt{agrees}, \texttt{weaker}, \texttt{stronger},
+\texttt{incomparable}, \texttt{out of reach}, \texttt{no published rule}.
+\section{Summary by tier}
+Tier is \texttt{tools/mzn\_coverage.py}'s priority ranking. ``Entries'' counts \texttt{catalog/*.md} files; ``rules'' counts \texttt{\textbackslash{}frac} occurrences in the matching \texttt{cata/*.tex}; ``sound+min'' counts rules this \texttt{make validate} run called \texttt{SOUND and MINIMAL}.
+\begin{longtable}{@{}lrrrrr@{}}
+\hline
+tier & globals & entries & with rules & rules & sound+min \\
+\hline\endhead
+A & 43 & 43 & 5 & 17 & 8 \\
+B & 8 & 8 & 0 & 0 & 0 \\
+C & 9 & 9 & 1 & 4 & 4 \\
+D & 19 & 19 & 2 & 3 & 1 \\
+unclassified & 11 & 11 & 0 & 0 & 0 \\
+out of scope & 28 & 28 & 0 & 0 & 0 \\
+\hline
+no release global & --- & 3 & 3 & 12 & 0 \\
+\hline
+\textbf{total} & 118 & 121 & 11 & 36 & 13 \\
+\hline
+\end{longtable}
+\section{Summary by entry}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth}l>{\raggedright\arraybackslash}p{0.32\textwidth}rrl@{}}
+\hline
+constraint & tier & status & rules & s+m & block \\
+\hline\endhead
+\texttt{all\_\allowbreak{}different} & D & validated: sound and minimal at n,m <= 4 & 1 & 1 & --- \\
+\texttt{all\_\allowbreak{}different\_\allowbreak{}except} & A & nothing generated --- blocked on G8 & --- & 0 & \texttt{G8} \\
+\texttt{all\_\allowbreak{}different\_\allowbreak{}except\_\allowbreak{}0} & A & nothing generated --- blocked on G8 & --- & 0 & \texttt{G8} \\
+\texttt{all\_\allowbreak{}disjoint} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{all\_\allowbreak{}equal} & A & validated: sound and minimal at n,m <= 4 & 2 & 2 & --- \\
+\texttt{alternative} & A & nothing generated --- blocked on G3, conditional on a sig... & --- & 0 & \texttt{G3} \\
+\texttt{among} & A & nothing generated --- blocked on G8 & 0 & 0 & \texttt{G8} \\
+\texttt{among\_\allowbreak{}fn} & unclassified & resolves to among.md, whose Status row reads nothing ge... & --- & 0 & \texttt{G8} \\
+\texttt{arg\_\allowbreak{}max} & out of scope & nothing generated --- blocked on E2 (int/bool variant) /... & --- & 0 & \texttt{E2} \\
+\texttt{arg\_\allowbreak{}min} & out of scope & nothing generated --- blocked on E2 (int/bool variant) /... & --- & 0 & \texttt{E2} \\
+\texttt{arg\_\allowbreak{}sort} & A & nothing generated --- blocked on G10 --- twice over; see St... & --- & 0 & \texttt{G10} \\
+\texttt{arg\_\allowbreak{}val} & A & nothing generated --- blocked on E1 --- and on G3 under the... & --- & 0 & \texttt{E1} \\
+\texttt{at\_\allowbreak{}least} & A & nothing generated --- blocked on G1 --- and on G8 for the c... & --- & 0 & \texttt{G1} \\
+\texttt{at\_\allowbreak{}most} & A & nothing generated --- blocked on G1 --- and on G8 for the c... & --- & 0 & \texttt{G1} \\
+\texttt{at\_\allowbreak{}most1} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{bin\_\allowbreak{}packing} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
+\texttt{bin\_\allowbreak{}packing\_\allowbreak{}capa} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
+\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load} & A & nothing generated --- blocked on G11 & --- & 0 & \texttt{G11} \\
+\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn} & unclassified & resolves to bin\_packing\_load.md, whose Status row reads... & --- & 0 & --- \\
+\texttt{bounded\_\allowbreak{}path} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{circuit} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{circuit\_\allowbreak{}opt} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{connected} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{cost\_\allowbreak{}mdd} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
+\texttt{cost\_\allowbreak{}regular} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
+\texttt{count} & A & nothing generated --- blocked on G8 --- the same wall as am... & --- & 0 & \texttt{G8} \\
+\texttt{count\_\allowbreak{}fn} & unclassified & resolves to count.md, whose Status row reads not review... & --- & 0 & --- \\
+\texttt{cumulative} & D & not validatable & 2 & 0 & --- \\
+\texttt{cumulative\_\allowbreak{}opt} & C & nothing generated --- blocked on G2 --- and on everything t... & --- & 0 & \texttt{G2} \\
+\texttt{cumulatives} & C & nothing generated --- blocked on G14 --- and on everything... & --- & 0 & \texttt{G14} \\
+\texttt{cumulatives\_\allowbreak{}opt} & C & nothing generated --- blocked on G14 --- and on everything... & --- & 0 & \texttt{G14} \\
+\texttt{dag} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{decreasing} & A & validated: sound and minimal at n,m <= 4 & 2 & 2 & --- \\
+\texttt{diffn} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{diffn\_\allowbreak{}k} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{diffn\_\allowbreak{}nonstrict} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{diffn\_\allowbreak{}nonstrict\_\allowbreak{}k} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{disjoint} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{disjunctive} & D & not validatable & --- & 0 & --- \\
+\texttt{disjunctive\_\allowbreak{}opt} & D & nothing generated --- blocked on G2 & --- & 0 & \texttt{G2} \\
+\texttt{disjunctive\_\allowbreak{}strict} & D & nothing generated --- blocked on G1 & --- & 0 & \texttt{G1} \\
+\texttt{disjunctive\_\allowbreak{}strict\_\allowbreak{}opt} & D & nothing generated --- blocked on G2 & --- & 0 & \texttt{G2} \\
+\texttt{distribute} & A & nothing generated --- blocked on G4 --- and on G8 for the c... & --- & 0 & \texttt{G4} \\
+\texttt{distribute\_\allowbreak{}fn} & unclassified & resolves to distribute.md, whose Status row reads not r... & --- & 0 & --- \\
+\texttt{element} & A & partly validated & 6 & 2 & --- \\
+\texttt{exactly} & A & nothing generated --- blocked on G1 --- and on G8 for the c... & --- & 0 & \texttt{G1} \\
+\texttt{geost} & out of scope & nothing generated --- blocked on E6/E7/E2 (unresolved, se... & --- & 0 & \texttt{E6} \\
+\texttt{global\_\allowbreak{}cardinality} & C & validated: sound and minimal at n,m <= 4 & 4 & 4 & --- \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed} & C & nothing generated --- blocked on G8 & --- & 0 & \texttt{G8} \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed\_\allowbreak{}fn} & unclassified & resolves to global\_cardinality\_closed.md, whose Status... & --- & 0 & \texttt{G8} \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}fn} & unclassified & resolves to gcc.md, whose Status row reads validated: s... & --- & 0 & --- \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}low\_\allowbreak{}up} & C & nothing generated --- blocked on G1 & --- & 0 & \texttt{G1} \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}low\_\allowbreak{}up\_\allowbreak{}closed} & C & nothing generated --- blocked on G1 & --- & 0 & \texttt{G1} \\
+\texttt{increasing} & A & validated: sound and minimal at n,m <= 4 & 2 & 2 & --- \\
+\texttt{int\_\allowbreak{}set\_\allowbreak{}channel} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{inverse} & B & encodable today, not encoded --- no gap blocks this decom... & --- & 0 & --- \\
+\texttt{inverse\_\allowbreak{}fn} & unclassified & resolves to inverse.md, whose Status row reads not revi... & --- & 0 & --- \\
+\texttt{inverse\_\allowbreak{}in\_\allowbreak{}range} & B & nothing generated --- blocked on G8 --- and, like inverse,... & --- & 0 & \texttt{G8} \\
+\texttt{inverse\_\allowbreak{}set} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{knapsack} & A & nothing generated --- blocked on G11 --- and on G4, G12, G1... & --- & 0 & \texttt{G11} \\
+\texttt{lex2} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{lex2\_\allowbreak{}strict} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greater} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greatereq} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greatereq\_\allowbreak{}orbitope} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}less} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}lesseq} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}chain\_\allowbreak{}lesseq\_\allowbreak{}orbitope} & A & nothing generated --- blocked on G3 --- and, for a chain of... & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}greater} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}greatereq} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}less} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{lex\_\allowbreak{}lesseq} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{link\_\allowbreak{}set\_\allowbreak{}to\_\allowbreak{}booleans} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{maximum} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{mdd} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
+\texttt{mdd\_\allowbreak{}nondet} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
+\texttt{member} & A & encodable today, not encoded for the fragment this repo... & --- & 0 & \texttt{G3} \\
+\texttt{minimum} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{network\_\allowbreak{}flow} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{neural\_\allowbreak{}net} & out of scope & nothing generated --- blocked on E7 & --- & 0 & \texttt{E7} \\
+\texttt{nvalue} & A & flagged & 5 & 0 & --- \\
+\texttt{nvalue\_\allowbreak{}fn} & unclassified & resolves to nvalues.md, whose Status row reads flagged... & --- & 0 & --- \\
+\texttt{partition\_\allowbreak{}set} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{piecewise\_\allowbreak{}linear} & out of scope & nothing generated --- blocked on E7 & --- & 0 & \texttt{E7} \\
+\texttt{piecewise\_\allowbreak{}linear\_\allowbreak{}non\_\allowbreak{}continuous} & out of scope & nothing generated --- blocked on E7 & --- & 0 & \texttt{E7} \\
+\texttt{range} & out of scope & nothing generated --- blocked on G8 & 0 & 0 & \texttt{G8} \\
+\texttt{range\_\allowbreak{}fn} & unclassified & resolves to range.md, whose Status row reads nothing ge... & --- & 0 & \texttt{G8} \\
+\texttt{reachable} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{regular} & D & nothing generated --- blocked on G7 & 0 & 0 & \texttt{G7} \\
+\texttt{regular\_\allowbreak{}nfa} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
+\texttt{regular\_\allowbreak{}regexp} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
+\texttt{roots} & out of scope & nothing generated --- blocked on G8 & 0 & 0 & \texttt{G8} \\
+\texttt{roots\_\allowbreak{}fn} & unclassified & resolves to roots.md, whose Status row reads nothing ge... & --- & 0 & \texttt{G8} \\
+\texttt{seq\_\allowbreak{}precede\_\allowbreak{}chain} & A & nothing generated --- blocked on G17 & --- & 0 & \texttt{G17} \\
+\texttt{sliding\_\allowbreak{}among} & A & nothing generated --- blocked on G8 --- twice over, and on... & --- & 0 & \texttt{G8} \\
+\texttt{sliding\_\allowbreak{}sum} & A & nothing generated --- blocked on G12 --- and on G13, which... & --- & 0 & \texttt{G12} \\
+\texttt{sort} & A & nothing generated --- blocked on G10 --- and on G9 and G3;... & --- & 0 & \texttt{G10} \\
+\texttt{sort\_\allowbreak{}fn} & unclassified & resolves to sort.md, whose Status row reads not reviewe... & --- & 0 & --- \\
+\texttt{span} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{steiner} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{strict\_\allowbreak{}lex2} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{strictly\_\allowbreak{}decreasing} & A & encodable today, not encoded --- the format can already e... & --- & 0 & --- \\
+\texttt{strictly\_\allowbreak{}increasing} & A & encodable today, not encoded --- the format can already e... & --- & 0 & --- \\
+\texttt{subcircuit} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{subgraph} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{sum\_\allowbreak{}pred} & A & encodable today, not encoded under reading (a) --- measur... & --- & 0 & \texttt{G14} \\
+\texttt{sum\_\allowbreak{}set} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
+\texttt{symmetric\_\allowbreak{}all\_\allowbreak{}different} & A & nothing generated --- blocked on G10 --- on the self-invers... & --- & 0 & \texttt{G10} \\
+\texttt{table} & D & nothing generated --- blocked on G6 & 0 & 0 & \texttt{G6} \\
+\texttt{tree} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{value\_\allowbreak{}precede} & B & nothing generated --- blocked on G17 & --- & 0 & \texttt{G17} \\
+\texttt{value\_\allowbreak{}precede\_\allowbreak{}chain} & B & nothing generated --- blocked on G7 --- and, behind it, on... & --- & 0 & \texttt{G7} \\
+\texttt{var\_\allowbreak{}perm\_\allowbreak{}sym} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{var\_\allowbreak{}sqr\_\allowbreak{}sym} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{weighted\_\allowbreak{}spanning\_\allowbreak{}tree} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
+\texttt{write} & A & nothing generated --- blocked on G18 --- and G18 is about t... & --- & 0 & \texttt{G18} \\
+\texttt{writes} & A & nothing generated --- blocked on G18 --- k times over, plus... & --- & 0 & \texttt{G18} \\
+\texttt{writes\_\allowbreak{}seq} & A & nothing generated --- blocked on G18 --- plus a second guar... & --- & 0 & \texttt{G18} \\
+\texttt{atleastnvalues} & --- & flagged & 4 & 0 & --- \\
+\texttt{atmostnvalues} & --- & flagged & 4 & 0 & --- \\
+\texttt{sum} & --- & flagged --- all 4 rules flagged & 4 & 0 & --- \\
+\hline
+\end{longtable}
+\section{Disagreements between computed and written numbers}
+Each line is a number this run computed from an artifact next to a number written into a file. Neither side is preferred here; the disagreement is reported so it can be settled by whoever owns the file.
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item bin\_packing\_load\_fn: quotes bin\_packing\_load.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G11''
+\item catalog/README.md's ``Coverage so far'' says 118 of 118 files -- 12 reviewed, 106 stubs; grepping every catalog/*.md for the stub marker today gives 121 entry files, 121 reviewed, 0 stubs
+\item count\_fn: quotes count.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G8 --- the same wall as among, measure...''
+\item distribute\_fn: quotes distribute.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G4 --- and on G8 for the counted value...''
+\item inverse\_fn: quotes inverse.md's Status as ``not reviewed''; that row now reads ``encodable today, not encoded --- no gap blocks this decomposition; no...''
+\item sort\_fn: quotes sort.md's Status as ``not reviewed''; that row now reads ``nothing generated --- blocked on G10 --- and on G9 and G3; see Status....''
+\end{itemize}
+\section{Entries that did not parse}
+None. All 121 entry files carry the full six-row header table \texttt{catalog/TEMPLATE.md} mandates.
+\clearpage
+\section{Entries with generated rules}
+The release globals this method has produced rules for, plus the files under \texttt{cata/} that match no release global. Rules are copied verbatim from \texttt{cata/*.tex}; this document does not re-render one.
+\subsubsection*{\texttt{all\_\allowbreak{}different}}
+\label{entry:alldifferent}
+\entryfield{Tier}{\textbf{D} --- literature + native explaining propagator}
+\entryfield{Status}{\texttt{validated: sound and minimal at n,m <= 4}}
+\entryfield{Generated}{1 rule in \texttt{cata/alldifferent.tex}}
+\entryfield{Validator}{1 \texttt{SOUND and MINIMAL}, 0 flagged}
+\entryfield{Calibration}{\textbf{weaker than published} (Downing et al. \S{}4); the \S{}5 and \S{}6 rules are \textbf{out of reach}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (re-run by C3, same verdicts) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/alldifferent.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/alldifferent.tex} (1, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for X\_\{i\}=t: 1 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{all\_\allowbreak{}equal}}
+\label{entry:allequal}
+\entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/mzn\_coverage.py --rank}, ecodes \texttt{E0})}
+\entryfield{Status}{\texttt{validated: sound and minimal at n,m <= 4}}
+\entryfield{Generated}{2 rules in \texttt{cata/allequal.tex}}
+\entryfield{Validator}{2 \texttt{SOUND and MINIMAL}, 0 flagged}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:121} records ``none''}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/allequal.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/allequal.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{X_{i} \geq t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{X_{i}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{cumulative}}
+\label{entry:cumulative}
+\entryfield{Tier}{\textbf{D} --- literature + native explaining propagator}
+\entryfield{Status}{\texttt{not validatable}}
+\entryfield{Generated}{2 rules in \texttt{cata/cumulative.tex}}
+\entryfield{Validator}{out of scope: \texttt{UNPARSED: index equation offset: t'=t-d\_\{i\}}, and the capacity appears in no atom}
+\entryfield{Calibration}{\textbf{out of reach} --- but, uniquely among the three entries, out of reach by \emph{gaps} (G11, G15), not by structure}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (re-run by C3, same out-of-scope reason) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/cumulative.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/cumulative.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{no verdict} --- the validator reports this entry out of scope\par}
+\rulebox{\frac{X_{i} \geq t',~t'=t-d_{i}~~~~X_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~X_{i'} \geq t',~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t'=t-d_{i'}}{X_{i} \geq t}}
+
+{\small\textbf{Rule 2.} \textsc{no verdict} --- the validator reports this entry out of scope\par}
+\rulebox{\frac{X_{i}<t',~t'=t+d_{i}~~~~X_{i'}<t',~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t'=t+d_{i}~~~~X_{i'} \geq t'',~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t''=t'-d_{i'},~t'=t+d_{i}}{X_{i}<t}}
+
+\diag{Validator, out of scope: the durations d\_i appear as uninterpreted symbols inside index equations (t'=t-d\_i), AND the resource capacity appears in no atom, so the rule is schematic over a parameter the artifact never states}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 3 candidate(s) -> 1 rule(s); dropped F 2, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 3 candidate(s) -> 1 rule(s); dropped F 2, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{decreasing}}
+\label{entry:decreasing}
+\entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/mzn\_coverage.py --rank}, ecodes \texttt{E0})}
+\entryfield{Status}{\texttt{validated: sound and minimal at n,m <= 4}}
+\entryfield{Generated}{2 rules in \texttt{cata/decreasing.tex}}
+\entryfield{Validator}{2 \texttt{SOUND and MINIMAL}, 0 flagged}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} records ``none specific''}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/decreasing.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/decreasing.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'} \geq t,~i'=i+1}{X_{i} \geq t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'}<t,~i'=i-1}{X_{i}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{element}}
+\label{entry:element}
+\entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/mzn\_coverage.py --rank}, ecodes \texttt{E0})}
+\entryfield{Status}{\texttt{partly validated}}
+\entryfield{Generated}{6 rules in \texttt{cata/element.tex}}
+\entryfield{Validator}{2 \texttt{SOUND and MINIMAL}, 4 \texttt{VACUOUS}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:194} records ``none found''}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/element.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/element.tex} (6, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{I=i~~~~V=t}{X_{i}=t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{I=i~~~~V \neq t}{X_{i} \neq t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall t,~t \in \llbracket1,m\rrbracket~~~~V=t,~\forall t,~t \in \llbracket1,m\rrbracket}{I \neq i}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i}=t,~\forall t,~t \in \llbracket1,m\rrbracket~~~~V \neq t,~\forall t,~t \in \llbracket1,m\rrbracket}{I \neq i}}
+
+{\small\textbf{Rule 5.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i}=t,~\forall i,~i \in \llbracket1,n\rrbracket~~~~I=i,~\forall i,~i \in \llbracket1,n\rrbracket}{V=t}}
+
+{\small\textbf{Rule 6.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket~~~~I=i,~\forall i,~i \in \llbracket1,n\rrbracket}{V \neq t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ I=i : 2 candidate(s) -> 0 rule(s); dropped F 2, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for I=i: 2 candidate(s), all blocked **\\ I \textbackslash{}neq i : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ V=t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ V \textbackslash{}neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality}}
+\label{entry:gcc}
+\entryfield{Tier}{\textbf{C} --- literature exists, solvers decompose it anyway}
+\entryfield{Status}{\texttt{validated: sound and minimal at n,m <= 4}}
+\entryfield{Generated}{4 rules in \texttt{cata/gcc.tex}}
+\entryfield{Validator}{4 \texttt{SOUND and MINIMAL}, 0 flagged --- \textbf{the only fully validated entry in the repo}}
+\entryfield{Calibration}{\textbf{out of reach} --- the published rule is a run-time flow cut / SCC; these 4 rules answer a different question}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (re-run by C3, same verdicts) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/gcc.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/gcc.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t} \geq p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t}<p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i}=t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t} \geq p}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t}<p}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{t\} \textbackslash{}geq p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\} \textbackslash{}geq p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ O\_\{t\}<p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\}<p bind an index name twice; the LaTeX is ambiguous (D-0009) **}
+\subsubsection*{\texttt{increasing}}
+\label{entry:increasing}
+\entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/mzn\_coverage.py --rank}, ecodes \texttt{E0})}
+\entryfield{Status}{\texttt{validated: sound and minimal at n,m <= 4}}
+\entryfield{Generated}{2 rules in \texttt{cata/increasing.tex}}
+\entryfield{Validator}{2 \texttt{SOUND and MINIMAL}, 0 flagged}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} records ``none specific''}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/increasing.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/increasing.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'} \geq t,~i'=i-1}{X_{i} \geq t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} SOUND and MINIMAL\par}
+\rulebox{\frac{X_{i'}<t,~i'=i+1}{X_{i}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{nvalue}}
+\label{entry:nvalues}
+\entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/mzn\_coverage.py --rank}, ecodes \texttt{E0})}
+\entryfield{Status}{\texttt{flagged}}
+\entryfield{Generated}{5 rules in \texttt{cata/nvalues.tex}}
+\entryfield{Validator}{0 \texttt{SOUND and MINIMAL}; 4 \texttt{VACUOUS}, 1 \texttt{UNSOUND} (the firing-reading kind)}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:130} records ``none''}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run) and \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/nvalues.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/nvalues.tex} (5, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket~~~~N=p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket~~~~N=p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket~~~~X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N=p}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} UNSOUND --- every other reading is vacuous, so the only reading that can ever fire is the unsound one\par}
+{\small\textit{counterexample:} n=2 m=2 X=(1,2) N=2 [nvalue] p=2\par}
+\rulebox{\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \neq p}}
+
+{\small\textbf{Rule 5.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \neq p}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ N=p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N=p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N \textbackslash{}neq p : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 2 emitted rule(s) for N \textbackslash{}neq p bind an index name twice; the LaTeX is ambiguous (D-0009) **}
+\subsection*{No matching release global \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{No matching release global (3)}
+\subsubsection*{\texttt{atleastnvalues}}
+\label{entry:atleastnvalues}
+\entryfield{Tier}{\textbf{not ranked} --- \texttt{atleast\_nvalue} is a \textbf{gccat} constraint, not a MiniZinc 2.10.1 global (see below). \texttt{tools/mzn\_coverage.py --rank} assigns it no tier because it is not in the release list}
+\entryfield{Status}{\texttt{flagged}}
+\entryfield{Generated}{4 rules in \texttt{cata/atleastnvalues.tex}}
+\entryfield{Validator}{0 \texttt{SOUND and MINIMAL}; 1 \texttt{NOT MINIMAL}, 1 \texttt{AMBIGUOUS}, 1 \texttt{UNSOUND}, 1 \texttt{VACUOUS}}
+\entryfield{Calibration}{\textbf{pending} --- \texttt{CHRISTMAS\_LIST.md} has \textbf{no row} for this constraint, so neither a citation nor a searched-and-empty finding exists in-repo}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run), \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{python3 tools/catalog\_index.py}, \texttt{cmp}/\texttt{md5sum} on the two \texttt{.tex} files}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/atleastnvalues.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/atleastnvalues.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND but NOT MINIMAL --- droppable: \#1 (X\_i' != t), \#3 (N >= p)\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~X_{i} \neq t',~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t',~t' \neq t,~t' \in \llbracket1,m\rrbracket,~t \in \llbracket1,m\rrbracket~~~~N \geq p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} AMBIGUOUS --- the .tex does not determine the rule\par}
+\rulebox{\frac{X_{i}=t',~\exists i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t',~t' \neq t,~t' \in \llbracket1,m\rrbracket,~t \in \llbracket1,m\rrbracket~~~~N<p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} UNSOUND --- every other reading is vacuous, so the only reading that can ever fire is the unsound one\par}
+{\small\textit{counterexample:} n=2 m=2 X=(1,2) N=0 [atleast] p=1\par}
+\rulebox{\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \geq p}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N<p}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for X\_\{i\}=t bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for X\_\{i\} \textbackslash{}neq t bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N \textbackslash{}geq p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N \textbackslash{}geq p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N<p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N<p bind an index name twice; the LaTeX is ambiguous (D-0009) **}
+\subsubsection*{\texttt{atmostnvalues}}
+\label{entry:atmostnvalues}
+\entryfield{Tier}{\textbf{not ranked} --- \texttt{atmost\_nvalue} is a \textbf{gccat} constraint, not a MiniZinc 2.10.1 global (see below). \texttt{tools/mzn\_coverage.py --rank} assigns it no tier because it is not in the release list}
+\entryfield{Status}{\texttt{flagged}}
+\entryfield{Generated}{4 rules in \texttt{cata/atmostnvalues.tex}}
+\entryfield{Validator}{0 \texttt{SOUND and MINIMAL}; 1 \texttt{NOT MINIMAL}, 1 \texttt{UNSOUND}, 2 \texttt{VACUOUS}}
+\entryfield{Calibration}{\textbf{pending} --- \texttt{CHRISTMAS\_LIST.md} has \textbf{no row} for this constraint, so neither a citation nor a searched-and-empty finding exists in-repo}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate} (E2's own run), \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{python3 tools/catalog\_index.py}, \texttt{cmp}/\texttt{md5sum} on the two \texttt{.tex} files}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/atmostnvalues.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/atmostnvalues.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND but NOT MINIMAL --- droppable: \#1 (X\_i' != t), \#3 (N >= p)\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~X_{i} \neq t',~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t',~t' \neq t,~t' \in \llbracket1,m\rrbracket,~t \in \llbracket1,m\rrbracket~~~~N \geq p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i}=t',~\exists i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t',~t' \neq t,~t' \in \llbracket1,m\rrbracket,~t \in \llbracket1,m\rrbracket~~~~N<p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} UNSOUND --- every other reading is vacuous, so the only reading that can ever fire is the unsound one\par}
+{\small\textit{counterexample:} n=3 m=2 X=(1,1,2) N=2 [atmost] p=3\par}
+\rulebox{\frac{X_{i}=t,~\exists i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \geq p}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N<p}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for X\_\{i\}=t bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for X\_\{i\} \textbackslash{}neq t bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N \textbackslash{}geq p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N \textbackslash{}geq p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N<p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N<p bind an index name twice; the LaTeX is ambiguous (D-0009) **}
+\subsubsection*{\texttt{sum}}
+\label{entry:sum}
+\entryfield{Tier}{\textbf{not ranked.} \texttt{sum} is not a MiniZinc 2.10.1 global under any spelling --- measured, see ``Constraint''. The nearest ranked relatives are \texttt{sum\_pred} (tier \textbf{A}, ecode \texttt{E9}, \texttt{CHRISTMAS\_LIST.md:213}) and \texttt{sum\_set} (\texttt{- out of scope}, \texttt{E5}, line 207)}
+\entryfield{Status}{\texttt{flagged} --- all 4 rules flagged}
+\entryfield{Generated}{\textbf{4} rules in \texttt{cata/sum.tex}. \textbf{Not generated by anything that exists}: the file is orphaned (W1-T6, \texttt{TODO})}
+\entryfield{Validator}{0 \texttt{SOUND and MINIMAL}, \textbf{4 flagged}: 2 \texttt{SOUND but NOT MINIMAL}, 2 \texttt{VACUOUS}}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:213} records \texttt{none} for \texttt{sum\_pred}, and \texttt{sum} has no row of its own}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/sum.tex \textbackslash{}| wc -l}, \texttt{git log}/\texttt{git show} over \texttt{cata/sum.tex} and the generator}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/sum.md}}
+
+\textbf{Rules} --- copied verbatim from \texttt{cata/sum.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Rule 1.} \textsc{verdict} SOUND but NOT MINIMAL --- droppable: \#2 (N >= p)\par}
+\rulebox{\frac{X_{i'}<t',~\forall i',~i' \in \llbracket1,n\rrbracket,~i' \neq i,~\forall t',~t' \in \llbracket1,m\rrbracket,~t' \neq t~~~~N \geq p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i} \geq t}}
+
+{\small\textbf{Rule 2.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i'} \geq t',~\forall i',~i' \in \llbracket1,n\rrbracket,~i' \neq i,~\forall t',~t' \in \llbracket1,m\rrbracket,~t' \neq t~~~~N<p,~\forall p,~p \in \llbracket1,n\rrbracket}{X_{i}<t}}
+
+{\small\textbf{Rule 3.} \textsc{verdict} SOUND but NOT MINIMAL --- droppable: \#1 (X\_i >= t)\par}
+\rulebox{\frac{X_{i} \geq t,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \geq p}}
+
+{\small\textbf{Rule 4.} \textsc{verdict} VACUOUS --- no store in scope satisfies the premises, so it is sound only because it can never fire\par}
+\rulebox{\frac{X_{i}<t,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N<p}}
+\clearpage
+\section{Entries blocked on a gap}
+Grouped by the code the entry's own Status row names first. A \texttt{G}-number is a gap in the decomposition input format (\texttt{docs/DECOMP\_FORMAT\_NOTES.md}); an \texttt{E}-number is an extension route from \texttt{CHRISTMAS\_LIST.md}. An entry naming more than one code says so in the Status text reproduced below, and is filed under the first.
+\subsection*{\texttt{G1} \ \normalsize(6)}
+\addcontentsline{toc}{subsection}{\texttt{G1} (6)}
+\subsubsection*{\texttt{at\_\allowbreak{}least}}
+\label{entry:at-least}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1} --- \textbf{and on \texttt{G8} for the counted value.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/at\_least.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{at\_least} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/at\_least.md}}
+\subsubsection*{\texttt{at\_\allowbreak{}most}}
+\label{entry:at-most}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1} --- \textbf{and on \texttt{G8} for the counted value.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/at\_most.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{at\_most} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/at\_most.md}}
+\subsubsection*{\texttt{disjunctive\_\allowbreak{}strict}}
+\label{entry:disjunctive-strict}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (shared row with \texttt{disjunctive}, \texttt{\_opt}, \texttt{disjunctive\_strict\_opt})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1}}
+\entryfield{Generated}{\textbf{0} rules. There is no \texttt{cata/disjunctive\_strict.tex}; the near-miss artifact is \texttt{cata/cumulative.tex}, and it is the \textbf{non-strict} sibling --- see below}
+\entryfield{Validator}{out of scope: nothing of this name to validate. The artifact it is closest to, \texttt{cata/cumulative.tex}, is itself reported out of scope (``UNPARSED: index equation offset: t'=t-d\_\{i\}'')}
+\entryfield{Calibration}{\textbf{out of reach} --- the published \S{}6 explanations are indexed by a run-time compulsory-part set, and there is no generated rule on this side either}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/disjunctive\_strict.md}}
+\subsubsection*{\texttt{exactly}}
+\label{entry:exactly}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1} --- \textbf{and on \texttt{G8} for the counted value.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/exactly.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{exactly} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/exactly.md}}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}low\_\allowbreak{}up}}
+\label{entry:global-cardinality-low-up}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1}}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/global\_cardinality\_low\_up.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones}
+\entryfield{Calibration}{\textbf{out of reach} --- inherited from \texttt{gcc.md} and \emph{reinforced} here: there is also no generated premise on this side to compare}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml} and \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_low\_up.md}}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}low\_\allowbreak{}up\_\allowbreak{}closed}}
+\label{entry:global-cardinality-low-up-closed}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G1}}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/global\_cardinality\_low\_up\_closed.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones}
+\entryfield{Calibration}{\textbf{out of reach} --- inherited from \texttt{gcc.md} and \emph{reinforced} here: there is also no generated premise on this side to compare}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml} and \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Blocking gap}{\texttt{G1}}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_low\_up\_closed.md}}
+\subsection*{\texttt{G2} \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{\texttt{G2} (3)}
+\subsubsection*{\texttt{cumulative\_\allowbreak{}opt}}
+\label{entry:cumulative-opt}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E2}, \texttt{E4}; \texttt{CHRISTMAS\_LIST.md:168}, section \texttt{6. Scheduling}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G2} --- \textbf{and on everything that already blocks \texttt{cumulative}}: \texttt{G11}, \texttt{G15}, \texttt{G1}, \texttt{G3}. See Status}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/cumulative\_opt.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears in no line of the 2026-09-21 run}
+\entryfield{Calibration}{\textbf{out of reach} --- and, unlike \texttt{cumulative.md}, \emph{not} rescued by the TimeD route: see Calibration}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml}, \texttt{CHRISTMAS\_LIST.md:167-168}, \texttt{decomps/cumulative\_opt.md} and \texttt{catalog/cumulative.md}}
+\entryfield{Blocking gap}{\texttt{G2}}
+\entryfield{Entry}{\texttt{catalog/cumulative\_opt.md}}
+\subsubsection*{\texttt{disjunctive\_\allowbreak{}opt}}
+\label{entry:disjunctive-opt}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (shared row with \texttt{disjunctive}, \texttt{\_strict}, \texttt{disjunctive\_strict\_opt})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G2}}
+\entryfield{Generated}{\textbf{0} rules. There is no \texttt{cata/disjunctive\_opt.tex}}
+\entryfield{Validator}{out of scope: nothing of this name to validate}
+\entryfield{Calibration}{\textbf{out of reach} --- the published \S{}6 explanations are indexed by a run-time compulsory-part set, and there is no generated rule on this side either}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G2}}
+\entryfield{Entry}{\texttt{catalog/disjunctive\_opt.md}}
+\subsubsection*{\texttt{disjunctive\_\allowbreak{}strict\_\allowbreak{}opt}}
+\label{entry:disjunctive-strict-opt}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (shared row with \texttt{disjunctive}, \texttt{\_strict}, \texttt{\_opt})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G2}}
+\entryfield{Generated}{\textbf{0} rules. There is no \texttt{cata/disjunctive\_strict\_opt.tex}}
+\entryfield{Validator}{out of scope: nothing of this name to validate}
+\entryfield{Calibration}{\textbf{out of reach} --- the published \S{}6 explanations are indexed by a run-time compulsory-part set, and there is no generated rule on this side either}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{ls decomps/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G2}}
+\entryfield{Entry}{\texttt{catalog/disjunctive\_strict\_opt.md}}
+\subsection*{\texttt{G3} \ \normalsize(24)}
+\addcontentsline{toc}{subsection}{\texttt{G3} (24)}
+\subsubsection*{\texttt{alternative}}
+\label{entry:alternative}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}, \textbf{conditional on a signature nobody here has.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/alternative.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{alternative} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:152} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/alternative.md}}
+\subsubsection*{\texttt{diffn}}
+\label{entry:diffn}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E2}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/diffn.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/diffn.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:177}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:177} and \texttt{:51} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/diffn.md}}
+\subsubsection*{\texttt{diffn\_\allowbreak{}k}}
+\label{entry:diffn-k}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E2}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/diffn\_k.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/diffn\_k.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:177}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:177} and \texttt{:51} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/diffn\_k.md}}
+\subsubsection*{\texttt{diffn\_\allowbreak{}nonstrict}}
+\label{entry:diffn-nonstrict}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E2}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/diffn\_nonstrict.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/diffn\_nonstrict.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:177}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:177} and \texttt{:51} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/diffn\_nonstrict.md}}
+\subsubsection*{\texttt{diffn\_\allowbreak{}nonstrict\_\allowbreak{}k}}
+\label{entry:diffn-nonstrict-k}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E2}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/diffn\_nonstrict\_k.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/diffn\_nonstrict\_k.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:177}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:177} and \texttt{:51} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/diffn\_nonstrict\_k.md}}
+\subsubsection*{\texttt{lex2}}
+\label{entry:lex2}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_less}, \texttt{lex\_lesseq}, \texttt{strict\_lex2}, \texttt{lex2\_strict})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex2.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{CHRISTMAS\_LIST.md:142} records that no dedicated \texttt{lex} explanation paper was found}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex2.md}}
+\subsubsection*{\texttt{lex2\_\allowbreak{}strict}}
+\label{entry:lex2-strict}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_less}, \texttt{lex\_lesseq}, \texttt{lex2}, \texttt{strict\_lex2})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex2\_strict.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{CHRISTMAS\_LIST.md:142} records that no dedicated \texttt{lex} explanation paper was found}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex2\_strict.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greater}}
+\label{entry:lex-chain-greater}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with the other five \texttt{lex\_chain\_*} names)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_greater.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_greater.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greatereq}}
+\label{entry:lex-chain-greatereq}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with the other five \texttt{lex\_chain\_*} names)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_greatereq.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_greatereq.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}greatereq\_\allowbreak{}orbitope}}
+\label{entry:lex-chain-greatereq-orbitope}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with the four \texttt{lex\_chain\_*} names and the other orbitope)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_greatereq\_orbitope.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_greatereq\_orbitope.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}less}}
+\label{entry:lex-chain-less}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with the other five \texttt{lex\_chain\_*} names)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_less.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_less.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}lesseq}}
+\label{entry:lex-chain-lesseq}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with \texttt{lex\_chain\_less}, \texttt{lex\_chain\_greater}, \texttt{lex\_chain\_greatereq} and both \texttt{*\_orbitope} variants)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_lesseq.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_lesseq.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}chain\_\allowbreak{}lesseq\_\allowbreak{}orbitope}}
+\label{entry:lex-chain-lesseq-orbitope}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with the four \texttt{lex\_chain\_*} names and the other orbitope)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3} --- \textbf{and, for a chain of instance-dependent length, on \texttt{G7}}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_chain\_lesseq\_orbitope.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:144} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_chain\_lesseq\_orbitope.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}greater}}
+\label{entry:lex-greater}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_greatereq})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_greater.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:143} literature cell reads \texttt{none --- added 2026-09-18, W3-C}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_greater.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}greatereq}}
+\label{entry:lex-greatereq}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_greater})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_greatereq.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:143} literature cell reads \texttt{none --- added 2026-09-18, W3-C}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_greatereq.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}less}}
+\label{entry:lex-less}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E0} (same tier row for \texttt{lex\_lesseq}, \texttt{lex2}, \texttt{strict\_lex2}, \texttt{lex2\_strict})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_less.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex}, and this constraint has no artifact in \texttt{cata/}}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- and see below: \texttt{CHRISTMAS\_LIST.md:142} records that \emph{no dedicated \texttt{lex} explanation paper was found}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_less.md}}
+\subsubsection*{\texttt{lex\_\allowbreak{}lesseq}}
+\label{entry:lex-lesseq}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_less}, \texttt{lex2}, \texttt{strict\_lex2}, \texttt{lex2\_strict})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/lex\_lesseq.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{CHRISTMAS\_LIST.md:142} records that no dedicated \texttt{lex} explanation paper was found}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/lex\_lesseq.md}}
+\subsubsection*{\texttt{maximum}}
+\label{entry:maximum}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecodes \texttt{['E2']} (shared row with \texttt{minimum})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/maximum.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/maximum.md}}
+\subsubsection*{\texttt{member}}
+\label{entry:member}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E0']}}
+\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} for the fragment this repo decomposes (\texttt{y} a parameter); \textbf{\texttt{nothing generated --- blocked on G3}} for MiniZinc's var-target signature. \textbf{Two fragments, two statuses --- read the fragment statement below before quoting either.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/member.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:195} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/member.md}}
+\subsubsection*{\texttt{minimum}}
+\label{entry:minimum}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecodes \texttt{['E2']} (shared row with \texttt{maximum})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/minimum.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/minimum.md}}
+\subsubsection*{\texttt{span}}
+\label{entry:span}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/span.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{span} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:152} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/span.md}}
+\subsubsection*{\texttt{strict\_\allowbreak{}lex2}}
+\label{entry:strict-lex2}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{lex\_less}, \texttt{lex\_lesseq}, \texttt{lex2}, \texttt{lex2\_strict})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/strict\_lex2.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{CHRISTMAS\_LIST.md:142} records that no dedicated \texttt{lex} explanation paper was found}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/strict\_lex2.md}}
+\subsubsection*{\texttt{var\_\allowbreak{}perm\_\allowbreak{}sym}}
+\label{entry:var-perm-sym}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecodes \texttt{E0}, \texttt{E2} (shared row with \texttt{var\_sqr\_sym})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/var\_perm\_sym.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- the row cites Chu \& Stuckey 2011, which \texttt{CHRISTMAS\_LIST.md:142} describes as carrying no dedicated \texttt{lex} explanation}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/var\_perm\_sym.md}}
+\subsubsection*{\texttt{var\_\allowbreak{}sqr\_\allowbreak{}sym}}
+\label{entry:var-sqr-sym}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecodes \texttt{E0}, \texttt{E2} (shared row with \texttt{var\_perm\_sym})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G3}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/var\_sqr\_sym.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- the row cites Chu \& Stuckey 2011, which \texttt{CHRISTMAS\_LIST.md:142} describes as carrying no dedicated \texttt{lex} explanation}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/var\_sqr\_sym.md}}
+\subsection*{\texttt{G4} \ \normalsize(1)}
+\addcontentsline{toc}{subsection}{\texttt{G4} (1)}
+\subsubsection*{\texttt{distribute}}
+\label{entry:distribute}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecodes \texttt{E0}, \texttt{E3} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G4} --- \textbf{and on \texttt{G8} for the counted values.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/distribute.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{distribute} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:132} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G4}}
+\entryfield{Entry}{\texttt{catalog/distribute.md}}
+\subsection*{\texttt{G6} \ \normalsize(1)}
+\addcontentsline{toc}{subsection}{\texttt{G6} (1)}
+\subsubsection*{\texttt{table}}
+\label{entry:table}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecodes \texttt{['E2']} (\texttt{python3 tools/mzn\_coverage.py --rank --json})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G6}}
+\entryfield{Generated}{\textbf{0} rules in \texttt{cata/table.tex}}
+\entryfield{Validator}{\textbf{0 rules to check.} \texttt{table} is \emph{in} the validator's 11 in-scope entries --- it is not reported out of scope --- and contributes nothing: \texttt{---- cata/table.tex  (0 rules) ----}}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- two papers are cited at \texttt{CHRISTMAS\_LIST.md:158} and neither is in \texttt{catalog/\_literature/}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/table.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G6}}
+\entryfield{Entry}{\texttt{catalog/table.md}}
+
+\textbf{Rules} --- \texttt{cata/table.tex} exists and emits none.
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\}=t: 1 branch(es) reference undefined index set(s) D4; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 1 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 1 candidate(s), all blocked **}
+\subsection*{\texttt{G7} \ \normalsize(6)}
+\addcontentsline{toc}{subsection}{\texttt{G7} (6)}
+\subsubsection*{\texttt{mdd}}
+\label{entry:mdd}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecodes \texttt{E1}, \texttt{E2} (shared row with \texttt{mdd\_nondet})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/mdd.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- Gange, Stuckey \& Szymanek 2011 is cited and unsourced. A prior of \texttt{out of reach} is recorded below, as a prior}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/mdd.md}}
+\subsubsection*{\texttt{mdd\_\allowbreak{}nondet}}
+\label{entry:mdd-nondet}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecodes \texttt{E1}, \texttt{E2} (shared row with \texttt{mdd})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/mdd\_nondet.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- Gange, Stuckey \& Szymanek 2011 is cited and unsourced}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/mdd\_nondet.md}}
+\subsubsection*{\texttt{regular}}
+\label{entry:regular}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (same tier row for \texttt{regular\_nfa}, \texttt{regular\_regexp})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7}}
+\entryfield{Generated}{\textbf{0} rules in \texttt{cata/regular.tex}}
+\entryfield{Validator}{out of scope. Machine-printed reason: ``index sets D\_8, D\_9 --- the transition relation --- are never defined by the printer (W1-T2); gccat has no \texttt{regular} entry at all (docs/GCCAT.md s5.1)''}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- see \texttt{catalog/\_literature/}; two papers are cited in the index and neither has been sourced}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/regular.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/regular.md}}
+
+\textbf{Rules} --- \texttt{cata/regular.tex} exists and emits none.
+
+\diag{Validator, out of scope: index sets D\_8, D\_9 --- the transition relation --- are never defined by the printer (W1-T2); gccat has no \texttt{regular} entry at all (docs/GCCAT.md s5.1)}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\}=t: 1 branch(es) reference undefined index set(s) D9; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 2 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\} \textbackslash{}neq t: 1 branch(es) reference undefined index set(s) D8; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 2 candidate(s), all blocked **}
+\subsubsection*{\texttt{regular\_\allowbreak{}nfa}}
+\label{entry:regular-nfa}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (shared row with \texttt{regular}, \texttt{regular\_regexp})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/regular\_nfa.tex}. The shared artifact \texttt{cata/regular.tex} also holds \textbf{0} rules, and is the \emph{deterministic} 2-local fragment in any case}
+\entryfield{Validator}{out of scope: nothing of this name to validate. \texttt{cata/regular.tex} is itself out of scope: ``index sets D\_8, D\_9 --- the transition relation --- are never defined by the printer (W1-T2)''}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- two papers cited at \texttt{CHRISTMAS\_LIST.md:159}, neither sourced}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/regular.tex \textbackslash{}| wc -l}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/regular\_nfa.md}}
+\subsubsection*{\texttt{regular\_\allowbreak{}regexp}}
+\label{entry:regular-regexp}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2} (shared row with \texttt{regular}, \texttt{regular\_nfa})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/regular\_regexp.tex}. The shared artifact \texttt{cata/regular.tex} also holds \textbf{0} rules}
+\entryfield{Validator}{out of scope: nothing of this name to validate. \texttt{cata/regular.tex} is itself out of scope: ``index sets D\_8, D\_9 --- the transition relation --- are never defined by the printer (W1-T2)''}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- two papers cited at \texttt{CHRISTMAS\_LIST.md:159}, neither sourced}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/regular.tex \textbackslash{}| wc -l}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json} (re-run after D-0014)}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/regular\_regexp.md}}
+\subsubsection*{\texttt{value\_\allowbreak{}precede\_\allowbreak{}chain}}
+\label{entry:value-precede-chain}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{value\_precede})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G7} --- \textbf{and, behind it, on \texttt{G17}}, which already blocks \texttt{value\_precede}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/value\_precede\_chain.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:140} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G7}}
+\entryfield{Entry}{\texttt{catalog/value\_precede\_chain.md}}
+\subsection*{\texttt{G8} \ \normalsize(11)}
+\addcontentsline{toc}{subsection}{\texttt{G8} (11)}
+\subsubsection*{\texttt{all\_\allowbreak{}different\_\allowbreak{}except}}
+\label{entry:all-different-except}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/all\_different\_except.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{all\_different\_except} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:117} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/all\_different\_except.md}}
+\subsubsection*{\texttt{all\_\allowbreak{}different\_\allowbreak{}except\_\allowbreak{}0}}
+\label{entry:all-different-except-0}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/all\_different\_except\_0.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{all\_different\_except\_0} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:117} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/all\_different\_except\_0.md}}
+\subsubsection*{\texttt{among}}
+\label{entry:among}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{\textbf{0} rules in \texttt{cata/among.tex}}
+\entryfield{Validator}{out of scope. Machine-printed reason: ``index set D\_4 is never defined by the printer (W1-T2), AND among's count variable appears in no atom, so the rules constrain X alone while \texttt{among} restricts X only jointly with that count''}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:129} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/among.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/among.md}}
+
+\textbf{Rules} --- \texttt{cata/among.tex} exists and emits none.
+
+\diag{Validator, out of scope: index set D\_4 is never defined by the printer (W1-T2), AND among's count variable appears in no atom, so the rules constrain X alone while \texttt{among} restricts X only jointly with that count}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\}=t: 1 branch(es) reference undefined index set(s) D4; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 1 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\} \textbackslash{}neq t: 1 branch(es) reference undefined index set(s) D4; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 1 candidate(s), all blocked **}
+\subsubsection*{\texttt{among\_\allowbreak{}fn}}
+\label{entry:among-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{among} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{among.md}}, whose Status row reads \texttt{nothing generated --- blocked on G8} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{among\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/among\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{among.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{among.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains among, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:129} and \texttt{catalog/among.md}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/among\_fn.md}}
+\subsubsection*{\texttt{count}}
+\label{entry:count}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8} --- \textbf{the same wall as \texttt{among}}, measured. See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/count.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{count} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and \textbf{three scratch generator runs} (below)}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/count.md}}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed}}
+\label{entry:global-cardinality-closed}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/global\_cardinality\_closed.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones}
+\entryfield{Calibration}{\textbf{out of reach} --- inherited from \texttt{gcc.md} and \emph{reinforced} here: there is also no generated premise on this side to compare}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml} and \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_closed.md}}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed\_\allowbreak{}fn}}
+\label{entry:global-cardinality-closed-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{global\_cardinality\_closed} ranks \textbf{C} (\texttt{C literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{global\_cardinality\_closed.md}}, whose Status row reads \texttt{nothing generated --- blocked on G8} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{global\_cardinality\_closed\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/global\_cardinality\_closed\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{global\_cardinality\_closed.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{global\_cardinality\_closed.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains global\_cardinality\_closed, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:127} and \texttt{catalog/global\_cardinality\_closed.md}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_closed\_fn.md}}
+\subsubsection*{\texttt{inverse\_\allowbreak{}in\_\allowbreak{}range}}
+\label{entry:inverse-in-range}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecodes \texttt{['E0', 'E2']} (shared row with \texttt{inverse})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8} --- \textbf{and, like \texttt{inverse}, on G9 as a cost. See Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/inverse\_in\_range.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:199} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/inverse\_in\_range.md}}
+\subsubsection*{\texttt{range\_\allowbreak{}fn}}
+\label{entry:range-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{range} ranks \textbf{out of scope} (\texttt{- out of scope})}
+\entryfield{Status}{\textbf{resolves to \texttt{range.md}}, whose Status row reads \texttt{nothing generated --- blocked on G8} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{range\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/range\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{range.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{range.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains range, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:206} and \texttt{catalog/range.md}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/range\_fn.md}}
+\subsubsection*{\texttt{roots\_\allowbreak{}fn}}
+\label{entry:roots-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{roots} ranks \textbf{out of scope} (\texttt{- out of scope})}
+\entryfield{Status}{\textbf{resolves to \texttt{roots.md}}, whose Status row reads \texttt{nothing generated --- blocked on G8} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{roots\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/roots\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{roots.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{roots.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains roots, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:206} and \texttt{catalog/roots.md}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/roots\_fn.md}}
+\subsubsection*{\texttt{sliding\_\allowbreak{}among}}
+\label{entry:sliding-among}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8} --- \textbf{twice over}, and on \texttt{G1}. See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/sliding\_among.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{sliding\_among} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:133} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/sliding\_among.md}}
+\subsection*{\texttt{G10} \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{\texttt{G10} (3)}
+\subsubsection*{\texttt{arg\_\allowbreak{}sort}}
+\label{entry:arg-sort}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E2']} (shared row with \texttt{sort})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G10} --- \textbf{twice over; see Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/arg\_sort.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:198} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G10}}
+\entryfield{Entry}{\texttt{catalog/arg\_sort.md}}
+\subsubsection*{\texttt{sort}}
+\label{entry:sort}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E2']} (shared row with \texttt{arg\_sort})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G10} --- \textbf{and on G9 and G3; see Status. G10 is the wall.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/sort.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:198} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G10}}
+\entryfield{Entry}{\texttt{catalog/sort.md}}
+\subsubsection*{\texttt{symmetric\_\allowbreak{}all\_\allowbreak{}different}}
+\label{entry:symmetric-all-different}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E0']}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G10} --- \textbf{on the self-inverse half only; the \texttt{alldifferent} half already ships. See Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/symmetric\_all\_different.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:118} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G10}}
+\entryfield{Entry}{\texttt{catalog/symmetric\_all\_different.md}}
+\subsection*{\texttt{G11} \ \normalsize(4)}
+\addcontentsline{toc}{subsection}{\texttt{G11} (4)}
+\subsubsection*{\texttt{bin\_\allowbreak{}packing}}
+\label{entry:bin-packing}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E8}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G11}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/bin\_packing.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/bin\_packing.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:176}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:176} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G11}}
+\entryfield{Entry}{\texttt{catalog/bin\_packing.md}}
+\subsubsection*{\texttt{bin\_\allowbreak{}packing\_\allowbreak{}capa}}
+\label{entry:bin-packing-capa}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E8}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G11}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/bin\_packing\_capa.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/bin\_packing\_capa.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:176}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:176} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G11}}
+\entryfield{Entry}{\texttt{catalog/bin\_packing\_capa.md}}
+\subsubsection*{\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load}}
+\label{entry:bin-packing-load}
+\entryfield{Tier}{\textbf{A} (\texttt{no-literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E8}, section \texttt{7. Packing and geometry}. Re-tiered 2026-09-21 per \textbf{D-0014}: was filed \texttt{- out of scope} by the tool's section filter before the fix; see ``History'' below.}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G11}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/bin\_packing\_load.tex}}
+\entryfield{Validator}{not run --- no \texttt{cata/bin\_packing\_load.tex} exists yet}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated; no published shape exists to compare against (\texttt{CHRISTMAS\_LIST.md:176}: ``none found'')}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank} (post-fix), \texttt{CHRISTMAS\_LIST.md:176} read, \texttt{docs/DECISIONS.md} D-0014 read}
+\entryfield{Blocking gap}{\texttt{G11}}
+\entryfield{Entry}{\texttt{catalog/bin\_packing\_load.md}}
+\subsubsection*{\texttt{knapsack}}
+\label{entry:knapsack}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecodes \texttt{E1}, \texttt{E8}, \texttt{E9} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G11} --- \textbf{and on \texttt{G4}, \texttt{G12}, \texttt{G13}.} The only constraint in the corpus that needs all three sum extensions at once}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/knapsack.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{knapsack} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:170} records \texttt{none found}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G11}}
+\entryfield{Entry}{\texttt{catalog/knapsack.md}}
+\subsection*{\texttt{G12} \ \normalsize(1)}
+\addcontentsline{toc}{subsection}{\texttt{G12} (1)}
+\subsubsection*{\texttt{sliding\_\allowbreak{}sum}}
+\label{entry:sliding-sum}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E1+E2} as \texttt{tools/mzn\_coverage.py} parses the row; \textbf{\texttt{E9} per D-0011} --- see Gaps}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G12} --- \textbf{and on \texttt{G13}}, which is independent of it}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/sliding\_sum.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:151} reads \texttt{none directly} for this constraint; the paper it names is for the neighbouring \textbf{sequence} family}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G12}}
+\entryfield{Entry}{\texttt{catalog/sliding\_sum.md}}
+\subsection*{\texttt{G14} \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{\texttt{G14} (3)}
+\subsubsection*{\texttt{cumulatives}}
+\label{entry:cumulatives}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E2}, \texttt{E4}; \texttt{CHRISTMAS\_LIST.md:168}, section \texttt{6. Scheduling}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G14} --- \textbf{and on everything that already blocks \texttt{cumulative}}: \texttt{G11}, \texttt{G15}, \texttt{G1}, \texttt{G3}. See Status}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/cumulatives.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears in no line of the 2026-09-21 run}
+\entryfield{Calibration}{\textbf{out of reach} --- and, unlike \texttt{cumulative.md}, \emph{not} rescued by the TimeD route: see Calibration}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml}, \texttt{CHRISTMAS\_LIST.md:167-168}, \texttt{decomps/cumulatives.md} and \texttt{catalog/cumulative.md}}
+\entryfield{Blocking gap}{\texttt{G14}}
+\entryfield{Entry}{\texttt{catalog/cumulatives.md}}
+\subsubsection*{\texttt{cumulatives\_\allowbreak{}opt}}
+\label{entry:cumulatives-opt}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. Ecodes \texttt{E2}, \texttt{E4}; \texttt{CHRISTMAS\_LIST.md:168}, section \texttt{6. Scheduling}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G14} --- \textbf{and on everything that already blocks \texttt{cumulative}}: \texttt{G11}, \texttt{G15}, \texttt{G1}, \texttt{G3}. See Status}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/cumulatives\_opt.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears in no line of the 2026-09-21 run}
+\entryfield{Calibration}{\textbf{out of reach} --- and, unlike \texttt{cumulative.md}, \emph{not} rescued by the TimeD route: see Calibration}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml}, \texttt{CHRISTMAS\_LIST.md:167-168}, \texttt{decomps/cumulatives.md} and \texttt{catalog/cumulative.md}}
+\entryfield{Blocking gap}{\texttt{G14}}
+\entryfield{Entry}{\texttt{catalog/cumulatives\_opt.md}}
+\subsubsection*{\texttt{sum\_\allowbreak{}pred}}
+\label{entry:sum-pred}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E9} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} under reading (a) --- measured; \texttt{nothing generated --- blocked on G14} under reading (b). See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/sum\_pred.tex}. The orphan \texttt{cata/sum.tex} is the nearest artifact and is not this constraint}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{sum\_pred} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:213} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{git show 3e4f17d}, and a \textbf{scratch generator run} (below)}
+\entryfield{Blocking gap}{\texttt{G14}}
+\entryfield{Entry}{\texttt{catalog/sum\_pred.md}}
+\subsection*{\texttt{G15} \ \normalsize(2)}
+\addcontentsline{toc}{subsection}{\texttt{G15} (2)}
+\subsubsection*{\texttt{cost\_\allowbreak{}mdd}}
+\label{entry:cost-mdd}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, re-run 2026-09-21 after \textbf{D-0014}; unmoved. Ecodes \texttt{E1}, \texttt{E2}, \texttt{E9}; \texttt{CHRISTMAS\_LIST.md:161}, section \texttt{5. Extensional --- table, regular, MDD}. The row is shared with \texttt{cost\_regular}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G15} --- \textbf{and on everything that already blocks \texttt{mdd}}: \texttt{G7}, and \texttt{G17} for the reachability explanation. See Status}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/cost\_mdd.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears in no line of the 2026-09-21 run}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{catalog/\_literature/} holds \texttt{alldifferent}, \texttt{cumulative} and \texttt{gcc} only, and no rule shape may be written from memory. A \emph{prior} is recorded, labelled as a prior}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml}, \texttt{CHRISTMAS\_LIST.md:161}, \texttt{decomps/cost\_mdd.md} and \texttt{decomps/\_shapes-ext.md}}
+\entryfield{Blocking gap}{\texttt{G15}}
+\entryfield{Entry}{\texttt{catalog/cost\_mdd.md}}
+\subsubsection*{\texttt{cost\_\allowbreak{}regular}}
+\label{entry:cost-regular}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-decomposes}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, re-run 2026-09-21 after \textbf{D-0014}; unmoved. Ecodes \texttt{E1}, \texttt{E2}, \texttt{E9}; \texttt{CHRISTMAS\_LIST.md:161}, section \texttt{5. Extensional --- table, regular, MDD}. The row is shared with \texttt{cost\_mdd}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G15} --- \textbf{and on everything that already blocks \texttt{regular}}: \texttt{G7} for the shipped 2-local fragment, \texttt{G16} and \texttt{G17} for the general form. See Status}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/cost\_regular.tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears in no line of the 2026-09-21 run}
+\entryfield{Calibration}{\textbf{pending sourcing (C2)} --- \texttt{catalog/\_literature/} holds \texttt{alldifferent}, \texttt{cumulative} and \texttt{gcc} only, and no rule shape may be written from memory. A \emph{prior} is recorded, labelled as a prior}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}, and reads of \texttt{explenation generator.ml}, \texttt{CHRISTMAS\_LIST.md:161}, \texttt{decomps/cost\_regular.md} and \texttt{decomps/\_shapes-ext.md}}
+\entryfield{Blocking gap}{\texttt{G15}}
+\entryfield{Entry}{\texttt{catalog/cost\_regular.md}}
+\subsection*{\texttt{G17} \ \normalsize(2)}
+\addcontentsline{toc}{subsection}{\texttt{G17} (2)}
+\subsubsection*{\texttt{seq\_\allowbreak{}precede\_\allowbreak{}chain}}
+\label{entry:seq-precede-chain}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (its own row)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G17}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/seq\_precede\_chain.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:141} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G17}}
+\entryfield{Entry}{\texttt{catalog/seq\_precede\_chain.md}}
+\subsubsection*{\texttt{value\_\allowbreak{}precede}}
+\label{entry:value-precede}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecode \texttt{E0} (shared row with \texttt{value\_precede\_chain})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G17}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/value\_precede.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:140} literature cell reads \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{\texttt{G17}}
+\entryfield{Entry}{\texttt{catalog/value\_precede.md}}
+\subsection*{\texttt{G18} \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{\texttt{G18} (3)}
+\subsubsection*{\texttt{write}}
+\label{entry:write}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E2']} (shared row with \texttt{writes}, \texttt{writes\_seq})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G18} --- \textbf{and G18 is about the \emph{quantifier} form; a clause-per-position workaround is recorded. See Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/write.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:216} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G18}}
+\entryfield{Entry}{\texttt{catalog/write.md}}
+\subsubsection*{\texttt{writes}}
+\label{entry:writes}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E2']} (shared row with \texttt{write}, \texttt{writes\_seq})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G18} --- \textbf{\texttt{k} times over, plus an \texttt{all\_different} side condition \texttt{write} does not have. See Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/writes.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:216} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G18}}
+\entryfield{Entry}{\texttt{catalog/writes.md}}
+\subsubsection*{\texttt{writes\_\allowbreak{}seq}}
+\label{entry:writes-seq}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecodes \texttt{['E2']} (shared row with \texttt{write}, \texttt{writes})}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G18} --- \textbf{plus a second guarded channel for ``later write wins''. See Status.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/writes\_seq.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:216} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G18}}
+\entryfield{Entry}{\texttt{catalog/writes\_seq.md}}
+\subsection*{\texttt{E1} \ \normalsize(1)}
+\addcontentsline{toc}{subsection}{\texttt{E1} (1)}
+\subsubsection*{\texttt{arg\_\allowbreak{}val}}
+\label{entry:arg-val}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-literature + solver-decomposes}), ecode \texttt{E1} --- \texttt{python3 tools/mzn\_coverage.py --rank --json}, run 2026-09-21}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E1} --- \textbf{and on \texttt{G3} under the ``first occurrence'' reading.} See Status}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/arg\_val.tex}}
+\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{arg\_val} entry}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:134} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
+\entryfield{Blocking gap}{\texttt{E1}}
+\entryfield{Entry}{\texttt{catalog/arg\_val.md}}
+\clearpage
+\section{Encodable today, not encoded}
+The current input format can already express the decomposition and no gap blocks it; nothing in the generator does it. There is no G-number to name, which is why this status value exists.
+\subsubsection*{\texttt{inverse}}
+\label{entry:inverse}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-literature + solver-native}, ecodes \texttt{['E0', 'E2']} (shared row with \texttt{inverse\_in\_range})}
+\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} --- no gap blocks this decomposition; nobody has written it. G9 makes it verbose and G2 makes it read badly, and neither stops it. \textbf{See Status for a caveat about this value.}}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/inverse.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:199} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/inverse.md}}
+\subsubsection*{\texttt{strictly\_\allowbreak{}decreasing}}
+\label{entry:strictly-decreasing}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_increasing})}
+\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} --- the format can already express it and no gap blocks it; nothing in the generator does it. (This entry read ``no status-legend value fits'' until 2026-09-21, when that observation caused the value to be added to \texttt{catalog/README.md}'s legend.) See Status}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/strictly\_decreasing.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/strictly\_decreasing.md}}
+\subsubsection*{\texttt{strictly\_\allowbreak{}increasing}}
+\label{entry:strictly-increasing}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-literature + solver-decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_decreasing})}
+\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} --- the format can already express it and no gap blocks it; nothing in the generator does it. (This entry read ``no status-legend value fits'' until 2026-09-21, when that observation caused the value to be added to \texttt{catalog/README.md}'s legend.) See Status}
+\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/strictly\_increasing.tex} and no generator value for it}
+\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/*.tex}, \texttt{ls cata/}, \texttt{python3 tools/mzn\_coverage.py --rank}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/strictly\_increasing.md}}
+\clearpage
+\section{Out of scope}
+Tier \texttt{out of scope} in \texttt{tools/mzn\_coverage.py}'s ranking --- set variables, floats, graph and packing constraints this method does not address. Each still names the code that blocks it, and the subsections below are that code.
+\subsection*{\texttt{G8} \ \normalsize(2)}
+\addcontentsline{toc}{subsection}{\texttt{G8} (2)}
+\subsubsection*{\texttt{range}}
+\label{entry:range}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}. Out of scope for the \emph{ranking}, not for the catalog: \texttt{catalog/README.md} requires an entry for all 118 globals}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{\textbf{0} rules in \texttt{cata/range.tex}}
+\entryfield{Validator}{out of scope. Machine-printed reason: ``index sets D\_5, D\_6 are never defined by the printer (W1-T2); this is Bessiere's set RANGE and its set variables appear in no atom (gccat's range\_ctr is an unrelated constraint --- docs/GCCAT.md s5.2)''}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:206} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/range.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/range.md}}
+
+\textbf{Rules} --- \texttt{cata/range.tex} exists and emits none.
+
+\diag{Validator, out of scope: index sets D\_5, D\_6 are never defined by the printer (W1-T2); this is Bessiere's set RANGE and its set variables appear in no atom (gccat's range\_ctr is an unrelated constraint --- docs/GCCAT.md s5.2)}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 2\\   ** REFUSED for X\_\{i\}=t: 2 branch(es) reference undefined index set(s) D6, D5; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 2 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 1\\   ** REFUSED for X\_\{i\} \textbackslash{}neq t: 1 branch(es) reference undefined index set(s) D6; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 2 candidate(s), all blocked **}
+\subsubsection*{\texttt{roots}}
+\label{entry:roots}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}. Out of scope for the \emph{ranking}, not for the catalog: \texttt{catalog/README.md} requires an entry for all 118 globals}
+\entryfield{Status}{\texttt{nothing generated --- blocked on G8}}
+\entryfield{Generated}{\textbf{0} rules in \texttt{cata/roots.tex}}
+\entryfield{Validator}{out of scope. Machine-printed reason: ``index sets D\_5, D\_6 are never defined by the printer (W1-T2); the set variables S and T appear in no atom''}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:206} records \texttt{none}}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/roots.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{\texttt{G8}}
+\entryfield{Entry}{\texttt{catalog/roots.md}}
+
+\textbf{Rules} --- \texttt{cata/roots.tex} exists and emits none.
+
+\diag{Validator, out of scope: index sets D\_5, D\_6 are never defined by the printer (W1-T2); the set variables S and T appear in no atom}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 2\\   ** REFUSED for X\_\{i\}=t: 2 branch(es) reference undefined index set(s) D6, D5; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 2 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 2\\   ** REFUSED for X\_\{i\} \textbackslash{}neq t: 2 branch(es) reference undefined index set(s) D6, D5; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 2 candidate(s), all blocked **}
+\subsection*{\texttt{E2} \ \normalsize(2)}
+\addcontentsline{toc}{subsection}{\texttt{E2} (2)}
+\subsubsection*{\texttt{arg\_\allowbreak{}max}}
+\label{entry:arg-max}
+\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/mzn\_coverage.py --rank} (section \texttt{9. Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E2 (int/bool variant) / E7 (float variant)}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/arg\_max.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/arg\_max.tex} exists}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:197} read}
+\entryfield{Blocking gap}{\texttt{E2}}
+\entryfield{Entry}{\texttt{catalog/arg\_max.md}}
+\subsubsection*{\texttt{arg\_\allowbreak{}min}}
+\label{entry:arg-min}
+\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/mzn\_coverage.py --rank} (section \texttt{9. Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E2 (int/bool variant) / E7 (float variant)}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/arg\_min.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/arg\_min.tex} exists}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:197} read}
+\entryfield{Blocking gap}{\texttt{E2}}
+\entryfield{Entry}{\texttt{catalog/arg\_min.md}}
+\subsection*{\texttt{E5} \ \normalsize(8)}
+\addcontentsline{toc}{subsection}{\texttt{E5} (8)}
+\subsubsection*{\texttt{all\_\allowbreak{}disjoint}}
+\label{entry:all-disjoint}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{1. AllDifferent family}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/all\_disjoint.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/all\_disjoint.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:119} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/all\_disjoint.md}}
+\subsubsection*{\texttt{at\_\allowbreak{}most1}}
+\label{entry:at-most1}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{2. Counting and cardinality}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/at\_most1.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/at\_most1.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:131} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/at\_most1.md}}
+\subsubsection*{\texttt{disjoint}}
+\label{entry:disjoint}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/disjoint.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/disjoint.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:207} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/disjoint.md}}
+\subsubsection*{\texttt{int\_\allowbreak{}set\_\allowbreak{}channel}}
+\label{entry:int-set-channel}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{9. Ordering, sorting, channelling}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/int\_set\_channel.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/int\_set\_channel.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:200} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/int\_set\_channel.md}}
+\subsubsection*{\texttt{inverse\_\allowbreak{}set}}
+\label{entry:inverse-set}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/inverse\_set.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/inverse\_set.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:207} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/inverse\_set.md}}
+\subsubsection*{\texttt{link\_\allowbreak{}set\_\allowbreak{}to\_\allowbreak{}booleans}}
+\label{entry:link-set-to-booleans}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{9. Ordering, sorting, channelling}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/link\_set\_to\_booleans.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/link\_set\_to\_booleans.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:200} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/link\_set\_to\_booleans.md}}
+\subsubsection*{\texttt{partition\_\allowbreak{}set}}
+\label{entry:partition-set}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/partition\_set.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/partition\_set.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:207} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/partition\_set.md}}
+\subsubsection*{\texttt{sum\_\allowbreak{}set}}
+\label{entry:sum-set}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E5}, section \texttt{10. Set constraints}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E5}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/sum\_set.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/sum\_set.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:207} read}
+\entryfield{Blocking gap}{\texttt{E5}}
+\entryfield{Entry}{\texttt{catalog/sum\_set.md}}
+\subsection*{\texttt{E6} \ \normalsize(13)}
+\addcontentsline{toc}{subsection}{\texttt{E6} (13)}
+\subsubsection*{\texttt{bounded\_\allowbreak{}path}}
+\label{entry:bounded-path}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/bounded\_path.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/bounded\_path.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/bounded\_path.md}}
+\subsubsection*{\texttt{circuit}}
+\label{entry:circuit}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/circuit.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/circuit.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:184} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/circuit.md}}
+\subsubsection*{\texttt{circuit\_\allowbreak{}opt}}
+\label{entry:circuit-opt}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/circuit\_opt.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/circuit\_opt.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:184} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/circuit\_opt.md}}
+\subsubsection*{\texttt{connected}}
+\label{entry:connected}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/connected.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/connected.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/connected.md}}
+\subsubsection*{\texttt{dag}}
+\label{entry:dag}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/dag.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/dag.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/dag.md}}
+\subsubsection*{\texttt{geost}}
+\label{entry:geost}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, section \texttt{7. Packing and geometry} (\texttt{CHRISTMAS\_LIST.md} gives this row no E-code at all)}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6/E7/E2 (unresolved, see below)}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/geost.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/geost.tex} exists}
+\entryfield{Calibration}{\texttt{out of reach} --- 0 rules, no decomposition}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:178} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/geost.md}}
+\subsubsection*{\texttt{network\_\allowbreak{}flow}}
+\label{entry:network-flow}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6+E3}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/network\_flow.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/network\_flow.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:187} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/network\_flow.md}}
+\subsubsection*{\texttt{reachable}}
+\label{entry:reachable}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/reachable.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/reachable.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/reachable.md}}
+\subsubsection*{\texttt{steiner}}
+\label{entry:steiner}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/steiner.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/steiner.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/steiner.md}}
+\subsubsection*{\texttt{subcircuit}}
+\label{entry:subcircuit}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/subcircuit.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/subcircuit.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:185} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/subcircuit.md}}
+\subsubsection*{\texttt{subgraph}}
+\label{entry:subgraph}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/subgraph.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/subgraph.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/subgraph.md}}
+\subsubsection*{\texttt{tree}}
+\label{entry:tree}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/tree.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/tree.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:186} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/tree.md}}
+\subsubsection*{\texttt{weighted\_\allowbreak{}spanning\_\allowbreak{}tree}}
+\label{entry:weighted-spanning-tree}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E6+E3}, section \texttt{8. Graph and reachability}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E6}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/weighted\_spanning\_tree.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/weighted\_spanning\_tree.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:187} read}
+\entryfield{Blocking gap}{\texttt{E6}}
+\entryfield{Entry}{\texttt{catalog/weighted\_spanning\_tree.md}}
+\subsection*{\texttt{E7} \ \normalsize(3)}
+\addcontentsline{toc}{subsection}{\texttt{E7} (3)}
+\subsubsection*{\texttt{neural\_\allowbreak{}net}}
+\label{entry:neural-net}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E7}, section \texttt{11. Maths and misc}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E7}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/neural\_net.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/neural\_net.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:215} read}
+\entryfield{Blocking gap}{\texttt{E7}}
+\entryfield{Entry}{\texttt{catalog/neural\_net.md}}
+\subsubsection*{\texttt{piecewise\_\allowbreak{}linear}}
+\label{entry:piecewise-linear}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E7}, section \texttt{11. Maths and misc}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E7}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/piecewise\_linear.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/piecewise\_linear.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:214} read}
+\entryfield{Blocking gap}{\texttt{E7}}
+\entryfield{Entry}{\texttt{catalog/piecewise\_linear.md}}
+\subsubsection*{\texttt{piecewise\_\allowbreak{}linear\_\allowbreak{}non\_\allowbreak{}continuous}}
+\label{entry:piecewise-linear-non-continuous}
+\entryfield{Tier}{\texttt{- out of scope} --- \texttt{python3 tools/mzn\_coverage.py --rank}, ecode \texttt{E7}, section \texttt{11. Maths and misc}}
+\entryfield{Status}{\texttt{nothing generated --- blocked on E7}}
+\entryfield{Generated}{no generator entry --- there is no \texttt{cata/piecewise\_linear\_non\_continuous.tex}}
+\entryfield{Validator}{out of scope --- no \texttt{cata/piecewise\_linear\_non\_continuous.tex} exists for \texttt{make validate} to check}
+\entryfield{Calibration}{see Calibration section below}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank}, \texttt{CHRISTMAS\_LIST.md:214} read}
+\entryfield{Blocking gap}{\texttt{E7}}
+\entryfield{Entry}{\texttt{catalog/piecewise\_linear\_non\_continuous.md}}
+\clearpage
+\section{Remaining entries}
+No generated rule, no blocking code in the Status row, and a tier inside scope. Most are the \texttt{\_fn} function variants, whose Status defers to the base entry rather than asserting one.
+\subsubsection*{\texttt{bin\_\allowbreak{}packing\_\allowbreak{}load\_\allowbreak{}fn}}
+\label{entry:bin-packing-load-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{bin\_packing\_load} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes}) --- it moved out of \texttt{- out of scope} under \textbf{D-0014} (2026-09-21), which decides scope by mechanism rather than family}
+\entryfield{Status}{\textbf{resolves to \texttt{bin\_packing\_load.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{bin\_packing\_load\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/bin\_packing\_load\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{bin\_packing\_load.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{bin\_packing\_load.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains bin\_packing\_load, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:176} and \texttt{catalog/bin\_packing\_load.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/bin\_packing\_load\_fn.md}}
+\subsubsection*{\texttt{count\_\allowbreak{}fn}}
+\label{entry:count-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{count} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{count.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{count\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/count\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{count.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{count.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains count, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:128} and \texttt{catalog/count.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/count\_fn.md}}
+\subsubsection*{\texttt{disjunctive}}
+\label{entry:disjunctive}
+\entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-native}, ecode \texttt{E2}}
+\entryfield{Status}{\texttt{not validatable}}
+\entryfield{Generated}{\textbf{2} rules --- in \texttt{cata/cumulative.tex}, \textbf{not} in a file of this name. See the section below}
+\entryfield{Validator}{out of scope. Machine-printed reason: ``the durations d\_i appear as uninterpreted symbols inside index equations (t'=t-d\_i), AND the resource capacity appears in no atom, so the rule is schematic over a parameter the artifact never states''}
+\entryfield{Calibration}{\textbf{out of reach} --- by \emph{gaps} (G15, G1), not by structure; and the gap list here is one item shorter than \texttt{cumulative}'s}
+\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -o '\textbackslash{}frac' cata/cumulative.tex \textbackslash{}| wc -l}, \texttt{python3 tools/mzn\_coverage.py --rank --json}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/disjunctive.md}}
+\subsubsection*{\texttt{distribute\_\allowbreak{}fn}}
+\label{entry:distribute-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{distribute} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{distribute.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{distribute\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/distribute\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{distribute.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{distribute.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains distribute, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:132} and \texttt{catalog/distribute.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/distribute\_fn.md}}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}fn}}
+\label{entry:global-cardinality-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{global\_cardinality} ranks \textbf{C} (\texttt{C literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{gcc.md}}, whose Status row reads \texttt{validated: sound and minimal at n,m <= 4} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{global\_cardinality\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/global\_cardinality\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{gcc.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{gcc.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains global\_cardinality, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:127} and \texttt{catalog/gcc.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_fn.md}}
+\subsubsection*{\texttt{inverse\_\allowbreak{}fn}}
+\label{entry:inverse-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{inverse} ranks \textbf{B} (\texttt{B no-literature + solver-native})}
+\entryfield{Status}{\textbf{resolves to \texttt{inverse.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{inverse\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/inverse\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{inverse.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{inverse.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains inverse, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:199} and \texttt{catalog/inverse.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/inverse\_fn.md}}
+\subsubsection*{\texttt{nvalue\_\allowbreak{}fn}}
+\label{entry:nvalue-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{nvalue} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{nvalues.md}}, whose Status row reads \texttt{flagged} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{nvalue\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/nvalue\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{nvalues.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{nvalues.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains nvalue, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:130} and \texttt{catalog/nvalues.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/nvalue\_fn.md}}
+\subsubsection*{\texttt{sort\_\allowbreak{}fn}}
+\label{entry:sort-fn}
+\entryfield{Tier}{\textbf{unclassified} (\texttt{- unclassified}) --- \texttt{python3 tools/mzn\_coverage.py --rank}, 2026-09-21. \textbf{This is an artifact of a blank cell, not a property of the constraint} --- see below. The base \texttt{sort} ranks \textbf{A} (\texttt{A no-literature + solver-decomposes})}
+\entryfield{Status}{\textbf{resolves to \texttt{sort.md}}, whose Status row reads \texttt{not reviewed} (read off that file, 2026-09-21). \textbf{No status-legend value is asserted for \texttt{sort\_fn} itself}, and this entry generates nothing of its own}
+\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/sort\_fn.tex}, and there should not be one. The rules for this constraint are the rules in \texttt{sort.md}}
+\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex} and there is no file under this name; the base entry's verdicts are the verdicts}
+\entryfield{Calibration}{\textbf{resolves to \texttt{sort.md}}. \texttt{CHRISTMAS\_LIST.md:217} records the literature column for this row as \texttt{---}; that is a statement about the \emph{row}, not a finding that no paper explains sort, so \texttt{no published rule exists} is \textbf{not} claimed here}
+\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/mzn\_coverage.py --rank --json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:198} and \texttt{catalog/sort.md}}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/sort\_fn.md}}
+\end{document}
