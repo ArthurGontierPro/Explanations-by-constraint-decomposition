@@ -1562,3 +1562,68 @@ document faithfully shows it. Two separate problems behind that, now dispatched 
 2. **The generator emits almost nothing**, and T1's own gap census says why: **G3 blocks 24
    constraints, G8 blocks 13, G1 blocks 6.** G-1 closes the two cheapest (G1 and G8), which is
    the shortest path from a status list to a catalog of actual rules.
+
+### 2026-09-22 — G-1 (close G1 and G8) — CLOSED. **The catalog gained its first new rules.**
+
+Two commits (`4547daf` machinery, `1e747ee` demonstrators). `make check` passes, all 18 entries
+reproduce byte-for-byte, orphan set unchanged.
+
+**G1 closed by making the bound data.** `ind_set` gained `DCard (name, parent, op, bound)` with
+`ind_bound = BInt | BPar`, so a Boolean-sum bound is something the printer *walks* instead of an
+OCaml literal baked into which schema got called. **G8 closed by three new set forms** — `DSub`
+(literal subrange), `DExc` (exclusion), `DPar` (named parameter subset) — each rendering its own
+containment, so admitting them is **not** a relaxation of W1-T2: `D of int` and `D2` are untouched
+and still refused. Confirmed: the empty-premise rule did **not** return.
+
+**Three new rules, every soundness figure measured exhaustively over all stores at n,m ≤ 4:**
+
+- **`at_most`** 1 rule, **SOUND** (4706 firing cases, 0 counterexamples) but **NOT MINIMAL** —
+  dropping `i ∈ S` leaves it sound, because `i ∉ S` is unsatisfiable under `at_most(c)`. **The
+  droppable conjunct is `apprim`'s, not the decomposition's**, so this is machinery adding a
+  premise nothing needs — direct evidence for W1-T13.
+- **`alldifferent_except`** 1 rule, **SOUND for n ≥ 2**, vacuous at n=1 — and the *shipped*
+  `alldifferent` rule behaves identically (30 counterexamples, all n=1). It inherits alldifferent's
+  verdict and its weakness.
+- **`among`** 2 rules recovered from 0, **both UNSOUND**. **The cause is G5, not G8**: ctr 3's
+  single-`Decomp_devent` `rule7` channels among's count variable nowhere, so a rule over `X` alone
+  can only be a tautology. **G8 made the set sayable; it could not make the decomposition right** —
+  the sentence to keep from this wave.
+
+**It refused to ship measured-unsound rules silently.** A new `caveat` mechanism carries a
+human-measured note into an entry's own `%%` diagnostics footer; `cata/among.tex` now says its
+rules are unsound in the artifact itself. Empty for every other entry, which is why no other
+golden moved.
+
+**And it exposed a hole in the gate — now W1-T18.** `make validate` reported **identical**
+numbers after two new entries appeared, because `validator.ml`'s in-scope/out-of-scope lists are
+hardcoded and it never scans `cata/`. **The project's only correctness gate silently ignores new
+work** — the exact failure mode W1-T3 ended in the generator, still alive in the validator.
+
+**Left deliberately:** G5 (among's count channel), G3/G6/G7, `at_least`/`exactly` (their witness
+set needs a symbolic `n − c`, which `BPar`'s integer offset cannot express), `DSub` undemonstrated
+— it declined to invent a constraint to demonstrate it — and the three printer defects, none of
+which blocked it.
+
+### 2026-09-22 — T2 (the published explanations, in the document) — CLOSED
+
+`catalog/catalog.tex` is **70 pages** (was 50), `pdflatex` exit 0 twice, re-run by the
+orchestrator. It now carries **every section of all three sourced literature files**.
+
+**The distinction that mattered most is made three ways and survives being read out of context:**
+a generated rule is body text under "Generated rule k of n — this project's generator" with its
+validator verdict; a published rule sits in a purple-barred block redrawn on every page it spans,
+opening "Published explanation — not this project's output", and a published rule typeset as a
+fraction carries `[published]` **inside the display**. A new §1 states all of it before the first
+rule appears.
+
+**Only two published rules became `\frac`, and the choice was read off the source file's own
+sentence rather than the session's judgement** — `alldifferent` Rule 1 (Downing §4, "Faithful:")
+and Rule 5 (§7, "Faithful for this instance:"). The other 21 displays keep the paper's own form,
+because their premises are indexed by run-time objects with no index-set name here. Where a
+literature file translates and *then* marks the translation unfaithful, the attempt is printed in
+that file's own ASCII layout under a label saying it is **not** a rule of this catalog, with the
+file's numbered reasons beneath. That is the treatment the evidence deserved.
+
+**§1.3 "How much of the literature is here" is computed — 3 of 121 entries — and says in terms
+that it counts what this repo has sourced, not what the literature contains.** Without that line,
+three published rules could read as "the literature is covered".
