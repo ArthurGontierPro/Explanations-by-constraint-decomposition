@@ -1516,3 +1516,33 @@ bases' status as `not reviewed`, now stale; `CHRISTMAS_LIST.md:152`'s shared E0 
 `span` and needs splitting; and **eight sibling entries cite `docs/DECOMP_FORMAT_NOTES.md:96–107`,
 which my own G2 edit moved to 100–111 the same hour** — W1-T14 is not a legacy problem, it is
 generated fresh by every edit to a cited file, including mine.
+
+### 2026-09-22 — T1 (the catalog as one readable document) — CLOSED
+
+`tools/catalog_tex.py` → `catalog/catalog.tex`. **Compiles: `pdflatex` exit 0 on both passes,
+50 pages, 0 overfull and 0 underfull boxes** — re-run by the orchestrator, same result. The PDF
+is deliberately not committed; `*.pdf` and the LaTeX aux extensions are in `.gitignore`.
+Regenerate with `python3 tools/catalog_tex.py` after `eval $(opam env --switch=baguette --set-switch)`.
+
+**Every figure in it is computed at generation time**, which is the point: 118 release globals,
+118 with an entry, 121 entry files (3 matching no release global), 8 globals with any generated
+rule holding 24 rules, 36 rules across all of `cata/*.tex`, and `make validate`'s 34 checked /
+13 sound and minimal / 21 flagged / 2 out of scope. The blocked-by-gap census it prints is the
+first one anybody has computed across all 118: **G3 24, G8 13, E6 13, E5 8, G1 6, G7 6, G11 4**,
+then singles.
+
+**It rendered the rules by reusing `cata/*.tex` verbatim** rather than re-typesetting them, so
+the document cannot drift from the artifact, and it moved each file's `%%` diagnostics into a
+note under the rules where the dropped-branch counts and D-0009 flags belong.
+
+**Two disagreements reported rather than silently resolved, both stale text, both now fixed:**
+`catalog/README.md`'s coverage paragraph still said *12 reviewed, 106 stubs* — **the second
+hand-typed count in that file to rot within a day**, so it is now a pointer to the generated
+index rather than a third set of numbers; and five `*_fn` entries quoted their base's Status as
+`not reviewed`, written before the bases were reviewed later the same day.
+
+**Two false positives it suppressed deliberately, with the reason in the code** — `disjunctive`
+legitimately reports rules living in `cata/cumulative.tex`, so the check only compares when the
+cell names the entry's own file; and `cata/table.tex` has 0 rules but *is* one of the validator's
+11 entries, so counting entries by verdicts would have printed 10 for 11. Both are the kind of
+mismatch that would otherwise be "fixed" into a wrong number by a later session.
