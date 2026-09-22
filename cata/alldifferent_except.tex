@@ -1,0 +1,13 @@
+$$\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t \in \llbracket1,m\rrbracket \setminus \{v\}}{X_{i} \neq t,~t \in \llbracket1,m\rrbracket \setminus \{v\}}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i}=t,~t \in \llbracket1,m\rrbracket \setminus \{v\} : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%%   ** NO RULE EMITTED for X_{i}=t,~t \in \llbracket1,m\rrbracket \setminus \{v\}: 1 candidate(s), all blocked **
+%% X_{i} \neq t,~t \in \llbracket1,m\rrbracket \setminus \{v\} : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (G-1, 2026-09-22). New entry, the G8 exclusion demonstrator: alldifferent's
+%% own decomposition with the value index ranging over [[1,m]] minus the exempt value.
+%% NOT covered by validator.ml. Measured by exhaustive check over all n,m <= 4 and all
+%% v: SOUND for n >= 2 (100 firing cases, no counterexample). At n = 1 the universally
+%% quantified premise is vacuously true and the rule concludes from nothing -- the
+%% SHIPPED alldifferent rule does exactly the same (240 -> 140 firing cases, 30
+%% counterexamples, all of them at n = 1), so this entry inherits alldifferent's
+%% verdict and its weakness, including firing only when the others are already pinned.

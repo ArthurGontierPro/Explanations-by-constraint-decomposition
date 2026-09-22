@@ -1,0 +1,12 @@
+$$\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in S,~S \subseteq \llbracket1,n\rrbracket,~|S|=c+1,~i \in S,~S \subseteq \llbracket1,n\rrbracket,~|S|=c+1,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{X_{i} \neq t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i}=t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%%   ** NO RULE EMITTED for X_{i}=t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket: 1 candidate(s), all blocked **
+%% X_{i} \neq t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (G-1, 2026-09-22). New entry, the G1 demonstrator: the premise states the
+%% threshold (|S|=c+1) that at_most's rules could not previously mention.
+%% NOT covered by validator.ml, whose in_scope list is hardcoded. Measured instead by
+%% exhaustive check over all n,m <= 4, all v and all c: SOUND, 4706 firing cases, no
+%% counterexample. NOT minimal: dropping `i in S` leaves it sound (same 4706 cases),
+%% because a premise with i outside S is unsatisfiable under at_most(c). That conjunct
+%% is appended by apprim, not written by the decomposition.

@@ -44,7 +44,7 @@ type ind_symbols = PLUS|MINUS|IN|NEQ|LEQ|GEQ|EQ
   and their branches are still refused.
   ========================================================================*)
 type ind_bound = BInt of int | BPar of string*int
-type ind_elt   = EInt of int | EInd of ind_name
+type ind_elt   = EInt of int | EInd of ind_name | EPar of string
 type ind_set = D of int | D2 of ind_name list
              | DSub  of ind_set*int*int                       (*[[a,b]]*)
              | DExc  of ind_set*ind_elt list                  (*parent \ {..}*)
@@ -162,7 +162,7 @@ let print_bound b = match b with
   | BInt k     -> string_of_int k
   | BPar (s,0) -> s
   | BPar (s,k) -> if k > 0 then s^"+"^string_of_int k else s^"-"^string_of_int (-k)
-let print_elt e = match e with EInt k -> string_of_int k | EInd i -> printind_name i
+let print_elt e = match e with EInt k -> string_of_int k | EInd i -> printind_name i | EPar s -> s
 let rec op_set s = match s with
   | D a -> "D"^string_of_int a
   | D2 _ -> "D(list)"
@@ -728,6 +728,13 @@ let gen_ambig  = ref 0
 let gen_undef  = ref 0
 let footer : string list ref = ref []
 let note s = footer := !footer @ [s]
+(*A per-entry caveat, set immediately before the explainall that writes the
+  entry and cleared by write_footer. The rest of the footer is measured by the
+  generator itself; this carries what a HUMAN measured about the entry, so that
+  a .tex known to ship an unsound rule says so in the file rather than only in a
+  commit message. Empty for every entry that does not set it, which is why no
+  existing golden moves.*)
+let caveat : string list ref = ref []
 
 (*Output event explanation LateX rule from a global event and a decomposition*)
 let emit_event e dec fic =
@@ -789,7 +796,9 @@ let emit_event e dec fic =
 let write_footer fic =
   fprintf fic "\n%%%% generator diagnostics (W1-T3)";
   iter (fun s -> fprintf fic "\n%%%% %s" s) !footer;
-  footer := []
+  iter (fun s -> fprintf fic "\n%%%% %s" s) !caveat;
+  footer := [];
+  caveat := []
 
 let explain e dec =
   printf "== exp.tex ==\n";
@@ -921,8 +930,17 @@ let atmostnvalues  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC
                       Decomp (1, rule1, [Global_devent (true ,  N   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
                       Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), foralli, i_out)]);
                       Decomp (3, rule5, [Decomp_devent (true , (B 2), id, ont); Reified_devent (false, (B 4), imap [foralli;p_out], imap [i_out;t_out;forallp])])]
+(*G8, demonstrated. `among(n,x,s)` counts the i with X_i in s. Its value set s
+  was `D 4`: a per-decomposition counter the printer could not define, so W1-T2
+  refused both of among's candidate branches and cata/among.tex shipped with no
+  rule at all. s is not an anonymous set -- it is a parameter of among's own
+  signature, exactly as `n` and `m` are -- so `DPar ("s", D 2)` says so and
+  prints "t \in s,~s \subseteq [[1,m]]", which the artifact does define.
+  NOT fixed here, and still true: among's count variable n has no rule, because
+  ctr 3 uses the single-Decomp_devent rule7 shape instead of nvalues' N-channel.
+  That is G5 in docs/DECOMP_FORMAT_NOTES.md, a decomposition bug, not a gap.*)
 let among  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
-              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, ontin (D 4)); Reified_devent (true, (B 2), id, t_out)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, ontin (DPar ("s",D 2))); Reified_devent (true, (B 2), id, t_out)]);
               Decomp (3, rule7, [Decomp_devent (true , (B 2), id, oni)])]
 let regular= [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id);Decomp_devent (false, (B 1), imap [imoin 1;tprimin (D 8)], imap [iplus 1;tprimin (D 9)])])]
@@ -936,6 +954,58 @@ let table  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
               Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, imap [i_out])]);
               Decomp (4, rule4, [Decomp_devent (true , (B 2), id, onr)])]
 
+(*==========================================================================
+  G1, demonstrated. `at_most(c,x,v)` is `B_i <=> X_i = v` plus `sum_i B_i <= c`
+  -- exactly alldifferent's shape (rule1 + rule5, one Decomp_devent, no
+  Reified_devent), with alldifferent's implicit threshold of 1 replaced by a
+  general c. That is the shape G1 named: `c` lived only in the author's head,
+  so at_most(2,...) and at_most(3,...) printed the same LaTeX.
+
+  DCard puts it in the index data. rule5's surviving branch reaches the summed
+  family through `apprim`, which builds the sibling index i' from the ascending
+  op's set -- so writing that set as "a subset S of [[1,n]] with |S| = c+1"
+  makes the emitted premise quantify over S instead of over all of [[1,n]], and
+  the threshold prints.
+
+  WHY c+1 AND NOT c. `apprim` appends the PARENT index's own membership to the
+  sibling's modifier list (this is why cata/alldifferent.tex ends its premise
+  with `i \in [[1,n]]`), so the emitted premise says `i \in S` as well as
+  `forall i' in S, i' <> i`. That is not a nuisance here, it is the hinge: with
+  i inside S, the c+1 members of S other than i are exactly c witnesses, and
+  at_most(c) then forbids X_i = v. Writing |S| = c with i excluded instead makes
+  `i \in S` contradict the exclusion and the rule goes vacuous. Hence
+  BPar ("c",1) -- and hence ind_bound carries an offset rather than a bare int.
+
+  `t` is pinned to at_most's parameter value v by the seed event xacv below: the
+  count of v is bounded, not the count of every value, and a rule schematic in t
+  would be unsound for at_most. G3 (no variable-vs-variable comparison) is why
+  v has to be a parameter; D-0003 says that is the right reading anyway.
+
+  SOUNDNESS, by hand -- cata/at_most.tex is NOT covered by validator.ml, whose
+  in_scope list is hardcoded and which this session does not own. Premise: some
+  S subset of [[1,n]] with |S| = c+1 and i in S, and X_{i'} = v for every
+  i' in S \ {i}. Those are c indices distinct from i all taking v, so at_most(c)
+  leaves no room for X_i = v. Sound. NOT minimal in the droppability sense:
+  `i \in S` can be dropped and the rule stays sound, because a premise with
+  i not in S is unsatisfiable under the constraint. That redundant conjunct is
+  apprim's, not the decomposition's, and removing it would change every other
+  entry that reaches a summed family (W1-T13 territory, not G1).
+  ========================================================================*)
+let atmost = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oniin (DCard ("S",D 1,EQ,BPar ("c",1))))])]
+
+(*==========================================================================
+  G8's other half, demonstrated: EXCLUSION. `all_different_except(x,{v})` is
+  alldifferent restricted to the values other than v, so its decomposition is
+  alldiff's and the only thing that changes is the set the value index ranges
+  over -- which is precisely what G8 said could not be written down. DExc says
+  it: `[[1,m]] \ {v}`. The emitted rule is alldifferent's with that side
+  condition, so it inherits alldifferent's verdict, including the reason it only
+  ever fires at n=2 (minimality is premise-droppability, not power; W1-T13).
+  ========================================================================*)
+let alldiffexc = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+                  Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oni)])]
+
 
 (*global events*) 
 let xbc = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [])], BC)
@@ -946,6 +1016,11 @@ let i   = Global_event (true, I, [Ind (I 1, [])], AC)
 let v   = Global_event (true, V, [Ind (T 1, [])], AC)
 let ngbc= Global_event (true, O, [Ind (T 1, []); Ind (P 1, [])], BC)
 let x3ac= Global_event (true, X, [Ind (I 1, []); Ind (T 1, []);Ind (R 1, [])], AC)
+(*G1/G8 seeds: the value index carries its own side condition, so the printed
+  rule states which values it is about. xacv pins t to at_most's parameter v;
+  xacx excludes all_different_except's exempt value v from [[1,m]].*)
+let xacv = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DPar ("\\{v\\}",D 2))])], AC)
+let xacx = Global_event (true, X, [Ind (I 1, []); Ind (T 1, [Set (T 1,IN,DExc (D 2,[EPar "v"]))])], AC)
 
 let _ = explain xbc incr
 
@@ -959,11 +1034,41 @@ let _ = explainall [xac;i;v] elem "cata/element.tex"
 let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"
 let _ = explainall [xac;nbc] atmostnvalues "cata/atmostnvalues.tex"
-let _ = explainall [xac] among "cata/among.tex"
+let _ = caveat := [
+  "CAVEAT (G-1, 2026-09-22). These two rules exist again only because G8 landed:";
+  "the value set s used to be `D 4`, which W1-T2 refused, so this file shipped with";
+  "no rule. G8 made the set printable; it did NOT make the rules right. BOTH RULES";
+  "ARE UNSOUND, measured by exhaustive check over all n,m <= 4 and all s: rule 1 has";
+  "3374 firing cases and fails in all 3374; rule 2 fires 16832 times and fails in 4462.";
+  "The cause is G5, not G8: ctr 3 uses the single-Decomp_devent rule7 shape, so among's";
+  "count variable n is channelled nowhere, no rule concludes anything about it, and a";
+  "rule over X alone is sound only if it is a tautology -- among restricts X only";
+  "JOINTLY with its count. Fixing it means giving among nvalues' N-channel";
+  "(docs/DECOMP_FORMAT_NOTES.md G5), which is a decomposition repair, not a gap." ];
+    explainall [xac] among "cata/among.tex"
 let _ = explainall [xac] regular "cata/regular.tex"
 let _ = explainall [xac] roots "cata/roots.tex"
 let _ = explainall [xac] range "cata/range.tex"
 let _ = explainall [x3ac] table "cata/table.tex"
+let _ = caveat := [
+  "CAVEAT (G-1, 2026-09-22). New entry, the G1 demonstrator: the premise states the";
+  "threshold (|S|=c+1) that at_most's rules could not previously mention.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded. Measured instead by";
+  "exhaustive check over all n,m <= 4, all v and all c: SOUND, 4706 firing cases, no";
+  "counterexample. NOT minimal: dropping `i in S` leaves it sound (same 4706 cases),";
+  "because a premise with i outside S is unsatisfiable under at_most(c). That conjunct";
+  "is appended by apprim, not written by the decomposition." ];
+    explainall [xacv] atmost "cata/at_most.tex"
+let _ = caveat := [
+  "CAVEAT (G-1, 2026-09-22). New entry, the G8 exclusion demonstrator: alldifferent's";
+  "own decomposition with the value index ranging over [[1,m]] minus the exempt value.";
+  "NOT covered by validator.ml. Measured by exhaustive check over all n,m <= 4 and all";
+  "v: SOUND for n >= 2 (100 firing cases, no counterexample). At n = 1 the universally";
+  "quantified premise is vacuously true and the rule concludes from nothing -- the";
+  "SHIPPED alldifferent rule does exactly the same (240 -> 140 firing cases, 30";
+  "counterexamples, all of them at n = 1), so this entry inherits alldifferent's";
+  "verdict and its weakness, including firing only when the others are already pinned." ];
+    explainall [xacx] alldiffexc "cata/alldifferent_except.tex"
 
 (*W1-T3 — the run's own census. Nothing here changes a rule; it stops the
   generator from being silent about what it discarded.*)

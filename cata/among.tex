@@ -1,8 +1,14 @@
-
+$$\frac{X_{i} \neq t',~\forall t',~t' \neq t,~t' \in s,~s \subseteq \llbracket1,m\rrbracket,~t \in s,~s \subseteq \llbracket1,m\rrbracket~~~~X_{i} \neq t,~\forall t,~t \in s,~s \subseteq \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{X_{i}=t}$$ $$\frac{X_{i}=t,~\exists t,~t \in s,~s \subseteq \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{X_{i} \neq t}$$ 
 %% generator diagnostics (W1-T3)
-%% X_{i}=t : 1 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 1
-%%   ** REFUSED for X_{i}=t: 1 branch(es) reference undefined index set(s) D4; emitting them would state a rule over a set the artifact never defines (W1-T2) **
-%%   ** NO RULE EMITTED for X_{i}=t: 1 candidate(s), all blocked **
-%% X_{i} \neq t : 1 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 1
-%%   ** REFUSED for X_{i} \neq t: 1 branch(es) reference undefined index set(s) D4; emitting them would state a rule over a set the artifact never defines (W1-T2) **
-%%   ** NO RULE EMITTED for X_{i} \neq t: 1 candidate(s), all blocked **
+%% X_{i}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% X_{i} \neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (G-1, 2026-09-22). These two rules exist again only because G8 landed:
+%% the value set s used to be `D 4`, which W1-T2 refused, so this file shipped with
+%% no rule. G8 made the set printable; it did NOT make the rules right. BOTH RULES
+%% ARE UNSOUND, measured by exhaustive check over all n,m <= 4 and all s: rule 1 has
+%% 3374 firing cases and fails in all 3374; rule 2 fires 16832 times and fails in 4462.
+%% The cause is G5, not G8: ctr 3 uses the single-Decomp_devent rule7 shape, so among's
+%% count variable n is channelled nowhere, no rule concludes anything about it, and a
+%% rule over X alone is sound only if it is a tautology -- among restricts X only
+%% JOINTLY with its count. Fixing it means giving among nvalues' N-channel
+%% (docs/DECOMP_FORMAT_NOTES.md G5), which is a decomposition repair, not a gap.
