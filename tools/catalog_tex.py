@@ -622,8 +622,8 @@ def render(data, cmd_line, when, commit):
     L = []
     w = L.append
     w("%% catalog/catalog.tex -- GENERATED. Do not hand-edit.")
-    w("%% Regenerate with: %s" % cmd_line)
-    w("%% Generated: %s from commit %s" % (when, commit))
+    w("%%%% Regenerate with: %s" % cmd_line)
+    w("%%%% Generated: %s from commit %s" % (when, commit))
     w("%% Source: tools/catalog_tex.py, which reads tools/mzn_coverage.py")
     w("%% --json (via tools/catalog_index.py), catalog/*.md, cata/*.tex and")
     w("%% the output of `make validate`. Every number below is computed on")
