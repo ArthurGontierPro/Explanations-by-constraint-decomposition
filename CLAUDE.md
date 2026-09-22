@@ -41,12 +41,17 @@ decompositions. These are not hypotheticals; they are shipped output. Treat ever
 entry as unverified until the validator says otherwise.
 
 > **The catalog has been measured, and it is mixed.** `make validate` covers 11 of 16 entries:
-> **13 of 34 rules are sound and minimal at n,m ≤ 4, and 21 are flagged**; 2 rules in 5 entries
+> **13 of 34 rules are sound and minimal at n,m ∈ {2,3,4}, and 21 are flagged**; 2 rules in 5 entries
 > are out of scope. (This blockquote read 11 of 42 until 2026-09-21 — pre-W1-T2 figures that
 > disagreed with the table above it. **Re-measure with `make validate`; do not quote either.**)
 > `among`, `range`, `regular` and `roots` now emit **no rules at all** and `cumulative` cannot be
 > parsed, so those five entries are unmeasurable rather than unmeasured. So: run
-> `make validate` before calling any rule correct; say "validated: sound and minimal at n,m ≤ 4"
+> `make validate` before calling any rule correct; say "validated: sound and minimal at
+> n,m ∈ {2,3,4}" — **not "n,m ≤ 4", which this file and most entries said until 2026-09-22 and
+> which overstates it.** `docs/VALIDATOR.md:184` enumerates {2,3,4}; **n = 1 and m = 1 are not
+> checked at all**, and G-1's independent sweep found **30 counterexamples at n = 1 for the
+> shipped `alldifferent` rule** — a rule the validator certifies sound and minimal. Two
+> instruments, two ranges, and the gap between them is exactly where a wrong rule can hide
 > or "generated, unvalidated", never bare "correct"; and note that **sound and minimal is a
 > floor, not strength** — `alldifferent`'s one rule passes and still only ever fires at `n=2`,
 > because minimality is premise-droppability, not power.
