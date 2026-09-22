@@ -193,7 +193,7 @@ Choco LCG natives **[C]**, Choco LCG *failures* **[C✗]**.
 | `increasing`, `decreasing`, `strictly_*` | none specific | decomp | **E0** — `cata/increasing.tex` and `cata/decreasing.tex` are cleanly dual and each is **validated sound and minimal, 2/2** (2026-09-21). Wording fixed the same day: this row said "already correct", which `catalog/README.md` forbids |
 | `element` | none found | decomp **[C]** | **E0** — `cata/element.tex` generates 6 rules; **2 of 6 are validated sound-and-minimal**, the rest unvalidated (corrected 2026-09-18, W3-C — the "6 rules" phrasing read as a coverage claim, which it is not; per `CLAUDE.md`, no entry may be reported correct until the validator says so) |
 | `member` | none | decomp | **E0** — `exists(i)(x[i]=y)` |
-| `maximum`, `minimum` | none found | **native** (`minimum.cpp`) **[C]** | **E2** (var-var atoms) |
+| `maximum`, `minimum` | none found | **native** (`minimum.cpp`) **[C]** | **E2** (var-var atoms) | **Route corrected 2026-09-22: E0, not E2 — `maximum` generates 4 sound-and-minimal rules today (`cata/maximum.tex`); see W1-T20.**
 | `arg_max`, `arg_min` | none | native for bool (`bool_arg_max.cpp`) | **E2**; float variants **E7** |
 | `sort`, `arg_sort` | none | decomp | **E2** (composes `element`) |
 | `inverse`, `inverse_in_range` | none | native (`inverse` per Chuffed docs) **[G] [C]** | **E2** — channelling `x[i]=j <-> y[j]=i` is two reified families, close to **E0** |

@@ -49,6 +49,16 @@ repeats.
   name.
 
 - **G3 — only variable-vs-domain-value comparisons exist, never variable-vs-variable.**
+  **SHARPENED BY EXPERIMENT, 2026-09-22 (X-max), and the old reading was too wide.** A
+  variable-vs-variable comparison blocks a decomposition **only when it does not factor
+  through a shared threshold**. `m ≥ x_i` *factors*: `BC` events already are the order
+  encoding, so `m ≥ t ⇔ ⋁_i (x_i ≥ t)` has no var-var atom anywhere and `maximum` is
+  authorable **today** — 4 rules, all measured sound and minimal at `n,m ∈ {1..5}` including
+  `n = 1`, no constructor, schema, printer case or index operator added. `x_i = y_{p_i}` does
+  **not** factor: the obstruction there is a variable-valued *index*, and no `t` states both
+  sides separately. So the honest blocked set is `sort` / `arg_sort` /
+  `symmetric_all_different`, not `maximum` / `minimum` / `arg_max` / `arg_min` / `span`.
+  **The 25-entry width predates this test and is being re-audited (W1-T20).**
   `Global_event`/`ind_modifs` express `X_i = t` for `t` an index-derived domain value, never
   `X_i = Y_i` for two decision variables. This pilot sidesteps it by treating `count`'s `v` and
   `among`'s `s` as parameters (matching this project's own D-0003 choice to decompose for

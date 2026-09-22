@@ -136,7 +136,7 @@ check-warnings:
 	    n=$$(grep -c 'Warning [0-9]' out.txt || true); \
 	    printf "  %-14s %3d warnings\n" "$${w:-(default)}" "$$n"; \
 	  done
-	@echo "  -- expected after G-1 (2026-09-22): default 0, +27+39 6, +40+41+42 35, +a 60"
+	@echo "  -- expected after G-1 (2026-09-22): default 0, +27+39 6, +40+41+42 36, +a 61"
 	@echo "  -- these move whenever the generator changes; re-measure, do not quote"
 
 # ---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ check-warnings:
 # Exit status: 0 nothing flagged, 1 something flagged, 2 the validator's own
 # self-test or cross-check failed (in which case its verdicts mean nothing).
 # Measured 2026-09-21: 34 rules in 11 entries, 13 sound and minimal, 21 flagged;
-# 2 rules in 5 entries out of scope because the artifact is underspecified
+# 4 rules in 5 entries out of scope because the artifact is underspecified
 # (W1-T2). Re-measure these numbers, do not quote them.
 #
 # NOTE on exit codes, because an earlier version of this comment got it wrong:
