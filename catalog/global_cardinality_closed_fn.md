@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `global_cardinality_closed` ranks **C** (`C literature + solver-decomposes`) |
-| **Status** | **resolves to [`global_cardinality_closed.md`](global_cardinality_closed.md)**, whose Status row reads `nothing generated — blocked on G8` (read off that file, 2026-09-21). **No status-legend value is asserted for `global_cardinality_closed_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`global_cardinality_closed.md`](global_cardinality_closed.md)**, whose Status row reads `encodable today, not encoded` (re-read 2026-09-22 after G8 closed; it read `nothing generated — blocked on G8` when this entry was written). **No status-legend value is asserted for `global_cardinality_closed_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/global_cardinality_closed_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`global_cardinality_closed.md`](global_cardinality_closed.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`global_cardinality_closed.md`](global_cardinality_closed.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains global_cardinality_closed, so `no published rule exists` is **not** claimed here |
@@ -178,7 +178,14 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`global_cardinality_closed.md`](global_cardinality_closed.md)** — that entry's Status row reads `nothing generated — blocked on G8`.
+**resolves to [`global_cardinality_closed.md`](global_cardinality_closed.md)** — that entry's
+Status row reads `encodable today, not encoded`.
+
+**This quotation was stale and is re-read as of 2026-09-22.** It said
+`nothing generated — blocked on G8`; G8 closed that day (session G-1, `4547daf` and `1e747ee`)
+and the base entry had already argued that G8 was the *whole* of its difficulty, so its status
+moved to the legend value for "the format can express it and nothing does it". Still nothing
+generated under either name.
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -227,7 +234,7 @@ gaps mean; none is attributed to `global_cardinality_closed_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:66` read → the name, and that the snapshot carries
   names only.
 - `catalog/global_cardinality_closed.md` read, not run → the base entry's Status row, quoted above as
-  `nothing generated — blocked on G8`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `encodable today, not encoded` as re-read on 2026-09-22 (U2), and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `global_cardinality_closed_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,

@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **C** (`C literature + solver-decomposes`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. Ecodes `E0`, `E3`, `E4`, `E9`; the row is shared with `global_cardinality` at `CHRISTMAS_LIST.md:127` |
-| **Status** | `nothing generated — blocked on G1` |
+| **Status** | `nothing generated — blocked on G1` — **still, after G1's partial closure on 2026-09-22**: the `ub` direction is now writable, the `lb` direction needs a symbolic `n − lb_t`. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | **0** — there is no `cata/global_cardinality_low_up.tex`. `ls cata/` (2026-09-21) lists 16 files and none is this one |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex`; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones |
 | **Calibration** | **out of reach** — inherited from [`gcc.md`](gcc.md) and *reinforced* here: there is also no generated premise on this side to compare |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json`, and reads of `explenation generator.ml` and `CHRISTMAS_LIST.md:127` |
+| **Last measured** | 2026-09-21 for the tier, validator and calibration rows. **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; unchanged, and no new run |
 
 ## Read this before the rest of the entry
 
@@ -157,6 +157,30 @@ Nothing here is validated, flagged or refuted: with no artifact there is nothing
 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**) contain no line for this
 name.
 
+## What G1's partial closure on 2026-09-22 does and does not change
+
+**Re-checked by U2, 2026-09-22, by reading `explenation generator.ml` after G-1's commits
+`4547daf` and `1e747ee`. The status does not change, and the reason is a direction, not an
+oversight.**
+
+- **The `≤ ub_t` half is now writable.** `DCard (name, parent, op, bound)`
+  (`explenation generator.ml:52`, printed `:537`) carries a threshold on a named witness set
+  into the index data, and `at_most(c)` is exactly this shape: `DCard ("S", D 1, EQ,
+  BPar ("c", 1))` (`:995`), shipped as `cata/at_most.tex`. `global_cardinality`'s upper bound
+  *is* `at_most(ub_t)` once per value. **This also disposes of the G2 objection in the table
+  below**: `BPar`'s first component is a plain string the printer emits verbatim, exactly as
+  `at_most`'s seed writes its singleton as the literal `DPar ("\\{v\\}", D 2)` (`:1022`), so
+  `ub_t` can be *named* even though `var_name` has no letter for it.
+- **The `≥ lb_t` half is not.** Its witness set is the variables that do *not* take the value,
+  of size **`n − lb_t`**, and `ind_bound` is `BInt of int | BPar of string*int` (`:46`), printed
+  at `:161-164` as a name plus or minus a **literal integer**. One symbol minus another is not an
+  `ind_bound`. This is the same wall as [`at_least`](at_least.md), and **G-1 named it when it
+  left that case undone** (`WORKLOG.md:1615-1616`).
+
+So G1 is **half closed**, and a half-closed G1 leaves `_low_up` blocked, because a `low_up`
+constraint with only its upper bound is `at_most`, not this. *A reading of the generator's types
+and printers, not a measurement; nothing was run.*
+
 ## Calibration (W3-T5, D-0013)
 
 **Verdict: out of reach.**
@@ -193,8 +217,8 @@ failure to compare.
 
 | gap | what it blocks here |
 |---|---|
-| **`G1`** | **the binding one.** No way to carry a bare integer threshold into the printed rule: `lb[j]`/`ub[j]` are never captured as an `event`, an index or anything else the printer walks. `docs/DECOMP_FORMAT_NOTES.md` G1, whose empirical confirmation is `cata/alldifferent.tex`'s unprinted implicit "1" |
-| `G2` | adjacent, and worth naming: `var_name` is the closed variant `X \| B of int \| T \| I \| V \| N \| O` with no slot for "this constraint's own parameter", so even an *indexed* constant `lb_t` has no letter of its own. G1 is why it cannot be printed; G2 is why it cannot be named |
+| **`G1`** | **the binding one, and now half closed** (2026-09-22, `4547daf`/`1e747ee`). `DCard` carries a threshold into the printed rule for a sum's `≤` direction — `cata/at_most.tex` is the demonstrator — so `ub[j]` is writable. `lb[j]` is not: its witness set is `n − lb_t` and `ind_bound` is a name plus a literal integer (`explenation generator.ml:46`, `:161-164`). See the section above the Calibration heading |
+| `G2` | **withdrawn as a blocker, 2026-09-22.** The claim was that `var_name`'s closed variant leaves an indexed constant `lb_t` with no letter of its own. `ind_bound`'s `BPar of string*int` (`explenation generator.ml:46`) takes an arbitrary string the printer emits verbatim, and `at_most`'s shipped seed already writes raw LaTeX into such a slot (`DPar ("\\{v\\}", D 2)`, `:1022`). So `lb_t` can be named. The `var_name` observation stands; it is not what blocks this entry |
 | `G4`? | [`gcc.md`](gcc.md) lists this ("one Boolean-sum family per rule; the `_low_up` form wants two"). **This entry disagrees and says so** — see the discrepancy note. `rule5` and `rule6` give the two directions in two separate rules over one family, and the `failwith` site is reached only by several *families* in one step |
 | `G12`/`G13` | inherited from the family: `length(xs) >= sum(count)` sums *integer* variables (E9, D-0011). Arguably absent from `_low_up`, which has no `counts` array to sum |
 | — | the published flow rule is blocked by **no gap on this list** — **E4 is necessary but not sufficient** (Calibration) |

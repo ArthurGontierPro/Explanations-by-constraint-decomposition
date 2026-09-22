@@ -180,6 +180,11 @@ has no file to read. The generated rules for this constraint are rendered in
 
 **resolves to [`range.md`](range.md)** — that entry's Status row reads `nothing generated — blocked on G8`.
 
+**Re-read 2026-09-22 (U2) and unchanged**, which is worth recording because three sibling
+resolution entries moved on that date. G1 and G8 closed (session G-1, `4547daf`, `1e747ee`), but
+`D of int` beyond `D 3` and `D2` were left untouched and are still refused
+(`explenation generator.ml:517-521`), so the base entry's block is exactly what it was.
+
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
 none of its own, and inventing one would double-count the base entry's evidence under a second

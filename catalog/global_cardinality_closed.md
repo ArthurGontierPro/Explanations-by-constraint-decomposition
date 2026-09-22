@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **C** (`C literature + solver-decomposes`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. Ecodes `E0`, `E3`, `E4`, `E9`; the row is shared with `global_cardinality` at `CHRISTMAS_LIST.md:127` |
-| **Status** | `nothing generated — blocked on G8` |
+| **Status** | `encodable today, not encoded` — **G8 closed on 2026-09-22, and this entry's own text said it was the whole of the difficulty.** Re-decided by U2, 2026-09-22. See Status |
 | **Generated** | **0** — there is no `cata/global_cardinality_closed.tex`. `ls cata/` (2026-09-21) lists 16 files and none is this one |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex`; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones |
 | **Calibration** | **out of reach** — inherited from [`gcc.md`](gcc.md) and *reinforced* here: there is also no generated premise on this side to compare |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json`, and reads of `explenation generator.ml` and `CHRISTMAS_LIST.md:127` |
+| **Last measured** | 2026-09-21 for the tier, validator and calibration. **Status re-decided 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; no new run |
 
 ## Read this before the rest of the entry
 
@@ -125,22 +125,45 @@ was never asked, because no decomposition value for this variant is encodable (b
 
 ## Status
 
-**`nothing generated — blocked on G8`**
+**`encodable today, not encoded`**
 
-**The one feature this variant adds is a disjunction over a value *subset*, and `ind_set` cannot
-name a subset.** Closedness is `∀i: ⋁_{t ∈ cover} B1_{i,t}` — mechanically a `rule4`
-disjunction over the value family, which is a schema the generator already has and already uses
-(`regular`, `explenation generator.ml:854-855`). What it does not have is a way to say
-`t ∈ cover` when `cover` is a proper subset of the printer's value range: **G8** is
-"`ind_set` names only whole predefined ranges — no subrange, no exclusion"
-(`docs/DECOMP_FORMAT_NOTES.md:76`), and `ind_set_defined` (line **459**) admits exactly `D 1`,
-`D 2`, `D 3`.
+**This status changed on 2026-09-22.** The previous one — `nothing generated — blocked on G8` —
+is retired because G8 closed that day (session G-1, commits `4547daf` and `1e747ee`), and this
+entry had already argued that G8 was *the whole* of the difficulty. That argument is quoted
+below and it is now an argument for the new status rather than the old one. There is no gap left
+to name, which is the legend condition `catalog/README.md` attaches to this value.
 
-**And the degenerate case shows the gap is the whole of the difficulty.** If `cover` happens to
-be the entire value range `[1,m]`, closedness is vacuous and `global_cardinality_closed` *is*
-`global_cardinality` — the shipped `gccn` would already be it. Everything separating this entry
-from [`gcc.md`](gcc.md) therefore sits in the one construct G8 names. *That is reasoning from the
-semantics and the format, not a measurement*; nothing was run, because there is nothing to run.
+**What the block was.** The one feature this variant adds is a disjunction over a value
+*subset*. Closedness is `∀i: ⋁_{t ∈ cover} B1_{i,t}` — mechanically a `rule4` disjunction over
+the value family, a schema the generator already has and already uses (`regular`). What it did
+not have was a way to say `t ∈ cover` when `cover` is a proper subset of the printer's value
+range: **G8** was "`ind_set` names only whole predefined ranges — no subrange, no exclusion"
+(`docs/DECOMP_FORMAT_NOTES.md:76`).
+
+**Why it is gone.** `ind_set` now carries four further formers (`explenation generator.ml:48-52`)
+and two of them write exactly this set. `DPar (name, parent)` names a parameter subset and
+prints its own containment — `"cover,~cover \\subseteq \\llbracket1,m\\rrbracket"`
+(`:536`) — which is the faithful reading of MiniZinc's `cover` argument, a parameter array of
+covered values. `DSub (parent,a,b)` would write it instead as a literal subrange if an instance
+warranted one (`:534`). Either is admitted by `ind_set_defined` (`:520-525`), and admitted
+*without* relaxing W1-T2: these formers define themselves by being printed, so they are not
+`D_4`. `D of int` beyond 3 and `D2` are untouched and still refused, which is why `range`,
+`roots`, `regular` and `table` still emit nothing.
+
+**And the degenerate case, which is why G8 was the whole of it.** If `cover` is the entire value
+range `[1,m]`, closedness is vacuous and `global_cardinality_closed` *is* `global_cardinality` —
+the shipped `gccn` would already be it. Everything separating this entry from [`gcc.md`](gcc.md)
+sat in the one construct G8 named.
+
+**What would have to be written.** The `gccn` value at `explenation generator.ml:909` unchanged,
+plus one `Decomp (_, rule4, …)` over the `B1` family whose value index ranges over
+`DPar ("cover", D 2)`, and one `explainall` line. `oni`/`ont` and their set-taking siblings
+`oniin`/`ontin` already accept an `ind_set` argument, which is the interface `at_most`
+(`:994-995`) and `among` (`:942-943`) use. **Nothing was run**: no value was authored, no
+artifact produced, no rule of this constraint seen or judged. Two sobering precedents apply and
+neither is predicted away here — `among` got two rules from G8's closure and both are measured
+**UNSOUND**, and this entry's Calibration below stays `out of reach` for reasons G8 never
+touched.
 
 This is on top of, not instead of, everything that already blocks the base entry from reaching
 the published rule: `gcc.md`'s own Gaps table lists G1, G4, G11 and G12/G13, and its calibration
@@ -187,7 +210,7 @@ failure to compare.
 
 | gap | what it blocks here |
 |---|---|
-| **`G8`** | **the binding one, and the only one unique to this variant.** `ind_set` names only whole predefined ranges — no subrange, no exclusion — so `⋁_{t ∈ cover} B1_{i,t}` has no encoding. `docs/DECOMP_FORMAT_NOTES.md:76` names `all_different_except*` and `inverse_in_range` as the other constraints that hit it; add this one |
+| **`G8`** | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). It was the binding one and the only one unique to this variant: `ind_set` named only whole predefined ranges, so `⋁_{t ∈ cover} B1_{i,t}` had no encoding. `DPar`/`DSub` now write it — see Status. `docs/DECOMP_FORMAT_NOTES.md:76` still lists this gap as open; that file is not this session's to edit |
 | `G1` | inherited from [`gcc.md`](gcc.md): a bare integer threshold cannot reach the printed rule. Not binding *here* — `_closed` adds no threshold — but it still blocks the family's `low`/`up` siblings |
 | `G12`/`G13` | inherited: `length(xs) >= sum(count)` sums *integer* variables, a fourth kind of schema (E9, D-0011) |
 | — | the published flow rule is blocked by **no gap on this list**: its premises are indexed by a run-time graph cut, so **E4 is necessary but not sufficient** (Calibration, from C2 via `gcc.md`) |

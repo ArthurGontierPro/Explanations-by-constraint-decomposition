@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G8` — **the same wall as [`among`](among.md)**, measured. See Status |
+| **Status** | `encodable today, not encoded` — **G8 closed on 2026-09-22 and it was this entry's only wall.** Re-decided by U2, 2026-09-22. See Status |
 | **Generated** | no generator entry — there is no `cata/count.tex` |
 | **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `count` entry |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:128` records `none specific` |
-| **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, and **three scratch generator runs** (below) |
+| **Last measured** | 2026-09-21 for the tier, validator and scratch runs (below). **Status re-decided 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; no new run |
 
 ## Constraint
 
@@ -120,24 +120,47 @@ read. The rules quoted above are scratch output and are not catalog artifacts.
 
 ## Status
 
-**`nothing generated — blocked on G8`**, and it is worth stating what that supersedes.
+**`encodable today, not encoded`**
 
-The obvious reading of `count` in this corpus — the one `CHRISTMAS_LIST.md:128` prices at
-**E0** and `decomps/count.md` prices at E0 as well — is that every schema already exists, so
-the entry is a morning's authoring. Measured, it is not:
+**This status changed on 2026-09-22 and the previous one — `nothing generated — blocked on G8` —
+is retired, not softened.** G8 was closed that day (session G-1, commits `4547daf` and
+`1e747ee`), and the wall the paragraphs below measured is the one it took down. There is now no
+gap to name, which is why this entry uses the legend value `catalog/README.md` added for exactly
+that case rather than inventing a G-number.
 
-- the **value** `v` cannot be a parameter (an `X` literal without a value index raises at
-  `:512`), so it must be a one-element value set, which is `ontin (D k)` for a `D k` that
-  `ind_set_defined` (`:459`) does not admit and W1-T2 refuses. **G8.**
-- the **count variable** `c` is the easy part. `nvalues`' `N` channel works; run (b) emitted
-  three rules concluding about it. G5 — the defect that makes shipped `among` conclude nothing
-  about its count — is **not** `count`'s problem, because S3 has the channel by construction.
-- so the pricing to carry forward is: **E0 for the schemas, G8 for the value**, and the E0 cell
-  is right about the schemas and silent about the index sets, exactly as it is for
-  `at_most`/`at_least`/`exactly`.
+**What the block was, and why it is gone.** The measured obstacle was the *value*: `v` cannot be
+a bare parameter, because an `X` literal with no value index raises `Failure "hd"` at
+`explenation generator.ml:512`, so `v` had to be written as a one-element value **set** — and
+`ind_set` had no former for one. `ind_set` now has four (`explenation generator.ml:48-52`), and
+`DPar` is the one this needs: `at_most`'s seed event is
+`Set (T 1, IN, DPar ("\\{v\\}", D 2))` (`:1022`), which keeps the value index `t` the printer
+demands and pins it to the singleton `{v}`. `ind_set_defined` admits it (`:520-525`) because
+`printind_set` renders its own containment (`:536`), so it is not a `D_4`. `cata/at_most.tex`
+ships the result. The same seed serves `count`.
 
-Nothing here is validated, flagged or refuted; the content of the entry is the negative result
-and the three runs behind it.
+**What was never the block, restated because it is now the whole of the work.** The **count
+variable** `c` is the easy part: `nvalues`' `N` channel works (`explenation generator.ml:921-924`,
+a `rule7` whose `Reified_devent` carries `N`), and scratch run (b) emitted three rules concluding
+about it. **G5 is not `count`'s defect** — it is shipped `among`'s missing count channel, and S3
+has the channel by construction. That distinction is now load-bearing, because `among` is the
+cautionary case: G8's closure gave it two rules and both are measured **UNSOUND**
+([`among.md`](among.md)), precisely because its count is channelled nowhere. `count` does not
+share that fault, but nothing about this status predicts a verdict.
+
+**What would have to be written** — a decomposition value in the generator's `(*Decompositions*)`
+block, on the `at_most` pattern at `explenation generator.ml:994-995`:
+
+1. `Decomp (1, rule1, [Global_devent (X …); Reified_devent ((B 1) …)])` — `B1_i ⇔ X_i = t`.
+2. `Decomp (1, rule1, [Global_devent (N …); Reified_devent ((B 4) …)])` — the count channel,
+   copied from `nvalues` (`:922`). `G2` still applies: `var_name` has no letter meaning "the
+   count of a given value", so `c` borrows `N`.
+3. `Decomp (2, rule7, [Decomp_devent ((B 1) …); Reified_devent ((B 4) …)])` — the Boolean sum
+   `=`, with the `Reified_devent` present, which is what separates this from `among`'s G5 bug.
+
+plus a seed `Global_event` restricting `t` to `DPar ("\\{v\\}", D 2)` and one `explainall`
+line. **Nothing here was run.** This is a reading of the generator's types and of the two
+demonstrators G-1 shipped, not a measurement: no value was authored, no artifact was produced,
+and no rule of this constraint has been seen, let alone judged.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -155,7 +178,7 @@ here.
 
 | gap | what it blocks here |
 |---|---|
-| `G8` | **the binding one, measured.** `ind_set` names only whole predefined ranges, so the counted value `v` has no one-element set; `D_4` is refused by W1-T2. Identical to [`among`](among.md)'s wall |
+| `G8` | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). It was the binding one, measured: `ind_set` named only whole predefined ranges, so the counted value `v` had no one-element set and `D_4` was refused by W1-T2. `DPar` now writes it — see Status. The row is kept because the measurement above it was real |
 | — (unnumbered) | **the printer requires a value index on every `X` literal** — the parameter reading of `v` raises `Failure "hd"` at `explenation generator.ml:512`. Measured twice (here and under [`at_most.md`](at_most.md)); it is in neither `docs/DECOMP_FORMAT_NOTES.md` nor `docs/ROADMAP.md`, and it is the sibling of W1-T10 and W1-T15 in the same printer |
 | `G2` | `var_name` is the closed variant `X \| B of int \| T \| I \| V \| N \| O` (`explenation generator.ml:3`) and has no letter for "the count of a given value", so `count`'s own `c` must borrow `N` (`nvalue`'s) or `O` (`gcc`'s). Mechanically harmless in one file; it means the printed letter is another constraint's |
 | `G5` | **not `count`'s.** G5 is the shipped `among`'s missing count channel; S3 has the channel, and run (b) measured it concluding about `N` |
@@ -163,7 +186,8 @@ here.
 | `G3` | only for the general MiniZinc form with `v` a variable |
 
 Extensions: **E0** — `CHRISTMAS_LIST.md:128`, verbatim: "**E0** — this is `rule5/6/7` exactly as
-built". Closing G8 is part of **E2**/W2-T1, as `catalog/among.md` records.
+built". With G8 closed, that cell is now right about the index sets as well as the schemas,
+which it was not when this entry was written.
 Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 
 ## How this entry was produced
@@ -203,6 +227,11 @@ Source: `docs/DECOMP_FORMAT_NOTES.md` (consolidated wave-two numbering).
 3. **`decomps/count.md:24-25`'s "minus the intermediate per-value existential … `count` does
    not [need]" is contradicted by run (a).** Dropping that step aborts the printer. The file's
    G2 note is sound; this sentence is not.
-4. **[`catalog/count_fn.md`](count_fn.md) quotes this entry's Status as `not reviewed`**, read
-   off the stub on 2026-09-21. It is now `nothing generated — blocked on G8`. That file is not
-   this session's to edit.
+4. **[`catalog/count_fn.md`](count_fn.md) quotes this entry's Status.** It read `not reviewed`
+   off the stub on 2026-09-21, then `nothing generated — blocked on G8`; as of 2026-09-22 it is
+   `encodable today, not encoded`. U2 updated that quotation in the same commit as this change.
+
+5. **Everything above discrepancy 4 was measured on 2026-09-21 and G8 closed on 2026-09-22.**
+   The three scratch runs, the `Failure "hd"` at `:512` and the four `REFUSED … (D4)`
+   diagnostics all still stand as records of what the format was; they are no longer a record of
+   what it is. Only the Status section has been re-decided, and it says so.

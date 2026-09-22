@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G8` — **twice over**, and on `G1`. See Status |
+| **Status** | `nothing generated — blocked on G8` — **once over now, not twice**, and on `G1`. The value set became sayable on 2026-09-22; the sliding window did not. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | no generator entry — there is no `cata/sliding_among.tex` |
 | **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `sliding_among` entry |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:133` records `none` |
-| **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, `explenation generator.ml` read |
+| **Last measured** | 2026-09-21 for the tier and validator rows. **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; the status value is unchanged, one of its three justifications is withdrawn, and no new run was made |
 
 ## Constraint
 
@@ -104,25 +104,44 @@ undefined set for the window, so the expected result is 0 rules for the same rea
 
 ## Status
 
-**`nothing generated — blocked on G8`, twice over, and on `G1`.**
+**`nothing generated — blocked on G8`** — **once over now, and still on `G1`.**
 
-- **G8, the value set.** `among`'s `v` is already an undefined `D_4`; `sliding_among` inherits
-  it unchanged, and `catalog/among.md` records it as that entry's binding gap.
-- **G8, the window.** `∑_{i ∈ [j, j+seq-1]}` is a subrange of the position range, sliding with
-  `j`. `ind_set` is `D of int | D2 of ind_name list` (`explenation generator.ml:6`);
-  `ind_set_defined` (`:459`) admits `D 1`, `D 2`, `D 3` and nothing else, and `D2` — the hook
-  that could name a computed set — has no printer and **raises** (`:464`, and
-  `docs/DECOMP_FORMAT_NOTES.md:100-111`, where W2-A's "checked negative" on `D2` was withdrawn).
-  Note that the *shift* operators exist (`iplus`, `imoin`, `:792-793`) and are what `increasing`
-  and `regular` use, and `oniin`/`ontin` (`:767-768`) already take a set as an argument. What is
-  missing is not arithmetic on an index, nor an operator to consume the set: it is the **set**.
-- **G1, the bounds.** `sliding_among(lo, up, …)` compares each window's count against two bare
-  integers, and no bare integer reaches the printed rule — the defect
-  `at_least`/`at_most`/`exactly` share (`decomps/_shapes.md`, S2; see [`at_most.md`](at_most.md)).
+**Re-checked 2026-09-22 (U2) after G-1 closed G1 and G8 in commits `4547daf` and `1e747ee`.
+One of the three justifications below is withdrawn; the other two hold, and either alone is
+enough to keep the status.** `catalog/among.md`'s own warning is the frame for this: G8's
+closure gave `among` two rules and **both are measured UNSOUND** — the set became sayable and
+the decomposition did not become right.
+
+- **~~G8, the value set.~~ WITHDRAWN.** `among`'s `v` was an undefined `D_4`; it is not any
+  more. `ind_set` gained `DPar (name, parent)`, which names a parameter subset and prints its
+  own containment (`explenation generator.ml:51`, printed `:536`), and shipped `among` now uses
+  `ontin (DPar ("s", D 2))` (`:943`). `cata/among.tex` carries the result — two rules where it
+  had none.
+- **G8, the window. STANDS, and it is now the sharper half.** `∑_{i ∈ [j, j+seq-1]}` is a
+  subrange of the position range, **sliding with `j`**. The new `DSub` former is
+  `DSub of ind_set*int*int` (`explenation generator.ml:49`), and `printind_set` renders it as
+  `"\\llbracket"^string_of_int a^","^string_of_int b^"\\rrbracket"` (`:534`): **both endpoints
+  are OCaml `int` literals.** `DSub (D 1, 1, 3)` is writable; `[j, j+seq-1]`, whose endpoints
+  are an `ind_name` and an offset from it, is not — no former takes an index in an endpoint
+  position. `D2 of ind_name list`, the hook that could name a computed set, is **unchanged and
+  still raises** (`:532`), and `ind_set_defined` still rejects it (`:521`). The *shift*
+  operators exist and are what `increasing` and `regular` use, and `oniin`/`ontin` already take
+  a set argument; what is missing is still the **set**, and G8's closure did not supply this one.
+- **G1, the bounds. STANDS, half of it.** `sliding_among(lo, up, …)` compares each window's
+  count against two bare integers. `DCard` now carries a threshold into the printed rule —
+  `at_most(c)` writes `DCard ("S", D 1, EQ, BPar ("c", 1))` (`:995`) and ships
+  `cata/at_most.tex` — so the `≤ up` direction is expressible. The `≥ lo` direction is not: its
+  witness set has size `n − lo` and `ind_bound` is `BInt of int | BPar of string*int` (`:46`),
+  printed at `:161-164` as a name plus or minus a *literal integer*. Same wall as
+  [`at_least`](at_least.md), and **G-1 named it when it left that case undone**
+  (`WORKLOG.md:1615-1616`).
 
 **The E0 route cell is right about the schemas and silent about the index sets**, exactly as it
-is for the rest of §2. Every schema this constraint needs exists; not one of the index sets it
-needs can be named.
+is for the rest of §2. Every schema this constraint needs exists; of the three index-set and
+threshold constructs it needs, one arrived on 2026-09-22 and two did not.
+
+*Everything in this section is read off `explenation generator.ml`'s types and printers with
+line numbers re-measured today (W1-T14); nothing was run and no decomposition was authored.*
 
 ## Calibration (W3-T5, D-0013)
 
@@ -136,8 +155,8 @@ verdict — and with 0 rules there is nothing to place in an implication order. 
 
 | gap | what it blocks here |
 |---|---|
-| `G8` | **the binding one, and it applies twice**: to `among`'s value set (already `D_4`, already refused) and to the sliding window subrange. `D2 of ind_name list` is the hook, is used by nothing and raises (`explenation generator.ml:464`) |
-| `G1` | the window bounds `lo`/`up` never reach the printed rule |
+| `G8` | **the binding one, and it now applies once, not twice.** The value set is CLOSED (2026-09-22): `DPar` writes it and shipped `among` uses it (`explenation generator.ml:943`). The **sliding window** is not: `DSub of ind_set*int*int` (`:49`) takes two literal `int` endpoints, and `[j, j+seq-1]`'s endpoints depend on a running index. `D2 of ind_name list` is still the hook, is still used by nothing and still raises (`:532`) |
+| `G1` | **half closed 2026-09-22.** `DCard` carries a threshold for the `≤` direction, so `up` reaches the printed rule; `lo` does not — its witness set is `n − lo`, which `ind_bound` cannot form (`explenation generator.ml:46`, `:161-164`) |
 | `G3` | only if the counted set's elements may be variables; not binding under D-0003's parameter reading, as for `among` |
 | `G5` | **not this entry's** — the shipped `among`'s missing count channel is an authoring defect in `among`, and `sliding_among` has no shipped decomposition to inherit it |
 

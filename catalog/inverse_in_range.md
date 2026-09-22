@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **B** — `B no-literature + solver-native`, ecodes `['E0', 'E2']` (shared row with `inverse`) |
-| **Status** | `nothing generated — blocked on G8` — **and, like `inverse`, on G9 as a cost. See Status.** |
+| **Status** | `encodable today, not encoded` — **G8 closed on 2026-09-22; G9 and G2 were always costs, not walls.** Re-decided by U2, 2026-09-22. See Status |
 | **Generated** | **0** rules — there is no `cata/inverse_in_range.tex` and no generator value for it |
 | **Validator** | out of scope: nothing to validate. `make validate` reads `cata/*.tex` and this constraint has no artifact there |
 | **Calibration** | **no published rule** — `CHRISTMAS_LIST.md:199` records the literature column as `none` |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json` |
+| **Last measured** | 2026-09-21 for the tier and validator rows. **Status re-decided 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; no new run |
 
 ## Constraint
 
@@ -96,25 +96,43 @@ name), so `grep -o '\frac'` has no file to count.
 
 ## Status
 
-**`nothing generated — blocked on G8`**
+**`encodable today, not encoded`**
 
-`docs/DECOMP_FORMAT_NOTES.md:76` states G8 as "`ind_set` names only whole predefined ranges —
-no subrange, no exclusion", and names `all_different_except*` and **`inverse_in_range`** as
-the constraints that hit it. Read against the source, that is exactly right and it is
-absolute: three whole ranges exist, a fourth would need a new `ind_set` constructor, a
-printer for it, and admission by `ind_set_defined` — and, per W1-T2's reasoning at l.437-447,
-a naming scheme that does not repeat the `D_k` mistake of meaning different things in
-different entries.
+**This status changed on 2026-09-22**, and the change is the narrowest of the three U2 made:
+this entry already held that G8 was the *only* wall and that G9 and G2 were costs. G8 closed
+that day (session G-1, commits `4547daf` and `1e747ee`), so the wall is gone and the costs are
+what remain — which is precisely [`inverse`](inverse.md)'s position, and `inverse` already
+carries this status.
 
-**G9 applies too and is a cost rather than a wall**, exactly as in
-[`inverse`](inverse.md): there is no `Global ⇔ Global` channel schema, so the two-array
-channel re-derives `element`'s multi-`Decomp` detour by hand. **G2** applies for the same
-reason as there: `var_name` (l.3) has no letter *meaning* a second user array, so `Y` borrows
-`O` and prints as `gcc`'s occurrence array (`printvartex` l.522, `gccn` l.829). Neither would
-stop the value being written — [`inverse`](inverse.md) is `encodable today, not encoded` for
-exactly that reason — and G8 is what stops this one emitting.
+**What the block was, and the prediction this entry made about it.** `docs/DECOMP_FORMAT_NOTES.md:76`
+states G8 as "`ind_set` names only whole predefined ranges — no subrange, no exclusion", and
+names `all_different_except*` and **`inverse_in_range`** as the constraints that hit it. This
+entry read it against the source and called it absolute, adding that closing it would need "a
+new `ind_set` constructor, a printer for it, and admission by `ind_set_defined`" plus a naming
+scheme that does not repeat the `D_k` mistake. **All four arrived together.** `ind_set` gained
+four formers (`explenation generator.ml:48-52`); `printind_set` prints each
+(`:531-537`); `ind_set_defined` admits them (`:520-525`); and the naming problem was answered by
+making each former *render its own meaning*, so a set is never a bare `D_4` whose definition
+lives elsewhere. `DSub (parent, a, b)` is the one this constraint needs — it prints
+`\\llbracket a,b \\rrbracket` (`:534`) — and it is the sub-range `decomps/inverse.md` and
+`decomps/_shapes-perm.md:92-95` both say is the entire difference from `inverse`.
 
-**Nothing here is validated, flagged or refuted.** There is no artifact.
+**Two things the new status does not say.** It does not say the rules would be good:
+`alldifferent_except`, G8's shipped exclusion demonstrator, inherits `alldifferent`'s weakness
+and fires only at `n = 2`, and `among` got two rules from the same closure that are measured
+UNSOUND. And it does not say the decomposition can be written *faithfully* yet — **the exact
+range semantics of the MiniZinc global is not stated anywhere in this repo** (see "Constraint"),
+so whoever writes the value has to source it first. `DSub` takes two literal `int` endpoints
+(`:49`), which is what "a sub-range of `[1,n]`" needs and is *not* enough for an endpoint that
+depends on a running index — see [`sliding_among`](sliding_among.md), where that distinction is
+the reason the status did not change.
+
+**G9 and G2 still apply, still as costs.** There is no `Global ⇔ Global` channel schema, so the
+two-array channel re-derives `element`'s multi-`Decomp` detour by hand (G9); and `var_name` has
+no letter *meaning* a second user array, so `Y` borrows `O` and prints as `gcc`'s occurrence
+array (G2). Neither stops the value being written, which is why neither is named in the status.
+
+**Nothing here is validated, flagged or refuted.** There is no artifact, and nothing was run.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -133,13 +151,13 @@ be calibrated against either.
 
 | gap | what it blocks here |
 |---|---|
-| `G8` | **the binding one, and a wall.** `ind_set` names only whole predefined ranges (l.6, l.459-460); a channel over a sub-range cannot be written or printed (`docs/DECOMP_FORMAT_NOTES.md:76`, which names this constraint) |
+| `G8` | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). It was the binding one and a wall: `ind_set` named only whole predefined ranges, so a channel over a sub-range could not be written or printed. `DSub` now writes it (`explenation generator.ml:49`, `:534`) — see Status. `docs/DECOMP_FORMAT_NOTES.md:76` still lists it as open; that file is not this session's to edit |
 | `G9` | a **cost**: no `Global ⇔ Global` channel schema, so the channel re-derives `element`'s detour (`docs/DECOMP_FORMAT_NOTES.md:77`) |
 | `G2` | **not in this constraint's spec; read off the source.** `var_name` (l.3) has no letter *meaning* a second user array; `Y` borrows `O` (l.522, `gccn` l.829). A legibility cost — see [`inverse`](inverse.md), Status |
 | `G17` | no pivot-elimination pass. Not biting: the reification booleans wash out |
 
 Extensions: **E0, E2** (`CHRISTMAS_LIST.md:199`). The row's "close to **E0**" assessment is
-about the *channel*; the sub-range is the part that is not.
+about the *channel*; the sub-range was the part that was not, and as of 2026-09-22 it is.
 Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
 
 **Numbering warning.** `decomps/inverse.md` predates the consolidation and calls this gap

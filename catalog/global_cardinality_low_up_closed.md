@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **C** (`C literature + solver-decomposes`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. Ecodes `E0`, `E3`, `E4`, `E9`; the row is shared with `global_cardinality` at `CHRISTMAS_LIST.md:127` |
-| **Status** | `nothing generated — blocked on G1` |
+| **Status** | `nothing generated — blocked on G1` — **still, after G1's partial closure and G8's full closure on 2026-09-22**: the `lb` direction needs a symbolic `n − lb_t`. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | **0** — there is no `cata/global_cardinality_low_up_closed.tex`. `ls cata/` (2026-09-21) lists 16 files and none is this one |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex`; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones |
 | **Calibration** | **out of reach** — inherited from [`gcc.md`](gcc.md) and *reinforced* here: there is also no generated premise on this side to compare |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json`, and reads of `explenation generator.ml` and `CHRISTMAS_LIST.md:127` |
+| **Last measured** | 2026-09-21 for the tier, validator and calibration rows. **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; unchanged, and no new run |
 
 ## Read this before the rest of the entry
 
@@ -148,6 +148,31 @@ parts of the format — one a threshold on a sum, one the index set of a disjunc
 neither interferes with the other. This is the one place where the four-way suffix combination
 turns out to cost nothing extra, in contrast with `cumulatives_opt`, where it does.
 
+**Re-checked 2026-09-22 (U2), after G-1's commits `4547daf` and `1e747ee`. The status is
+unchanged and the paragraph above is the reason the re-check was quick: the parts move
+independently, so one of the two can close without the status moving.** What happened is that
+one and a half of them did.
+
+- **G8 is CLOSED**, and with it the borrowed half from
+  [`global_cardinality_closed`](global_cardinality_closed.md), which is now
+  `encodable today, not encoded`. `DPar (name, parent)` names a parameter subset and prints its
+  own containment (`explenation generator.ml:51`, `:536`), which is `cover`; `DSub` writes a
+  literal subrange (`:534`). Neither is a `D_4` — they define themselves by being printed — so
+  `ind_set_defined` admits them (`:520-525`) without relaxing W1-T2.
+- **G1 is half closed, and this entry needs the unclosed half.** `DCard` puts a threshold on a
+  named witness set (`:52`, printed `:537`), which `at_most(c)` uses as
+  `DCard ("S", D 1, EQ, BPar ("c", 1))` (`:995`) — the sum's `≤` direction, so `ub[j]` is now
+  writable. `lb[j]` is not: its witness set has size `n − lb_t`, and `ind_bound` is
+  `BInt of int | BPar of string*int` (`:46`), printed at `:161-164` as a name plus or minus a
+  literal integer. One symbol minus another is not an `ind_bound`, and **G-1 named exactly this
+  case when it left `at_least`/`exactly` undone** (`WORKLOG.md:1615-1616`).
+
+**So the status's own justification survives intact, for the same reason it was written.** This
+entry named G1 rather than G8 because "G8 can be sidestepped by an instance whose `cover` is the
+whole value range … G1 cannot be sidestepped by any instance with a non-trivial bound." G8 has
+now been closed outright rather than sidestepped, and G1's binding half has not. *A reading of
+the generator's types and printers, not a measurement; nothing was run.*
+
 Nothing here is validated, flagged or refuted: with no artifact there is nothing for
 `make validate` to judge, and the 2026-09-21 run's totals (**34 rules checked in 11 entries: 13
 SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**) contain no line for this
@@ -189,8 +214,8 @@ failure to compare.
 
 | gap | what it blocks here |
 |---|---|
-| **`G1`** | **the binding one.** `lb[j]`/`ub[j]` are bare integer thresholds and no schema path ever mentions the constant. Cannot be sidestepped by any instance with a real bound |
-| **`G8`** | closedness is a disjunction over a value *subset*; `ind_set` names only whole predefined ranges. Binding for every instance whose `cover` is a proper subset of the value range |
+| **`G1`** | **the binding one, and now half closed** (2026-09-22). `DCard` reaches the printed rule for a sum's `≤` direction, so `ub[j]` is writable (`cata/at_most.tex` is the demonstrator). `lb[j]` is not: `n − lb_t` is not an `ind_bound` (`explenation generator.ml:46`, `:161-164`). Still cannot be sidestepped by any instance with a real lower bound |
+| **`G8`** | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). Closedness is a disjunction over a value *subset*, which `ind_set` could not name; `DPar`/`DSub` now name it (`explenation generator.ml:51`, `:534`, `:536`). `docs/DECOMP_FORMAT_NOTES.md` still lists it as open; that file is not this session's to edit |
 | `G2` | `var_name` has no slot for this constraint's own parameter, so `lb_t` has no letter even once G1 lets it be printed |
 | `G4`? | [`gcc.md`](gcc.md) attributes this to the `_low_up` shape. [`global_cardinality_low_up`](global_cardinality_low_up.md) disagrees and gives the argument; the same applies here |
 | — | the published flow rule is blocked by **no gap on this list** — **E4 is necessary but not sufficient** (Calibration) |

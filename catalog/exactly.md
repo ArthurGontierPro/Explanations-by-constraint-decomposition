@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G1` — **and on `G8` for the counted value.** See Status |
+| **Status** | `nothing generated — blocked on G1` — **still, after G1's partial closure on 2026-09-22.** The `G8` half is gone; `exactly` needs both sum directions and the `≥` one needs a symbolic `n − c`. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | no generator entry — there is no `cata/exactly.tex` |
 | **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `exactly` entry |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:128` records `none specific` |
-| **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, and a **scratch generator run** (below) |
+| **Last measured** | 2026-09-21 for the tier, validator and scratch run (below). **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; unchanged, and no new run |
 
 ## Constraint
 
@@ -102,15 +102,37 @@ binder.
 
 ## Status
 
-**`nothing generated — blocked on G1`** — and on **G8** for the counted value `v`.
+**`nothing generated — blocked on G1`** — and **no longer on G8**.
 
 Nothing is generated because no `exactly` value exists in the generator; both schemas do exist.
 `decomps/exactly.md` calls G1 "arguably the sharpest case of the three, since `exactly`'s
 defining feature *is* the precise count `n`", and this entry agrees: what the scratch run emits
 is a value-generic `= `-sum rule over the whole value range, not `exactly(n, x, v)`. To be
-`exactly` it needs the threshold (**G1**) and the counted value as a singleton set (**G8**;
-baking it in raises `Failure "hd"` at `explenation generator.ml:512` — measured, see
-[`at_most.md`](at_most.md)).
+`exactly` it needed the threshold (**G1**) and the counted value as a singleton set (**G8**).
+One of the two is now settled, and the one that is not is settled *less* here than anywhere
+else in the family.
+
+**G8 closed on 2026-09-22 and this status did not change.** Session G-1 (`4547daf`, `1e747ee`)
+gave `ind_set` four formers that print their own meaning, and `DPar` settles the counted value:
+`at_most`'s seed event is `Set (T 1, IN, DPar ("\\{v\\}", D 2))`
+(`explenation generator.ml:1022`), which keeps the value index the printer demands and pins it
+to `{v}`, so the `Failure "hd"` route at `:512` is no longer the only one. `cata/at_most.tex`
+ships the result.
+
+**G1 closed in one direction and `exactly` needs both.** `DCard` carries a threshold into the
+index data — a named subset `S` with `|S| ⋈ b` (`explenation generator.ml:52`, printed `:537`) —
+and `at_most(c)` uses `DCard ("S", D 1, EQ, BPar ("c", 1))` (`:995`) to get `c` witnesses for the
+sum's **`≤`** direction. `exactly` is `≤ c` **and** `≥ c` at once, so it inherits `at_most`'s
+solved half and [`at_least`](at_least.md)'s unsolved one: the `≥` direction's witness set has
+size **`n − c`**, and `ind_bound` is `BInt of int | BPar of string*int` (`:46`), printed at
+`:161-164` as a name plus or minus a *literal integer*. One symbol minus another is not an
+`ind_bound`. **G-1 named this case when it left it undone** (`WORKLOG.md:1615-1616`:
+"`at_least`/`exactly` (their witness set needs a symbolic `n − c`, which `BPar`'s integer offset
+cannot express)"), and this entry confirms it by reading the type.
+
+*That is a reading of `explenation generator.ml`'s types and printers, not a measurement.*
+Nothing was run for this re-decision, and in particular no attempt was made to author half of
+`exactly` and see what came out.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -122,8 +144,8 @@ in the repository there is no premise to place in an implication order. See
 
 | gap | what it blocks here |
 |---|---|
-| `G1` | **the named one**, and `decomps/exactly.md` calls it the sharpest instance: `exactly`'s content is the number `n` and the number cannot be printed |
-| `G8` | no singleton value set for `v` |
+| `G1` | **the named one, and now the only one.** Partially closed 2026-09-22: `DCard` prints a threshold for the `≤` direction (`cata/at_most.tex`). `exactly` needs `≥` as well, whose witness set is `n − c`, which `ind_bound` cannot form (`explenation generator.ml:46`, `:161-164`). `decomps/exactly.md` calls this the sharpest instance and the partial closure sharpens it further: half of `exactly` is now writable and the half that names it is not |
+| `G8` | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). `DPar ("\\{v\\}", D 2)` is the singleton value set (`explenation generator.ml:1022`), shipped in `cata/at_most.tex` |
 | — (unnumbered) | the printer requires a value index on every `X` literal (`:512`, `Failure "hd"`); measured under [`at_most.md`](at_most.md) |
 | `D-0009` | not a gap but an open decision, and visible here: both emitted rules quantify `∀i` over the index the conclusion names, and the generator's D-0009 counter does not flag it |
 | `G3` | only for the general form with `v` a variable |

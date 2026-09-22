@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **A** (`A no-literature + solver-decomposes`), ecode `E0` — `python3 tools/mzn_coverage.py --rank --json`, run 2026-09-21 |
-| **Status** | `nothing generated — blocked on G1` — **and on `G8` for the counted value.** See Status |
+| **Status** | `nothing generated — blocked on G1` — **still, after G1's partial closure on 2026-09-22.** The `G8` half is gone; the threshold needs a symbolic `n − c` that `ind_bound` cannot form. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | no generator entry — there is no `cata/at_least.tex` |
 | **Validator** | out of scope: no artifact. My `make validate` run (2026-09-21) names no `at_least` entry |
 | **Calibration** | **no published rule exists** — `CHRISTMAS_LIST.md:128` records `none specific` |
-| **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, and a **scratch generator run** (below) |
+| **Last measured** | 2026-09-21 for the tier, validator and scratch run (below). **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; unchanged, and no new run |
 
 ## Constraint
 
@@ -100,15 +100,41 @@ constant is absent from the artifact.
 
 ## Status
 
-**`nothing generated — blocked on G1`** — and on **G8** for the counted value `v`.
+**`nothing generated — blocked on G1`** — and **no longer on G8**.
 
 Nothing is generated because no `at_least` value exists in the generator. Authoring one is
 `rule1` + `rule6`, both of which already exist and are already exercised
-(`atleastnvalues`, `explenation generator.ml:843-846`, uses `rule6` in a channelled form), so
-the block is not in the schemas. It is in the two things the format cannot print: the threshold
-`n` (**G1**) and the counted value `v` (**G8**; baking it in instead raises `Failure "hd"` at
-`explenation generator.ml:512` — measured, see [`at_most.md`](at_most.md)). Both are shared with
-`at_most`, `exactly` and `all_different`, and fixing S2 once fixes all four.
+(`atleastnvalues`, `explenation generator.ml:925-928`, uses `rule6` in a channelled form), so
+the block is not in the schemas. It was in the two things the format could not print: the
+threshold `n` (**G1**) and the counted value `v` (**G8**). One of those two is now settled.
+
+**G8 closed on 2026-09-22 and this status did not change.** Session G-1 (`4547daf`, `1e747ee`)
+gave `ind_set` four formers that print their own meaning, and `DPar` settles the counted value
+outright: `at_most`'s seed event is `Set (T 1, IN, DPar ("\\{v\\}", D 2))`
+(`explenation generator.ml:1022`), which keeps the value index the printer demands and pins it
+to the singleton `{v}`. `cata/at_most.tex` ships the result. **So the G8 half of this entry's
+block is gone.**
+
+**G1 closed only in one direction, and this constraint needs the other.** `DCard` carries a
+threshold into the index data — a named subset `S` of a parent range with `|S| ⋈ b`
+(`explenation generator.ml:52`), printed at `:537` — and `at_most(c)` uses it as
+`DCard ("S", D 1, EQ, BPar ("c", 1))` (`:995`): `c+1` witnesses including `i` itself, so `c`
+others take the value and the sum's `≤` direction forbids one more. That is the **`≤`**
+direction. The other direction needs a witness set of size **`n − c`** — the variables that do
+*not* take the value — and `ind_bound` is `BInt of int | BPar of string*int` (`:46`), printed at
+`:161-164` as a name plus or minus a *literal integer*. `n − c` is one symbol minus another, and
+no `ind_bound` forms it. **G-1 said so explicitly when it left this case undone**
+(`WORKLOG.md:1615-1616`: "`at_least`/`exactly` (their witness set needs a symbolic `n − c`,
+which `BPar`'s integer offset cannot express)"), and this entry confirms it by reading the type.
+
+*That is a reading of `explenation generator.ml`'s types and printers, not a measurement.*
+Nothing was run for this re-decision.
+
+**The asymmetry with `at_most` is the whole finding.** `at_most` and `at_least` share every
+schema, every parameter and every gap this entry ever named; `at_most` now ships a rule and this
+one still cannot be written. The difference is a minus sign in a set size, and the sentence
+`at_most`'s own demonstrator comment builds its correctness on — "with `i` inside `S`, the `c+1`
+members of `S` other than `i` are exactly `c` witnesses" — has no counterpart on this side.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -122,8 +148,8 @@ for the two qualifications that apply equally here.
 
 | gap | what it blocks here |
 |---|---|
-| `G1` | **the named one.** The threshold `n` never reaches the page; worse here than for `at_most`, because the emitted rule is *sound only at* `n` = the array length. See "Generated rules" |
-| `G8` | no singleton value set, so the counted value `v` has no expression |
+| `G1` | **the named one, and now the only one.** Partially closed 2026-09-22: `DCard` prints a threshold for the `≤` direction (`cata/at_most.tex` is the demonstrator). The `≥` direction needs `\|S\| = n − c`, and `ind_bound` is a name plus a literal integer (`explenation generator.ml:46`, `:161-164`) — it cannot form one symbol minus another. Still worse here than for `at_most`, because the emitted rule is *sound only at* `n` = the array length. See "Generated rules" |
+| `G8` | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). `DPar ("\\{v\\}", D 2)` is the singleton value set (`explenation generator.ml:1022`), shipped in `cata/at_most.tex` |
 | — (unnumbered) | the printer requires a value index on every `X` literal (`:512`, `Failure "hd"`). Measured under [`at_most.md`](at_most.md); not in `docs/DECOMP_FORMAT_NOTES.md` and not on the roadmap |
 | `G3` | only for the general form with `v` a variable; not binding under D-0003's parameter reading |
 

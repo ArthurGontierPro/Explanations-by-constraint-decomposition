@@ -159,8 +159,23 @@ books the change as `range 3→0`), all quantified over `D_5`/`D_6`.
 
 **`nothing generated — blocked on G8`**
 
-Four candidate branches reduce to zero rules: three W1-T2 refusals naming `D_5`/`D_6` and one
-legitimate `F` discard. The gap in the status line is the one that blocks *this file*; it is not
+**Re-confirmed 2026-09-22 (U2), after G1 and G8 closed. This entry is NOT stale.** Session G-1
+(`4547daf`, `1e747ee`) gave `ind_set` four new formers — `DSub`, `DExc`, `DPar`, `DCard` — and
+they are admitted because each **prints its own meaning**, so naming one never obliges the
+artifact to define it elsewhere. `D of int` beyond `D 3` and `D2` were deliberately left alone:
+`ind_set_defined` still reads `| D 1 | D 2 | D 3 -> true | D _ -> false | D2 _ -> false`
+(`explenation generator.ml:521`), and the source comment immediately above it says so in terms —
+"`D of int` and `D2` are unchanged and still refused, which is why `table`/`regular`/`roots`/
+`range` still emit nothing" (`:517-519`). **Measured today:** `grep -o '\frac' cata/range.tex | wc -l`
+→ **0**, and the footer still carries `REFUSED … undefined index set(s) D6, D5 … (W1-T2)`.
+
+The status still names `G8`, and that label was always approximate for this entry — the refusal
+is W1-T2's on an undefined `D_k`, not the subrange/exclusion construct G8 describes. What is
+*not* approximate is that the block is unchanged. Renumbering it is `docs/DECOMP_FORMAT_NOTES.md`
+work and that file is not this session's to edit.
+
+Continuing from the original measurement. Four candidate branches reduce to zero
+rules: three W1-T2 refusals naming `D_5`/`D_6` and one legitimate `F` discard. The gap in the status line is the one that blocks *this file*; it is not
 the gap that would make this file about `range`. Nothing here is validated, flagged or refuted,
 and the useful content of the entry is negative: **the shipped decomposition has no literal for
 either set variable, no visible threshold on either sum, and no spec, so even restoring its

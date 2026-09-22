@@ -14,7 +14,7 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `count` ranks **A** (`A no-literature + solver-decomposes`) |
-| **Status** | **resolves to [`count.md`](count.md)**, whose Status row reads `nothing generated — blocked on G8` (re-read 2026-09-22; it read `not reviewed` when this entry was written, before the base was reviewed). **No status-legend value is asserted for `count_fn` itself**, and this entry generates nothing of its own |
+| **Status** | **resolves to [`count.md`](count.md)**, whose Status row reads `encodable today, not encoded` (re-read 2026-09-22 after G8 closed; it read `not reviewed`, then `nothing generated — blocked on G8`). **No status-legend value is asserted for `count_fn` itself**, and this entry generates nothing of its own |
 | **Generated** | **0** — there is no `cata/count_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`count.md`](count.md) |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`count.md`](count.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains count, so `no published rule exists` is **not** claimed here |
@@ -178,7 +178,14 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`count.md`](count.md)** — that entry's Status row reads `nothing generated — blocked on G8` (re-read 2026-09-22).
+**resolves to [`count.md`](count.md)** — that entry's Status row reads
+`encodable today, not encoded` (re-read 2026-09-22).
+
+**The quotation has now moved twice.** It was `not reviewed` when this entry was written, then
+`nothing generated — blocked on G8` once the base was reviewed, and as of 2026-09-22 it is
+`encodable today, not encoded`, because G8 — the base entry's only wall — was closed that day
+(session G-1, `4547daf` and `1e747ee`). Nothing has been generated for either name; what changed
+is that there is no longer a gap to point at.
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -227,7 +234,7 @@ gaps mean; none is attributed to `count_fn` itself.
 - `tools/data/minizinc-2.10.1-globals.txt:43` read → the name, and that the snapshot carries
   names only.
 - `catalog/count.md` read, not run → the base entry's Status row, quoted above as
-  `nothing generated — blocked on G8`, and the fact that it carries the rules, scope and calibration this entry defers to.
+  `encodable today, not encoded` as re-read on 2026-09-22 (U2), and the fact that it carries the rules, scope and calibration this entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `count_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,

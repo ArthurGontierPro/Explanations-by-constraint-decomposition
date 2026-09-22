@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **D** — `D literature + solver-native`, ecode `E2` (shared row with `disjunctive`, `_opt`, `disjunctive_strict_opt`) |
-| **Status** | `nothing generated — blocked on G1` |
+| **Status** | `nothing generated — blocked on G1` — **still, after G1's partial closure on 2026-09-22**: what closed is a threshold on a Boolean sum; `d_i = 0` is a constant in a *guard*. Re-checked by U2, 2026-09-22. See Status |
 | **Generated** | **0** rules. There is no `cata/disjunctive_strict.tex`; the near-miss artifact is `cata/cumulative.tex`, and it is the **non-strict** sibling — see below |
 | **Validator** | out of scope: nothing of this name to validate. The artifact it is closest to, `cata/cumulative.tex`, is itself reported out of scope ("UNPARSED: index equation offset: t'=t-d_{i}") |
 | **Calibration** | **out of reach** — the published §6 explanations are indexed by a run-time compulsory-part set, and there is no generated rule on this side either |
-| **Last measured** | 2026-09-21, `make validate`, `ls cata/`, `python3 tools/mzn_coverage.py --rank --json` |
+| **Last measured** | 2026-09-21 for the tier, validator and calibration rows. **Status re-checked 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; unchanged, and no new run |
 
 ## Read this first: what separates this entry from `disjunctive`, and it is one time point
 
@@ -141,6 +141,28 @@ Two things this status does *not* say. It does not say the shape is missing — 
 runs. And it does not say `d_i = 0` is rare or uninteresting: it is the entire content of the
 `_strict` suffix.
 
+**Re-checked 2026-09-22 (U2), after G-1 closed part of G1 in commits `4547daf` and `1e747ee`.
+The status is unchanged, and the reason is that G1 turns out to name two different things.**
+What closed is *a threshold on a Boolean sum*: `DCard (name, parent, op, bound)` carries a
+cardinality into the index data (`explenation generator.ml:52`, printed `:537`), so
+`at_most(c)` can say "a witness set `S` with `|S| = c+1`" and `cata/at_most.tex` prints its own
+`c`. That is the shape `docs/DECOMP_FORMAT_NOTES.md:10-21` describes when it states G1 for
+`at_least`/`at_most`/`exactly`.
+
+**This entry is the fourth constraint pinned to G1 and the only one where the constant is not a
+threshold on a sum.** `d_i = 0` is a per-task predicate on a duration constant, deciding whether
+a pair of tasks may overlap at all — a *guard* on the decomposition, not a bound on a count.
+None of the four new `ind_set` formers reaches it: `DCard` bounds a set's size, `DSub` takes two
+literal `int` endpoints, `DExc` removes named elements, `DPar` names a parameter subset
+(`explenation generator.ml:48-52`). A set can now be *named*; a constant still cannot be
+*compared* anywhere the printer walks. So the sentence this entry was written to make survives
+the closure intact, and it is now sharper rather than weaker: **this is the first constraint
+where the un-sayable constant is what separates one global from another**, and it is the one
+part of G1 that 2026-09-22 did not touch.
+
+*A reading of `explenation generator.ml`'s types and printers, not a measurement; nothing was
+run.*
+
 ## Calibration (W3-T5, D-0013)
 
 **Verdict: out of reach.**
@@ -170,7 +192,7 @@ p.13, two open questions).
 
 | gap | what it blocks here |
 |---|---|
-| `G1` | **the binding one.** No way to carry a bare integer constant into a rule, an index or a guard, so `d_i = 0` cannot be tested. This is what separates this constraint from `disjunctive`, and the whole of it |
+| `G1` | **the binding one, and the half of it that 2026-09-22 did not close.** `DCard` now carries a constant into a rule as a *threshold on a Boolean sum's witness set* (`cata/at_most.tex`). `d_i = 0` is a constant in a **guard**, and no `ind_set` or `ind_bound` former compares one (`explenation generator.ml:46`, `:48-52`). This is what separates this constraint from `disjunctive`, and the whole of it |
 | `G15` | inherited from the shape: `t' = t − d_i` is the validator's measured `UNPARSED`, so even the non-strict sibling's rules cannot be checked. Closing G1 without G15 would give an unmeasurable entry |
 | `G3` | **`fzn_disjunctive`'s general form only** — variable durations make the atoms variable-vs-variable (`CHRISTMAS_LIST.md:169`). Not needed for the constant-duration form this entry covers |
 | — | the **global** window-and-subset explanation is **E4**; see Calibration |

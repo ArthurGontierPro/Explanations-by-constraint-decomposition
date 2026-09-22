@@ -14,8 +14,8 @@ its one qualification are in **"The `*_fn` decision"** below.
 | | |
 |---|---|
 | **Tier** | **unclassified** (`- unclassified`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. **This is an artifact of a blank cell, not a property of the constraint** — see below. The base `among` ranks **A** (`A no-literature + solver-decomposes`) |
-| **Status** | **resolves to [`among.md`](among.md)**, whose Status row reads `nothing generated — blocked on G8` (read off that file, 2026-09-21). **No status-legend value is asserted for `among_fn` itself**, and this entry generates nothing of its own |
-| **Generated** | **0** — there is no `cata/among_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`among.md`](among.md) |
+| **Status** | **resolves to [`among.md`](among.md)**, whose Status row reads `flagged` — **2 rules, both `UNSOUND`** (re-read 2026-09-22; it read `nothing generated — blocked on G8` when this entry was written, before G8 closed). **No status-legend value is asserted for `among_fn` itself**, and this entry generates nothing of its own |
+| **Generated** | **0** — there is no `cata/among_fn.tex`, and there should not be one. The rules for this constraint are the rules in [`among.md`](among.md), and as of 2026-09-22 there are **2** of them where there were none |
 | **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex` and there is no file under this name; the base entry's verdicts are the verdicts |
 | **Calibration** | **resolves to [`among.md`](among.md)**. `CHRISTMAS_LIST.md:217` records the literature column for this row as `—`; that is a statement about the *row*, not a finding that no paper explains among, so `no published rule exists` is **not** claimed here |
 | **Last measured** | 2026-09-21, `python3 tools/mzn_coverage.py --rank --json`, `make validate`, `ls cata/`, and reads of `CHRISTMAS_LIST.md:217`, `CHRISTMAS_LIST.md:129` and `catalog/among.md` |
@@ -178,7 +178,17 @@ has no file to read. The generated rules for this constraint are rendered in
 
 ## Status
 
-**resolves to [`among.md`](among.md)** — that entry's Status row reads `nothing generated — blocked on G8`.
+**resolves to [`among.md`](among.md)** — that entry's Status row reads `flagged`: **2 rules,
+both `UNSOUND`**.
+
+**This quotation was stale and is re-read as of 2026-09-22.** It said
+`nothing generated — blocked on G8`, which was true when this entry was written. G8 closed that
+day (session G-1, `4547daf` and `1e747ee`), `cata/among.tex` went from 0 rules to 2, and both
+were measured `UNSOUND` by G-1's exhaustive check — **not** by `make validate`, which still
+reports the entry out of scope and issues no verdict. All of that lives in
+[`among.md`](among.md); the point here is only that the deferral now resolves to a different
+value than it did, and that a resolution entry inherits whatever the base says, including a
+warning.
 
 **No value from `catalog/README.md`'s six-value status legend is asserted here**, and that is
 deliberate rather than evasive: all six are verdicts about *generated rules*, this name has
@@ -226,8 +236,10 @@ gaps mean; none is attributed to `among_fn` itself.
 - `CHRISTMAS_LIST.md:106-109` read → the solver-column legend.
 - `tools/data/minizinc-2.10.1-globals.txt:24` read → the name, and that the snapshot carries
   names only.
-- `catalog/among.md` read, not run → the base entry's Status row, quoted above as
-  `nothing generated — blocked on G8`, and the fact that it carries the rules, scope and calibration this entry defers to.
+- `catalog/among.md` read, not run → the base entry's Status row. Quoted as
+  `nothing generated — blocked on G8` on 2026-09-21; **re-read 2026-09-22 (U2) and now `flagged`,
+  2 rules both `UNSOUND`** — and the fact that it carries the rules, scope and calibration this
+  entry defers to.
 - `ls cata/` → 16 `.tex` files, none named `among_fn.tex`.
 - `make validate` (run 2026-09-21, output redirected to a file then grepped, per `CLAUDE.md`
   "Verify before you report") → `== 34 rules checked in 11 entries: 13 SOUND and MINIMAL,
