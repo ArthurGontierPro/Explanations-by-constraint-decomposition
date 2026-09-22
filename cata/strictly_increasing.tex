@@ -1,0 +1,24 @@
+$$\frac{X_{i'} \geq t',~i'=i-1,~t'=t-1}{X_{i} \geq t}$$ $$\frac{X_{i'}<t',~i'=i+1,~t'=t+1}{X_{i}<t}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (A-1, 2026-09-22). New entry. catalog/strictly_increasing.md said
+%% `encodable today, not encoded` and NAMED the operators this file now uses:
+%% `imap [imoin 1; tmoin 1]` descending, `imap [iplus 1; tplus 1]` ascending. The
+%% prediction held -- no new constructor, schema or printer case was needed. tplus
+%% and tmoin existed but had never been used by any decomposition; this is the first.
+%% NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured
+%% by exhaustive enumeration of every strictly increasing X in [[1,m]]^n for every
+%% n,m in {1,2,3,4,5} -- n = 1 INCLUDED. Off-the-end indices follow validator.ml's
+%% own convention (l.69-74): a premise naming a non-existent variable is FALSE.
+%% BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:
+%% 222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.
+%% AT n = 1 BOTH RULES FIRE 0 TIMES and there is nothing to be unsound about: every
+%% premise names X_{i-1} or X_{i+1}, which does not exist. Stated rather than let
+%% pass as `0 counterexamples`, which would be true and misleading.
+%% THE SHIFT IS NOT COSMETIC, measured two ways. (a) Run against NON-strictly
+%% increasing sequences the same two rules FAIL -- 103 and 155 counterexamples at
+%% n,m <= 4 -- so they really do encode strictness rather than relabel `increasing`.
+%% (b) On the strict model they fire MORE than increasing's own rules do: 222 / 150
+%% against 150 / 78 over the same assignments, and the firing sets are supersets
+%% (X_{i-1} >= t implies X_{i-1} >= t-1). Stronger, not merely different.

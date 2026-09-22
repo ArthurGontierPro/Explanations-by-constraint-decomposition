@@ -913,6 +913,51 @@ let incr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
               Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imoin 1, iplus 1)])]
 let decr   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id); Decomp_devent (false , (B 1), imoin 1, iplus 1)])]
+(*==========================================================================
+  A-1, 2026-09-22 -- the STRICT pair, and it costs exactly the composed shift
+  catalog/strictly_increasing.md predicted.
+
+  Both files said `encodable today, not encoded`, and both named the operators:
+  "imap [imoin 1; tmoin 1] descending and imap [iplus 1; tplus 1] ascending --
+  the composed shift the strict variant needs -- is writable in the existing
+  vocabulary". Written here. No new constructor, no new schema, no new printer
+  case: tplus/tmoin already existed (they were simply never used by any
+  decomposition), OpSeq already composes, and the Addint printer case is
+  already exercised by incr/decr's index shift.
+
+  WHAT THE SHIFT IS, derived rather than copied. Under the order encoding
+  B1_{i,t} <=> X_i >= t:
+
+    increasing          X_i <= X_{i+1}   is   forall t:  X_i >= t -> X_{i+1} >= t
+                        clause            ~B1_{i,t} \/ B1_{i+1,t}
+    strictly_increasing X_i <  X_{i+1}   is   forall t:  X_i >= t -> X_{i+1} >= t+1
+                        clause            ~B1_{i,t} \/ B1_{i+1,t+1}
+
+  so the second literal moves in BOTH families at once and the ascending op is
+  imap [iplus 1; tplus 1]. The descending op must carry an event that matched
+  the second literal back to the clause's base index, which is (i-1,t-1), hence
+  imap [imoin 1; tmoin 1]. The two are inverses, and the run report says so.
+
+  The decreasing side is NOT the mirror image of that, and this is the one place
+  the pair is asymmetric:
+
+    decreasing          X_i >= X_{i+1}   is   forall t:  X_{i+1} >= t -> X_i >= t
+                        clause            B1_{i,t} \/ ~B1_{i+1,t}
+    strictly_decreasing X_i >  X_{i+1}   is   forall t:  X_{i+1} >= t -> X_i >= t+1
+
+  Re-index that with t := t-1 so the POSITIVE literal keeps the base threshold,
+  matching decr's layout:  B1_{i,t} \/ ~B1_{i+1,t-1}.  The negative literal's
+  value index therefore moves DOWN while its position index moves up, so the
+  ascending op is imap [iplus 1; tmoin 1] and the descending one
+  imap [imoin 1; tplus 1].  Writing imap [iplus 1; tplus 1] here -- the naive
+  mirror of the increasing case -- encodes X_{i+1} >= t+1 -> X_i >= t, which is
+  implied by plain `decreasing` and states nothing strict.  Checked by sweep,
+  not by eye: see the caveat on the emitted file.
+  ========================================================================*)
+let sincr  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (false, (B 1), id, id); Decomp_devent (true , (B 1), imap [imoin 1;tmoin 1], imap [iplus 1;tplus 1])])]
+let sdecr  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, id); Decomp_devent (false , (B 1), imap [imoin 1;tplus 1], imap [iplus 1;tmoin 1])])]
 let elem   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 2), id, id)]);
               Decomp (3, rule1, [Global_devent (true ,  V   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
@@ -1113,6 +1158,50 @@ let _ = explainall [xbc] cumul "cata/cumulative.tex"
 let _ = explainall [xac;ngbc] gccn "cata/gcc.tex"
 let _ = explainall [xbc] decr "cata/decreasing.tex"
 let _ = explainall [xbc] incr "cata/increasing.tex"
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry. catalog/strictly_increasing.md said";
+  "`encodable today, not encoded` and NAMED the operators this file now uses:";
+  "`imap [imoin 1; tmoin 1]` descending, `imap [iplus 1; tplus 1]` ascending. The";
+  "prediction held -- no new constructor, schema or printer case was needed. tplus";
+  "and tmoin existed but had never been used by any decomposition; this is the first.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured";
+  "by exhaustive enumeration of every strictly increasing X in [[1,m]]^n for every";
+  "n,m in {1,2,3,4,5} -- n = 1 INCLUDED. Off-the-end indices follow validator.ml's";
+  "own convention (l.69-74): a premise naming a non-existent variable is FALSE.";
+  "BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:";
+  "222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.";
+  "AT n = 1 BOTH RULES FIRE 0 TIMES and there is nothing to be unsound about: every";
+  "premise names X_{i-1} or X_{i+1}, which does not exist. Stated rather than let";
+  "pass as `0 counterexamples`, which would be true and misleading.";
+  "THE SHIFT IS NOT COSMETIC, measured two ways. (a) Run against NON-strictly";
+  "increasing sequences the same two rules FAIL -- 103 and 155 counterexamples at";
+  "n,m <= 4 -- so they really do encode strictness rather than relabel `increasing`.";
+  "(b) On the strict model they fire MORE than increasing's own rules do: 222 / 150";
+  "against 150 / 78 over the same assignments, and the firing sets are supersets";
+  "(X_{i-1} >= t implies X_{i-1} >= t-1). Stronger, not merely different." ];
+    explainall [xbc] sincr "cata/strictly_increasing.tex"
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry, and the asymmetric half of the strict pair.";
+  "catalog/strictly_decreasing.md said `encodable today, not encoded`.";
+  "THE OPERATORS ARE NOT THE MIRROR OF strictly_increasing'S, and the difference was";
+  "checked rather than reasoned: `decr` puts the POSITIVE literal at the base index,";
+  "so re-indexing X_{i+1} >= t -> X_i >= t+1 to keep that layout gives";
+  "B1_{i,t} \\/ ~B1_{i+1,t-1} -- the value index moves DOWN while the position index";
+  "moves up. Ascending `imap [iplus 1; tmoin 1]`, descending `imap [imoin 1; tplus 1]`.";
+  "The naive mirror `imap [iplus 1; tplus 1]` was swept too: it is SOUND for";
+  "strictly_decreasing (78 firings, 0 counterexamples at n,m <= 5) and ALSO sound for";
+  "plain non-strict decreasing (1907 firings, 0 counterexamples), i.e. it states";
+  "nothing strict at all. That is how a plausible-looking wrong composition passes a";
+  "soundness check, and why the control was run (D-0006's first item).";
+  "NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every";
+  "strictly decreasing X in [[1,m]]^n for every n,m in {1,2,3,4,5}, n = 1 INCLUDED,";
+  "off-the-end indices FALSE per validator.ml l.69-74.";
+  "BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:";
+  "222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.";
+  "AT n = 1 BOTH RULES FIRE 0 TIMES, for the same reason as strictly_increasing.";
+  "Against NON-strictly decreasing sequences both FAIL (103 and 155 counterexamples";
+  "at n,m <= 4), which is the check that they encode strictness." ];
+    explainall [xbc] sdecr "cata/strictly_decreasing.tex"
 let _ = explainall [xac;i;v] elem "cata/element.tex"
 let _ = explainall [xac;nac] nvalues "cata/nvalues.tex"
 let _ = explainall [xac;nbc] atleastnvalues "cata/atleastnvalues.tex"

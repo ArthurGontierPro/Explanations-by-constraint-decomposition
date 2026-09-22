@@ -1,0 +1,24 @@
+$$\frac{X_{i'} \geq t',~i'=i+1,~t'=t-1}{X_{i} \geq t}$$ $$\frac{X_{i'}<t',~i'=i-1,~t'=t+1}{X_{i}<t}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (A-1, 2026-09-22). New entry, and the asymmetric half of the strict pair.
+%% catalog/strictly_decreasing.md said `encodable today, not encoded`.
+%% THE OPERATORS ARE NOT THE MIRROR OF strictly_increasing'S, and the difference was
+%% checked rather than reasoned: `decr` puts the POSITIVE literal at the base index,
+%% so re-indexing X_{i+1} >= t -> X_i >= t+1 to keep that layout gives
+%% B1_{i,t} \/ ~B1_{i+1,t-1} -- the value index moves DOWN while the position index
+%% moves up. Ascending `imap [iplus 1; tmoin 1]`, descending `imap [imoin 1; tplus 1]`.
+%% The naive mirror `imap [iplus 1; tplus 1]` was swept too: it is SOUND for
+%% strictly_decreasing (78 firings, 0 counterexamples at n,m <= 5) and ALSO sound for
+%% plain non-strict decreasing (1907 firings, 0 counterexamples), i.e. it states
+%% nothing strict at all. That is how a plausible-looking wrong composition passes a
+%% soundness check, and why the control was run (D-0006's first item).
+%% NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every
+%% strictly decreasing X in [[1,m]]^n for every n,m in {1,2,3,4,5}, n = 1 INCLUDED,
+%% off-the-end indices FALSE per validator.ml l.69-74.
+%% BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:
+%% 222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.
+%% AT n = 1 BOTH RULES FIRE 0 TIMES, for the same reason as strictly_increasing.
+%% Against NON-strictly decreasing sequences both FAIL (103 and 155 counterexamples
+%% at n,m <= 4), which is the check that they encode strictness.
