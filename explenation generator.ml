@@ -1051,6 +1051,31 @@ let atmost = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reifi
 let alldiffexc = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
                   Decomp (2, rule5, [Decomp_devent (true , (B 1), id, oni)])]
 
+(*==========================================================================
+  A-1, 2026-09-22 -- `member`, catalog/member.md's "three-line instance".
+
+  That entry said `encodable today, not encoded` for the fragment this repo
+  decomposes (y a PARAMETER; a var y is G3 and stays G3 -- D-0003). Encoded
+  here, and it is alldifferent's own value with rule4 where alldiff has rule5:
+
+      B_i <=> X_i = v      (rule1, AC)
+      \/_{i in [[1,n]]} B_i (rule4, ONE Decomp_devent, no Reified_devent)
+
+  The second constraint has no Reified_devent, so `reified_devent` returns its
+  T sentinel and rule4's `fre`/`fnre` collapse to Lit T / Lit F. The positive
+  branch therefore survives with the T conjunct erased and the F branch is
+  discarded and counted -- which is why this entry emits ONE rule and not two,
+  and why its diagnostics footer reads `dropped F 1` exactly as alldifferent's
+  does. `member` gives no reason for a variable NOT to take v, and that is the
+  truth about the constraint, not a defect of the derivation.
+
+  The seed is `xacv`, at_most's: it pins the value index to the parameter v.
+  Nothing new was added for this entry -- not a constructor, not a schema, not
+  a seed.
+  ========================================================================*)
+let member = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni)])]
+
 
 (*==========================================================================
   G3, TESTED rather than argued (session X-max, 2026-09-22).
@@ -1241,6 +1266,30 @@ let _ = caveat := [
   "counterexamples, all of them at n = 1), so this entry inherits alldifferent's";
   "verdict and its weakness, including firing only when the others are already pinned." ];
     explainall [xacx] alldiffexc "cata/alldifferent_except.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry. catalog/member.md said `encodable today,";
+  "not encoded` for the fragment this repo decomposes -- y a PARAMETER -- and priced";
+  "it a `three-line instance, no new derivation needed`. The price was right: this is";
+  "alldifferent's own decomposition with rule4 where alldiff has rule5, at_most's own";
+  "seed xacv, and nothing else added. The var-y signature is still G3 and untouched.";
+  "ONE rule, not two, and the missing one is not a defect: `member` gives no reason";
+  "for a variable NOT to take v, so the negative event's only candidate branch is F";
+  "and the footer counts it (dropped F 1), exactly as alldifferent's does.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured";
+  "by exhaustive enumeration of every X in [[1,m]]^n containing v, for every v in";
+  "[[1,m]] and every n,m in {1,2,3,4,5} -- n = 1 INCLUDED.";
+  "SOUND, no counterexample anywhere: 736 firing cases at n,m <= 4, 10571 at n,m <= 5,";
+  "15 of them at n = 1. MINIMAL over the range: dropping the premise fails 57648 times.";
+  "THE n = 1 CASE IS THE INTERESTING ONE, and it is the exact mirror of the shipped";
+  "alldifferent hole. Both rules have a universal premise over i' <> i that is VACUOUS";
+  "at n = 1, and both then conclude from nothing. alldifferent's conclusion (X_i <> t)";
+  "is NOT entailed at n = 1, so it fails there -- 30 counterexamples, W1-T19. member's";
+  "conclusion (X_i = v) IS entailed at n = 1, because member(X,v) with one variable";
+  "forces it. So a vacuous premise is not by itself the bug; concluding something the";
+  "constraint does not force is. Restricted to n = 1 alone the premise is droppable";
+  "here (15 firings either way), so minimality is a statement about the range swept." ];
+    explainall [xacv] member "cata/member.tex"
 
 let _ = caveat := [
   "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";
