@@ -1245,6 +1245,67 @@ let minim  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
   (see the comment above `ncvbc`). Used within its contract it is fine.
   ========================================================================*)
 (*==========================================================================
+  A-1, 2026-09-22 -- `arg_max` / `arg_min`. catalog/arg_max.md said
+  `nothing generated -- blocked on E2 (int/bool variant) / E7 (float variant)`
+  and there is no decomps/arg_max.md at all: this decomposition is authored
+  here, not transcribed. It is `maxi` (resp. `minim`) plus element's
+  three-literal clause:
+
+      I = i  /\  O >= t  ->  X_i >= t
+
+  i.e. the index variable says WHICH x carries the bound the max channel
+  already computes. Every atom is a variable against a threshold, so E2 is not
+  needed for the int variant; the float variant is untouched and stays E7.
+
+  WHY THREE EXTRA REIFICATIONS (B3, B4, B5) AND NOT A REUSE OF B1/B2.
+  Hanging the clause on B1 and B2 directly would put those auxiliaries in three
+  constraints each, which is the configuration that makes `find` loop forever --
+  measured on global_cardinality_closed, see the comment above `gccc`. B4 and B5
+  are second names for `O >= t` and `X_i >= t`; each auxiliary then appears in
+  exactly two constraints, as in `elem`, and the traversal terminates.
+
+  THE INDEX OPS IN CONSTRAINT 7 ARE `pointt`/`pointi`, NOT `forallt`/`foralli`,
+  AND THAT IS THE WHOLE DIFFERENCE BETWEEN A USEFUL ENTRY AND A VACUOUS ONE.
+  Written with element's own ops (forallt/foralli) this decomposition emits, in
+  place of rules 6 and 7,
+
+      {forall i: X_i < t}, {forall i: I = i}  |-  O < t
+      {forall t: X_i < t}, {forall t: O >= t} |-  I <> i
+
+  whose premises are unsatisfiable -- I cannot equal every i, and no X_i is
+  below every t. MEASURED, not predicted: both were emitted by the first draft
+  of this value and both fire 0 times. The clause is quantified over (i,t) at
+  the CONSTRAINT level, so a rule built from it is a schema valid for each pair
+  separately: i and t are free parameters, which is exactly what OpPoint emits
+  and OpForall does not. This is W1-T9 defect 3 for the third time (gcc's
+  `pointp` was the first, count's rule7 the second).
+
+  AND IT IS SHIPPED ELSEWHERE. cata/element.tex's rules 3-6 carry precisely
+  these binders, and `make validate` scores all four VACUOUS -- 4 of the 21
+  flagged rules in the whole catalog. `elem` uses forallt/foralli at ctr 4 and
+  the same repair applies, but changing it would move a golden, so it is
+  REPORTED here and not touched (W1-T22 material).
+
+  TIE-BREAKING, stated because MiniZinc's arg_max returns the FIRST maximal
+  index and this decomposition only says I is A maximal index. The decomposition
+  is therefore a relaxation of the constraint, and a rule sound for a relaxation
+  is sound for the constraint. Both readings were swept anyway; see the caveats.
+  ========================================================================*)
+let argmax = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule4, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)]);
+              Decomp (4, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
+              Decomp (5, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
+              Decomp (6, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 5), id, id)]);
+              Decomp (7, rule4, [Decomp_devent (false, (B 3), pointt, t_out); Decomp_devent (false, (B 4), pointi, i_out); Decomp_devent (true , (B 5), id, id)])]
+let argmin = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)]);
+              Decomp (4, rule1, [Global_devent (true ,  I   , id, id, AC); Reified_devent (true, (B 3), id, id)]);
+              Decomp (5, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 4), id, id)]);
+              Decomp (6, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 5), id, id)]);
+              Decomp (7, rule4, [Decomp_devent (false, (B 3), pointt, t_out); Decomp_devent (true , (B 4), pointi, i_out); Decomp_devent (false, (B 5), id, id)])]
+(*==========================================================================
   A-1, 2026-09-22 -- `global_cardinality_closed` = `gccn` plus closedness, and
   the interesting part is the SECOND reification.
 
@@ -1533,6 +1594,63 @@ let _ = caveat := [
   "same two rules carry the same flag. Both bindings are the same forall over the same";
   "set, so the readings coincide and the sweep is unaffected." ];
     explainall [xac;ngbc] gccc "cata/global_cardinality_closed.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry, and the decomposition is AUTHORED HERE: there";
+  "is no decomps/arg_max.md, and catalog/arg_max.md said `nothing generated -- blocked";
+  "on E2 (int/bool variant) / E7 (float variant)`. The int/bool variant needs no E2:";
+  "it is `maxi` plus element's three-literal clause I = i /\\ O >= t -> X_i >= t, and";
+  "every atom in it is a variable against a threshold. The FLOAT variant is untouched";
+  "and its E7 routing stands.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by";
+  "exhaustive enumeration of every X in [[1,m]]^n with O = max_i X_i and I an index";
+  "achieving it, for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED -- and SEPARATELY under";
+  "MiniZinc's first-index tie-break, because this decomposition says only that I is A";
+  "maximal index. It is therefore a relaxation, and soundness on the relaxation implies";
+  "soundness on the constraint; both were swept rather than argued.";
+  "ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample anywhere. Firings in";
+  "file order, any-maximal-index reading, at n,m <= 4: 359 / 2438 / 1225 / 2438 / 349 /";
+  "349 / 2262; at n,m <= 5: 4173 / 37329 / 19226 / 37329 / 4158 / 4158 / 53196. Under";
+  "the first-index reading at n,m <= 5: 4173 / 23903 / 10488 / 23903 / 2296 / 2296 /";
+  "37950. ALL SEVEN MINIMAL over the range.";
+  "AT n = 1 firings are 35 / 35 / 20 / 35 / 20 / 20 / 0 and no rule fails. Rule 7 fires";
+  "0 times there for a reason, not by accident: with one variable X_1 IS the maximum,";
+  "so its premise X_i < t <= O cannot hold. Rules 1, 2 and 6 have a premise that goes";
+  "droppable at n = 1 alone, so their minimality is a claim about the range swept.";
+  "RULE 5 IS NOT `NO RULE FOR I = i`. The positive index event gets no rule at all --";
+  "1 candidate, dropped F -- exactly as cata/element.tex's I = i does, and for the same";
+  "reason: nothing in the decomposition can conclude that the argmax IS a given index.";
+  "Rule 7 is the negative direction and it is the useful one.";
+  "THE OPS IN CONSTRAINT 7 ARE pointt/pointi, NOT element's forallt/foralli, and that";
+  "is the difference between this file and a vacuous one. Measured: the first draft of";
+  "this value used element's ops and emitted `{forall i: I = i}` and `{forall t:";
+  "X_i < t}` premises, which fire 0 times. cata/element.tex's rules 3-6 carry exactly";
+  "those binders and make validate scores all four VACUOUS -- 4 of the 21 flagged rules";
+  "in the catalog. The same one-word repair applies to `elem`; it is REPORTED, not";
+  "made, because it would move a shipped golden." ];
+    explainall [xbc;mbc;i] argmax "cata/arg_max.tex"
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry, the dual of cata/arg_max.tex: `minim` plus the";
+  "same three-literal clause, with the O literal entering positively because the";
+  "conjunctive channel runs the other way. catalog/arg_min.md said `nothing generated --";
+  "blocked on E2 / E7`; the int/bool variant needs no E2 and the float variant is";
+  "untouched. Read the caveat on cata/arg_max.tex for the pointt/pointi finding and the";
+  "element.tex consequence -- it is not repeated here.";
+  "NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every X";
+  "in [[1,m]]^n with O = min_i X_i and I an index achieving it, for every n,m in";
+  "{1,2,3,4,5}, n = 1 INCLUDED, under BOTH the any-minimal-index reading (which is what";
+  "this decomposition states) and MiniZinc's first-index tie-break.";
+  "ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample. Firings in file order,";
+  "any-index reading, at n,m <= 4: 4101 / 349 / 1654 / 1133 / 1133 / 1654 / 2262; at";
+  "n,m <= 5: 62487 / 4158 / 28200 / 13287 / 13287 / 28200 / 53196. Under the first-index";
+  "reading at n,m <= 5: 37329 / 4158 / 18204 / 7995 / 7995 / 18204 / 37950. ALL SEVEN";
+  "MINIMAL over the range.";
+  "AT n = 1 firings are 35 / 20 / 20 / 35 / 35 / 20 / 0, no failures; rule 7 fires 0";
+  "times because with one variable X_1 IS the minimum. Rules 2, 3 and 5 have a premise";
+  "that goes droppable at n = 1 alone.";
+  "As in arg_max, the positive event I = i gets NO rule (1 candidate, dropped F): the";
+  "decomposition cannot conclude that the argmin IS a given index, only that it is not." ];
+    explainall [xbc;mbc;i] argmin "cata/arg_min.tex"
 
 let _ = caveat := [
   "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";

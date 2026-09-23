@@ -1,0 +1,29 @@
+$$\frac{O_{} \geq t}{X_{i} \geq t}$$ $$\frac{X_{i'} \geq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{}<t}{X_{i}<t}$$ $$\frac{O_{}<t~~~~I=i}{X_{i}<t}$$ $$\frac{X_{i} \geq t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}$$ $$\frac{X_{i} \geq t,~i \in \llbracket1,n\rrbracket~~~~I=i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}$$ $$\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{}<t}$$ $$\frac{X_{i} \geq t,~t \in \llbracket1,m\rrbracket~~~~O_{}<t,~t \in \llbracket1,m\rrbracket}{I \neq i}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{} \geq t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% O_{}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% I=i : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%%   ** NO RULE EMITTED for I=i: 1 candidate(s), all blocked **
+%% I \neq i : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (A-1, 2026-09-22). New entry, the dual of cata/arg_max.tex: `minim` plus the
+%% same three-literal clause, with the O literal entering positively because the
+%% conjunctive channel runs the other way. catalog/arg_min.md said `nothing generated --
+%% blocked on E2 / E7`; the int/bool variant needs no E2 and the float variant is
+%% untouched. Read the caveat on cata/arg_max.tex for the pointt/pointi finding and the
+%% element.tex consequence -- it is not repeated here.
+%% NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every X
+%% in [[1,m]]^n with O = min_i X_i and I an index achieving it, for every n,m in
+%% {1,2,3,4,5}, n = 1 INCLUDED, under BOTH the any-minimal-index reading (which is what
+%% this decomposition states) and MiniZinc's first-index tie-break.
+%% ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample. Firings in file order,
+%% any-index reading, at n,m <= 4: 4101 / 349 / 1654 / 1133 / 1133 / 1654 / 2262; at
+%% n,m <= 5: 62487 / 4158 / 28200 / 13287 / 13287 / 28200 / 53196. Under the first-index
+%% reading at n,m <= 5: 37329 / 4158 / 18204 / 7995 / 7995 / 18204 / 37950. ALL SEVEN
+%% MINIMAL over the range.
+%% AT n = 1 firings are 35 / 20 / 20 / 35 / 35 / 20 / 0, no failures; rule 7 fires 0
+%% times because with one variable X_1 IS the minimum. Rules 2, 3 and 5 have a premise
+%% that goes droppable at n = 1 alone.
+%% As in arg_max, the positive event I = i gets NO rule (1 candidate, dropped F): the
+%% decomposition cannot conclude that the argmin IS a given index, only that it is not.

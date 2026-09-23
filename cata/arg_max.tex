@@ -1,0 +1,41 @@
+$$\frac{X_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{} \geq t}{X_{i} \geq t}$$ $$\frac{O_{} \geq t~~~~I=i}{X_{i} \geq t}$$ $$\frac{O_{}<t}{X_{i}<t}$$ $$\frac{X_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}$$ $$\frac{X_{i}<t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{}<t}$$ $$\frac{X_{i}<t,~i \in \llbracket1,n\rrbracket~~~~I=i,~i \in \llbracket1,n\rrbracket}{O_{}<t}$$ $$\frac{X_{i}<t,~t \in \llbracket1,m\rrbracket~~~~O_{} \geq t,~t \in \llbracket1,m\rrbracket}{I \neq i}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i} \geq t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% X_{i}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% O_{} \geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% O_{}<t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% I=i : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%%   ** NO RULE EMITTED for I=i: 1 candidate(s), all blocked **
+%% I \neq i : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% CAVEAT (A-1, 2026-09-22). New entry, and the decomposition is AUTHORED HERE: there
+%% is no decomps/arg_max.md, and catalog/arg_max.md said `nothing generated -- blocked
+%% on E2 (int/bool variant) / E7 (float variant)`. The int/bool variant needs no E2:
+%% it is `maxi` plus element's three-literal clause I = i /\ O >= t -> X_i >= t, and
+%% every atom in it is a variable against a threshold. The FLOAT variant is untouched
+%% and its E7 routing stands.
+%% NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by
+%% exhaustive enumeration of every X in [[1,m]]^n with O = max_i X_i and I an index
+%% achieving it, for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED -- and SEPARATELY under
+%% MiniZinc's first-index tie-break, because this decomposition says only that I is A
+%% maximal index. It is therefore a relaxation, and soundness on the relaxation implies
+%% soundness on the constraint; both were swept rather than argued.
+%% ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample anywhere. Firings in
+%% file order, any-maximal-index reading, at n,m <= 4: 359 / 2438 / 1225 / 2438 / 349 /
+%% 349 / 2262; at n,m <= 5: 4173 / 37329 / 19226 / 37329 / 4158 / 4158 / 53196. Under
+%% the first-index reading at n,m <= 5: 4173 / 23903 / 10488 / 23903 / 2296 / 2296 /
+%% 37950. ALL SEVEN MINIMAL over the range.
+%% AT n = 1 firings are 35 / 35 / 20 / 35 / 20 / 20 / 0 and no rule fails. Rule 7 fires
+%% 0 times there for a reason, not by accident: with one variable X_1 IS the maximum,
+%% so its premise X_i < t <= O cannot hold. Rules 1, 2 and 6 have a premise that goes
+%% droppable at n = 1 alone, so their minimality is a claim about the range swept.
+%% RULE 5 IS NOT `NO RULE FOR I = i`. The positive index event gets no rule at all --
+%% 1 candidate, dropped F -- exactly as cata/element.tex's I = i does, and for the same
+%% reason: nothing in the decomposition can conclude that the argmax IS a given index.
+%% Rule 7 is the negative direction and it is the useful one.
+%% THE OPS IN CONSTRAINT 7 ARE pointt/pointi, NOT element's forallt/foralli, and that
+%% is the difference between this file and a vacuous one. Measured: the first draft of
+%% this value used element's ops and emitted `{forall i: I = i}` and `{forall t:
+%% X_i < t}` premises, which fire 0 times. cata/element.tex's rules 3-6 carry exactly
+%% those binders and make validate scores all four VACUOUS -- 4 of the 21 flagged rules
+%% in the catalog. The same one-word repair applies to `elem`; it is REPORTED, not
+%% made, because it would move a shipped golden.
