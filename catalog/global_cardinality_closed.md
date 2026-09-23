@@ -8,11 +8,11 @@
 | | |
 |---|---|
 | **Tier** | **C** (`C literature + solver-decomposes`) — `python3 tools/mzn_coverage.py --rank`, 2026-09-21. Ecodes `E0`, `E3`, `E4`, `E9`; the row is shared with `global_cardinality` at `CHRISTMAS_LIST.md:127` |
-| **Status** | `encodable today, not encoded` — **G8 closed on 2026-09-22, and this entry's own text said it was the whole of the difficulty.** Re-decided by U2, 2026-09-22. See Status |
-| **Generated** | **0** — there is no `cata/global_cardinality_closed.tex`. `ls cata/` (2026-09-21) lists 16 files and none is this one |
-| **Validator** | out of scope: no artifact. `make validate` reads `cata/*.tex`; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones |
+| **Status** | **`partly validated`** *by a second instrument* — **4 of 5** rules **SOUND and MINIMAL** at every `n,m ∈ {1,2,3,4,5}`, **`n = 1` included**; the fifth is **SOUND but NOT MINIMAL**. `make validate` cannot see this file (**W1-T18**), so this is not a validator verdict. Was `encodable today, not encoded` until session A-1 encoded it, 2026-09-22 |
+| **Generated** | **5** rules in `cata/global_cardinality_closed.tex` — **new 2026-09-22** (session A-1), from generator value `gccc`: `gcc`'s four plus the one that *is* closedness |
+| **Validator** | **not covered — the validator cannot see this file.** `make validate` (run 2026-09-22) names no `global_cardinality_closed` entry, in scope or out: `validator.ml`'s lists are hardcoded and it never scans `cata/`. That is **W1-T18** |
 | **Calibration** | **out of reach** — inherited from [`gcc.md`](gcc.md) and *reinforced* here: there is also no generated premise on this side to compare |
-| **Last measured** | 2026-09-21 for the tier, validator and calibration. **Status re-decided 2026-09-22 (U2)** against `explenation generator.ml` after commits `4547daf`/`1e747ee`; no new run |
+| **Last measured** | 2026-09-22 (session A-1), `make check`, `make validate`, `grep -o '\frac' cata/global_cardinality_closed.tex \| wc -l`, and this session's own exhaustive sweep over every cover subset with per-premise droppability. The Tier row is the 2026-09-21 `mzn_coverage.py` run, unre-run |
 
 ## Read this before the rest of the entry
 
@@ -84,13 +84,48 @@ in tier C.
 
 ## Decomposition used here
 
-**Generator value:** **none.** `explenation generator.ml` defines two values for this
-family and neither is this constraint: `gcc` at line **813** (`rule1` + `rule7`, a Boolean sum `=`,
+**Generator value:** `gccc`, `explenation generator.ml:1285`.
+**Emitted by:** `explainall [xac;ngbc] gccc "cata/global_cardinality_closed.tex"`, line
+**1535** — with `gcc`'s own two seeds, unchanged.
+
+| ctr | schema | meaning | from |
+|---|---|---|---|
+| 1 | `rule1` | `X_i = t ⇔ B1_{i,t}` (AC) | `gccn`, verbatim |
+| 2 | `rule6` | `∑_i B1_{i,t} ≥ p ⇔ B2_{t,p}` | `gccn`, verbatim |
+| 3 | `rule1` | `O_t ≥ p ⇔ B2_{t,p}` (BC) | `gccn`, verbatim |
+| 4 | `rule1` | `X_i = t ⇔ B5_{i,t}` (AC) | **new — a second reification of the same literal** |
+| 5 | `rule4` | `⋁_{t ∈ cover} B5_{i,t}` | **new — closedness** |
+
+### The prescription in this entry did not terminate, and why
+
+The 2026-09-21 version of this file said, under Status, "the `gccn` value unchanged, plus one
+`Decomp (_, rule4, …)` over the **`B1`** family whose value index ranges over
+`DPar ("cover", D 2)`, and one `explainall` line". **Written exactly like that, the generator
+runs forever** — killed after 150 s, with a 0-byte `.tex` that `open_out` had already created.
+
+The cause is a property of `find`, not of this constraint, and it is new to the catalog:
+
+> With `B1` in **three** constraints, `rule4`'s surviving branch in ctr 4 calls `napprim`, which
+> builds `¬B1` with a **primed value index** `t'`. That event is not in the chain `ch`, because
+> `inl` compares *whole events* and a primed index list is structurally new. `find` re-enters
+> ctr 2, whose `rule6` branch calls `apprim` and primes the **position** family instead, giving
+> `B1_{i',t'}` — also new. The two constraints alternate, priming a different family each time,
+> and the chain never repeats. **Cycle detection is by event equality, so an infinite path of
+> pairwise-distinct events is invisible to it.**
+
+**The repair is one line and is not a language change.** Give the closedness clause its own
+reification `B5` of the same solver literal — exactly as `elem` gives `B1`/`B2`/`B3` to three
+different globals. `B5` appears only in ctrs 4–5, so the loop cannot form: from `B5` the only
+other constraint is a `rule1` that terminates in an `X` literal. Mathematically nothing changed
+(`B1` and `B5` are the same boolean) and both wash out of the printed rules.
+
+**Historical, kept: the two values this family already had.** `explenation generator.ml` defines
+two and neither is this constraint: `gcc` at line **813** (`rule1` + `rule7`, a Boolean sum `=`,
 with no occurrence variable) and `gccn` at line **827** (`rule1` → `rule6` → `rule1`, the
 occurrence-variable channel). Both encode the **unrestricted** form. Nothing emits `gcc`;
 `cata/gcc.tex` comes from `gccn`.
-**Emitted by:** nothing under this name. The only emitting call for the family is line **882**,
-`explainall [xac;ngbc] gccn "cata/gcc.tex"`.
+The only emitting call for the family used to be line **882**,
+`explainall [xac;ngbc] gccn "cata/gcc.tex"`; there are now two.
 **Spec:** none — there is no `decomps/global_cardinality_closed.md`, and there is no `decomps/global_cardinality.md`
 either. The nearest relative is `decomps/count.md` (`count(x, v, c)`, i.e. `gcc` at a single
 value), which [`gcc.md`](gcc.md) already names.
@@ -101,31 +136,92 @@ feature of `global_cardinality_closed` that has no encoding, and that is the Sta
 
 ## Scope of this entry
 
-**Events the generator was asked to explain:** **none under this name.** No `explainall` call in
-`explenation generator.ml` names a `global_cardinality_closed` decomposition; line 882 is
-`explainall [xac;ngbc] gccn "cata/gcc.tex"` and it is the only call in the file that concerns
-this family (verified 2026-09-21 by `grep -n 'explainall' 'explenation generator.ml'`, which
-prints 15 emitting calls at lines 879–893).
+**Events the generator was asked to explain:** **four** — `X_i = t`, `X_i ≠ t` from `xac`, and
+`O_t ≥ p`, `O_t < p` from `ngbc`, i.e. exactly the base's four. **Closedness adds no variable
+and therefore no fifth event**; it restricts which assignments are legal, not which literals
+exist, so it shows up as an extra *candidate* rather than an extra question. The 2026-09-21
+version of this section predicted precisely that, and it was right:
 
 | event | candidates | rules emitted | dropped |
 |---|---|---|---|
-| — | — | — | no artifact, so no `%% generator diagnostics (W1-T3)` footer exists |
+| `X_{i}=t` | **2** | **2** | none |
+| `X_{i} \neq t` | 2 | **1** | `F` 1 |
+| `O_{t} \geq p` | 1 | **1** | none; binds `i` twice (D-0009) |
+| `O_{t}<p` | 1 | **1** | none; binds `i` twice (D-0009) |
 
-**The events that *would* be asked, if the decomposition existed**, are the base's four:
-`X_i = t`, `X_i ≠ t` from `xac`, and `O_t ≥ p`, `O_t < p` from `ngbc`
-(`explenation generator.ml:869, 874`). Closedness adds no new variable and therefore no fifth event; it restricts which
-assignments are legal, not which literals exist. So the event list of a hypothetical
-``global_cardinality_closed`` entry would be the base's four, and the *rules* would differ, not the questions.
+Beside [`gcc`](gcc.md)'s footer, which has **1** candidate on each of the first two events:
+closedness contributes exactly one extra candidate to `X_i = t` (which becomes a rule) and one
+to `X_i ≠ t` (which is `F` and is discarded — `⋁_{t ∈ cover} B5_{i,t}` is not a reified
+constraint, so "this clause is false" is not a fact anything can explain; the same discard
+[`member`](member.md) and [`alldifferent`](alldifferent.md) show).
 
 ## Generated rules
 
-**None.** There is no `cata/global_cardinality_closed.tex` to count, so `grep -o '\\frac'` has no input. This is
-not the same as `regular`'s zero — there the generator ran and refused every branch; here it
-was never asked, because no decomposition value for this variant is encodable (below).
+`grep -o '\frac' cata/global_cardinality_closed.tex | wc -l` → **5**, measured 2026-09-22.
+
+| # | rule | verdict (second instrument; **not** `make validate`) |
+|---|---|---|
+| 1 | `∀i'≠i: X_{i'} ≠ t`, `O_t ≥ p`  ⊢  `X_i = t` | **SOUND**, **MINIMAL** |
+| 2 | `∀t'≠t ∈ cover: X_i ≠ t'`, `t ∈ cover`  ⊢  `X_i = t` | **SOUND**, **NOT MINIMAL** |
+| 3 | `∀i'≠i: X_{i'} = t`, `O_t < p`  ⊢  `X_i ≠ t` | **SOUND**, **MINIMAL** |
+| 4 | `∀i: X_i = t`  ⊢  `O_t ≥ p` | **SOUND**, **MINIMAL** |
+| 5 | `∀i: X_i ≠ t`  ⊢  `O_t < p` | **SOUND**, **MINIMAL** |
+
+**Rules 1, 3, 4 and 5 are [`gcc`](gcc.md)'s, from the same derivations.** Rule 2 is the entry:
+it is the whole content of `closed`, and it is the only rule in the catalog that reasons across
+the *value* family for a single variable rather than across the *position* family.
+
+### How the verdicts were obtained
+
+**This session's own sweep, not `make validate`.** Exhaustive enumeration of every non-empty
+`cover ⊆ [1,m]` and every `X ∈ cover^n`, for every `n, m ∈ {1,2,3,4,5}` — **`n = 1` included**.
+Free indices `i, p ∈ [[1,n]]` and `t ∈ [[1,m]]`.
+
+**0 counterexamples on all five rules at every size swept.** Firings in file order at
+`n,m ≤ 4`: **1513 / 4462 / 682 / 490 / 6748**; at `n,m ≤ 5`:
+**27513 / 86787 / 3552 / 1935 / 166908**; at `n = 1` alone: **129 / 129 / 444 / 129 / 444**
+firings, **0** failures.
+
+**Four minimal, one not — and the flag is on the new rule.** Rule 2's second premise
+`t ∈ cover` is **droppable**: given the first premise and closedness, `X_i` lies in the cover
+and differs from every *other* member, so `t ∈ cover` follows, and the rule stays sound with the
+**same 86787 firings**. This is the same redundancy [`at_most`](at_most.md) reports for its
+`i ∈ S` — a containment conjunct appended by the index machinery rather than asserted by the
+decomposition — and it is reported, not hidden. Dropping the *first* premise fails 243306 times,
+so that one is needed.
+
+**On the two D-0009 flags.** Rules 4 and 5 bind `i` twice. Inherited from [`gcc`](gcc.md)
+verbatim, where the identical pair carries the identical flag; both bindings are the same
+`∀i ∈ [[1,n]]` over the same set, so the readings coincide and the sweep is unambiguous.
 
 ## Status
 
-**`encodable today, not encoded`**
+**`partly validated`** — **4 of 5** rules sound and minimal, **1** sound and **not** minimal.
+
+**Two qualifications this status needs, both required by `catalog/README.md`:**
+
+1. **It is not a `make validate` verdict.** That legend value is written for the validator's
+   output, and the validator cannot see this file (**W1-T18**). The verdicts come from a sweep
+   written for this entry, over a wider range than the validator's (`{1,…,5}` rather than
+   `{2,3,4}`, `n = 1` included).
+2. **The non-minimal rule is the new one**, and its redundant conjunct is the index machinery's,
+   not the decomposition's. See "How the verdicts were obtained".
+
+**And the entry's own prediction did not survive contact with the generator.** The
+prescription written here on 2026-09-21 was correct about the *schemas* and hangs the generator
+when run; see "Decomposition used here" for the non-termination and its one-line repair. That
+is the second time in this session's slice that `encodable today, not encoded` turned out to be
+true of the vocabulary and silent about what happens when you run it — [`count`](count.md) is
+the other.
+
+**Two sobering precedents were named here in advance, and here is how they turned out.** This
+entry warned that "`among` got two rules from G8's closure and both are measured **UNSOUND**".
+That did not repeat: all five rules here are sound, and the difference is exactly the one
+`among`'s own caveat names — `among`'s count variable is channelled nowhere (**G5**), while this
+entry inherits `gccn`'s working occurrence channel. The other warning — that Calibration stays
+`out of reach` — **does** hold, unchanged, below.
+
+**Historical, kept.**
 
 **This status changed on 2026-09-22.** The previous one — `nothing generated — blocked on G8` —
 is retired because G8 closed that day (session G-1, commits `4547daf` and `1e747ee`), and this
@@ -155,7 +251,9 @@ range `[1,m]`, closedness is vacuous and `global_cardinality_closed` *is* `globa
 the shipped `gccn` would already be it. Everything separating this entry from [`gcc.md`](gcc.md)
 sat in the one construct G8 named.
 
-**What would have to be written.** The `gccn` value at `explenation generator.ml:909` unchanged,
+**What would have to be written** *(and it was, 2026-09-22 — with one correction: the clause
+must hang off its own reification `B5`, not off `B1`, or the generator does not terminate)*.
+The `gccn` value at `explenation generator.ml:909` unchanged,
 plus one `Decomp (_, rule4, …)` over the `B1` family whose value index ranges over
 `DPar ("cover", D 2)`, and one `explainall` line. `oni`/`ont` and their set-taking siblings
 `oniin`/`ontin` already accept an `ind_set` argument, which is the interface `at_most`
@@ -169,10 +267,10 @@ This is on top of, not instead of, everything that already blocks the base entry
 the published rule: `gcc.md`'s own Gaps table lists G1, G4, G11 and G12/G13, and its calibration
 is `out of reach` for reasons G8 does not touch.
 
-Nothing here is validated, flagged or refuted: with no artifact there is nothing for
-`make validate` to judge, and the 2026-09-21 run's totals (**34 rules checked in 11 entries: 13
-SOUND and MINIMAL, 21 flagged; 2 rules in 5 entries out of scope**) contain no line for this
-name.
+Nothing here is validated, flagged or refuted *by `make validate`*: it does not scan `cata/`,
+and the 2026-09-22 run's totals (**34 rules checked in 11 entries: 13 SOUND and MINIMAL, 21
+flagged; 4 rules in 5 entries out of scope**) contain no line for this name. The verdicts above
+are a second instrument's.
 
 ## Calibration (W3-T5, D-0013)
 
@@ -210,7 +308,8 @@ failure to compare.
 
 | gap | what it blocks here |
 |---|---|
-| **`G8`** | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`). It was the binding one and the only one unique to this variant: `ind_set` named only whole predefined ranges, so `⋁_{t ∈ cover} B1_{i,t}` had no encoding. `DPar`/`DSub` now write it — see Status. `docs/DECOMP_FORMAT_NOTES.md:76` still lists this gap as open; that file is not this session's to edit |
+| **`G8`** | **CLOSED 2026-09-22** (`4547daf`, `1e747ee`), and **spent 2026-09-22** by this entry. It was the binding one and the only one unique to this variant: `ind_set` named only whole predefined ranges, so `⋁_{t ∈ cover} B1_{i,t}` had no encoding. `DPar ("cover", D 2)` now writes it and the shipped rule 2 prints it as `t' ∈ cover, cover ⊆ [[1,m]]`. `docs/DECOMP_FORMAT_NOTES.md:76` still lists this gap as open; that file is not this session's to edit |
+| — (unnumbered, new 2026-09-22) | **`find`'s cycle detection cannot see an alternating-prim loop.** Putting a second clause on an *already reified* family makes `apprim` and `napprim` alternate between the position and value families, so every event on the path is structurally new and `inl` never matches. The generator does not terminate and writes a 0-byte file. Worked around here by a duplicate reification (`B5`); **not fixed**, and it will bite the next entry that hangs a clause off a shared auxiliary. It is a **rule-engine** defect, not a format gap |
 | `G1` | inherited from [`gcc.md`](gcc.md): a bare integer threshold cannot reach the printed rule. Not binding *here* — `_closed` adds no threshold — but it still blocks the family's `low`/`up` siblings |
 | `G12`/`G13` | inherited: `length(xs) >= sum(count)` sums *integer* variables, a fourth kind of schema (E9, D-0011) |
 | — | the published flow rule is blocked by **no gap on this list**: its premises are indexed by a run-time graph cut, so **E4 is necessary but not sufficient** (Calibration, from C2 via `gcc.md`) |
@@ -221,6 +320,31 @@ explanation — `CHRISTMAS_LIST.md:127`, with the E3→E9 sharpening at **D-0011
 Source: `docs/DECOMP_FORMAT_NOTES.md`, consolidated wave-two numbering.
 
 ## How this entry was produced
+
+### 2026-09-22 (session A-1) — what changed
+
+- `explenation generator.ml` edited (this session owns it): decomposition value `gccc` at line
+  **1285**, `caveat` block and `explainall` call at **1535**, plus a source comment recording
+  the non-termination and its repair. Seeds unchanged — `xac` and `ngbc` are `gcc`'s own. Run
+  under OCaml 5.1.1 in the `baguette` switch; exit 0, empty stderr;
+  `cata/global_cardinality_closed.tex` produced and committed.
+- **The specced authoring was written first, run, and killed after 150 s** with a 0-byte `.tex`.
+  That is the measurement behind the non-termination finding; it is not an inference from the
+  code.
+- `make check` (run 2026-09-22, redirected then grepped) → **GATE PASSED**, exit 0, no `FAIL`;
+  every pre-existing non-orphaned `cata/*.tex` byte-identical, orphan set unchanged. The warning
+  census did **not** move for this entry (0 / 6 / 41 / 66 before and after) — `gccc` introduces
+  no new constructor site that `span` had not already introduced.
+- `make validate` (run 2026-09-22, redirected then grepped) → unchanged totals, and it names no
+  entry of this name — W1-T18.
+- An exhaustive sweep over every non-empty `cover ⊆ [1,m]` and every `X ∈ cover^n`, for every
+  `n,m ∈ {1,2,3,4,5}`, `n = 1` included, with per-premise droppability. Written and run by this
+  session; all counts quoted from the run.
+- `grep -o '\frac' cata/global_cardinality_closed.tex | wc -l` → **5**.
+- Line numbers re-checked by `grep -n` after the final edit (W1-T14). **The 2026-09-21 numbers
+  below have moved**; they are left as written and dated.
+
+### 2026-09-21 — the original entry
 
 - `python3 tools/mzn_coverage.py --rank --json` (2026-09-21) → `global_cardinality_closed` in
   `C literature + solver-decomposes`, ecodes `E0`, `E3`, `E4`, `E9`, `CHRISTMAS_LIST.md` line 127,

@@ -1244,6 +1244,49 @@ let minim  = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reifi
   the same one-index printer that silently drops the second index for `count`
   (see the comment above `ncvbc`). Used within its contract it is fine.
   ========================================================================*)
+(*==========================================================================
+  A-1, 2026-09-22 -- `global_cardinality_closed` = `gccn` plus closedness, and
+  the interesting part is the SECOND reification.
+
+  catalog/global_cardinality_closed.md said `encodable today, not encoded` and
+  prescribed: "the gccn value unchanged, plus one Decomp (_, rule4, ...) over
+  the B1 family whose value index ranges over DPar (\"cover\", D 2), and one
+  explainall line". THE PRESCRIPTION AS WRITTEN DOES NOT TERMINATE. Written
+  exactly as specced --
+
+      Decomp (4, rule4, [Decomp_devent (true, (B 1), id, ontin (DPar ("cover",D 2)))])
+
+  -- the generator runs forever (killed after 150s; the .tex is created by
+  open_out and stays 0 bytes). The reason is worth recording because it is a
+  property of `find`, not of this constraint:
+
+    B1 now appears in THREE constraints. From B1 in ctr 4, rule4's surviving
+    branch calls napprim, which builds ~B1 with a PRIMED value index t'. That
+    event is not in the chain `ch`, because `inl` compares whole events and a
+    primed index list is structurally new. `find` then re-enters ctr 2, whose
+    rule6 branch calls apprim and primes the POSITION family, giving B1_{i',t'}
+    -- also new. Ctr 2 and ctr 4 alternate, priming a different family each
+    time, and the chain never repeats. Cycle detection is by event equality, so
+    an infinite path of pairwise-distinct events is invisible to it.
+
+  THE FIX IS ONE LINE AND IT IS NOT A LANGUAGE CHANGE: give the closedness
+  clause its OWN reification of the same solver literal. B5 is a second name
+  for `X_i = t`, exactly as `elem` gives B1/B2/B3 to three different globals.
+  With B5 in ctrs 4-5 only, the loop cannot form: from B5 the only other
+  constraint is ctr 4, which is a rule1 and terminates in an X literal. The
+  decomposition is unchanged mathematically -- B1 and B5 are the same boolean
+  -- and the emitted rules mention only X and O, because both wash out.
+
+  So the entry costs: gccn's three constraints verbatim, one duplicate rule1
+  reification, one rule4 clause over the value family restricted to `cover`,
+  and two seeds that already exist (xac, ngbc). No constructor, no schema, no
+  printer case, no index operator.
+  ========================================================================*)
+let gccc   = [Decomp (1, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 1), id, id)]);
+              Decomp (2, rule6, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), imap [foralli;p_out], imap [i_out;pointp])]);
+              Decomp (3, rule1, [Global_devent (true ,  O   , id, id, BC); Reified_devent (true, (B 2), id, id)]);
+              Decomp (4, rule1, [Global_devent (true ,  X   , id, id, AC); Reified_devent (true, (B 5), id, id)]);
+              Decomp (5, rule4, [Decomp_devent (true , (B 5), id, ontin (DPar ("cover",D 2)))])]
 let spn    = [(*S = min_i start_i -- minim, on X/N*)
               Decomp (1, rule1, [Global_devent (true ,  X   , id, id, BC); Reified_devent (true, (B 1), id, id)]);
               Decomp (2, rule3, [Decomp_devent (true , (B 1), id, oni); Reified_devent (true, (B 2), id, i_out)]);
@@ -1460,6 +1503,36 @@ let _ = caveat := [
   "used within its contract and they print as `N >= t` and `V >= t` -- cleaner than";
   "cata/maximum.tex's `O_{} >= t`, which borrows an array letter for a scalar." ];
     explainall [xbc;ebc;sspan;espan] spn "cata/span.tex"
+
+let _ = caveat := [
+  "CAVEAT (A-1, 2026-09-22). New entry. catalog/global_cardinality_closed.md said";
+  "`encodable today, not encoded` and prescribed gccn plus one rule4 clause over the";
+  "B1 family. THE PRESCRIPTION AS WRITTEN DOES NOT TERMINATE: with B1 in three";
+  "constraints, ctrs 2 and 4 alternate through apprim/napprim, priming a different";
+  "index family each time, so every event on the path is structurally new and the";
+  "cycle detector -- which compares whole events -- never sees a repeat. Killed after";
+  "150s with a 0-byte .tex. The repair is one line and is not a language change: give";
+  "the closedness clause its own reification B5 of the same literal, as elem gives";
+  "B1/B2/B3 to three different globals. See the source comment above `gccc`.";
+  "FIVE rules: gcc's four, byte-for-byte the same derivations, plus ONE new rule --";
+  "rule 2 -- which is the whole content of `closed`: if X_i differs from every OTHER";
+  "value in the cover, it must take this one.";
+  "NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by";
+  "exhaustive enumeration of every non-empty cover subset of [[1,m]] and every";
+  "X in cover^n, for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED.";
+  "ALL FIVE RULES SOUND, no counterexample. Firings in file order at n,m <= 4:";
+  "1513 / 4462 / 682 / 490 / 6748; at n,m <= 5: 27513 / 86787 / 3552 / 1935 / 166908;";
+  "at n = 1 alone 129 / 129 / 444 / 129 / 444 firings and 0 failures.";
+  "FOUR MINIMAL, ONE NOT, and the flag is on the new rule. Rule 2's second premise";
+  "`t in cover` is DROPPABLE: with the first premise and closedness, X_i lies in the";
+  "cover and differs from every other member, so t in cover follows and the rule stays";
+  "sound with the same 86787 firings. This is the same redundancy cata/at_most.tex";
+  "carries for `i in S` -- a containment conjunct appended by the index machinery, not";
+  "asserted by the decomposition -- and it is reported, not hidden.";
+  "Rules 4 and 5 bind i twice (D-0009); inherited from cata/gcc.tex verbatim, where the";
+  "same two rules carry the same flag. Both bindings are the same forall over the same";
+  "set, so the readings coincide and the sweep is unaffected." ];
+    explainall [xac;ngbc] gccc "cata/global_cardinality_closed.tex"
 
 let _ = caveat := [
   "CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written";

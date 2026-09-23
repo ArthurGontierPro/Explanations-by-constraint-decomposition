@@ -1,0 +1,35 @@
+$$\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t} \geq p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}$$ $$\frac{X_{i} \neq t',~\forall t',~t' \neq t,~t' \in cover,~cover \subseteq \llbracket1,m\rrbracket,~t \in cover,~cover \subseteq \llbracket1,m\rrbracket}{X_{i}=t}$$ $$\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t}<p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}$$ $$\frac{X_{i}=t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t} \geq p}$$ $$\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t}<p}$$ 
+%% generator diagnostics (W1-T3)
+%% X_{i}=t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%% X_{i} \neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0
+%% O_{t} \geq p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%%   ** DEFECT: 1 emitted rule(s) for O_{t} \geq p bind an index name twice; the LaTeX is ambiguous (D-0009) **
+%% O_{t}<p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0
+%%   ** DEFECT: 1 emitted rule(s) for O_{t}<p bind an index name twice; the LaTeX is ambiguous (D-0009) **
+%% CAVEAT (A-1, 2026-09-22). New entry. catalog/global_cardinality_closed.md said
+%% `encodable today, not encoded` and prescribed gccn plus one rule4 clause over the
+%% B1 family. THE PRESCRIPTION AS WRITTEN DOES NOT TERMINATE: with B1 in three
+%% constraints, ctrs 2 and 4 alternate through apprim/napprim, priming a different
+%% index family each time, so every event on the path is structurally new and the
+%% cycle detector -- which compares whole events -- never sees a repeat. Killed after
+%% 150s with a 0-byte .tex. The repair is one line and is not a language change: give
+%% the closedness clause its own reification B5 of the same literal, as elem gives
+%% B1/B2/B3 to three different globals. See the source comment above `gccc`.
+%% FIVE rules: gcc's four, byte-for-byte the same derivations, plus ONE new rule --
+%% rule 2 -- which is the whole content of `closed`: if X_i differs from every OTHER
+%% value in the cover, it must take this one.
+%% NOT covered by validator.ml, whose in_scope list is hardcoded (W1-T18). Measured by
+%% exhaustive enumeration of every non-empty cover subset of [[1,m]] and every
+%% X in cover^n, for every n,m in {1,2,3,4,5} -- n = 1 INCLUDED.
+%% ALL FIVE RULES SOUND, no counterexample. Firings in file order at n,m <= 4:
+%% 1513 / 4462 / 682 / 490 / 6748; at n,m <= 5: 27513 / 86787 / 3552 / 1935 / 166908;
+%% at n = 1 alone 129 / 129 / 444 / 129 / 444 firings and 0 failures.
+%% FOUR MINIMAL, ONE NOT, and the flag is on the new rule. Rule 2's second premise
+%% `t in cover` is DROPPABLE: with the first premise and closedness, X_i lies in the
+%% cover and differs from every other member, so t in cover follows and the rule stays
+%% sound with the same 86787 firings. This is the same redundancy cata/at_most.tex
+%% carries for `i in S` -- a containment conjunct appended by the index machinery, not
+%% asserted by the decomposition -- and it is reported, not hidden.
+%% Rules 4 and 5 bind i twice (D-0009); inherited from cata/gcc.tex verbatim, where the
+%% same two rules carry the same flag. Both bindings are the same forall over the same
+%% set, so the readings coincide and the sweep is unaffected.
