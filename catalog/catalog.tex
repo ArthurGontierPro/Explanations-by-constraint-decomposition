@@ -1,6 +1,6 @@
 %% catalog/catalog.tex -- GENERATED. Do not hand-edit.
 %% Regenerate with: python3 tools/catalog_tex.py
-%% Generated: 2026-09-22 from commit f5db878
+%% Generated: 2026-09-23 from commit 8f2d4bf
 %% Source: tools/catalog_tex.py, which reads tools/mzn_coverage.py
 %% --json (via tools/catalog_index.py), catalog/*.md, cata/*.tex and
 %% the output of `make validate`. Every number below is computed on
@@ -91,7 +91,7 @@
 \vspace{0.6em}
 {\LARGE The catalog, in one document\par}
 \vspace{1.4em}
-{\large Generated 2026-09-22 from commit \texttt{f5db878} by \texttt{python3 tools/catalog\_tex.py}.\par}
+{\large Generated 2026-09-23 from commit \texttt{8f2d4bf} by \texttt{python3 tools/catalog\_tex.py}.\par}
 \vspace{1.6em}
 \hrule
 \vspace{1.2em}
@@ -108,14 +108,14 @@
 \begin{itemize}\setlength{\itemsep}{0pt}
 \item \textbf{118} MiniZinc release globals (\texttt{tools/mzn\_coverage.py}, release \texttt{2.10.1}); \textbf{118} of them have a \texttt{catalog/*.md} entry.
 \item \textbf{121} entry files in \texttt{catalog/}: \textbf{121} reviewed, \textbf{0} still carrying the auto-stub marker. (\textbf{3} of the files match no release global.)
-\item \textbf{11} of the 118 release globals have any generated rule; those files hold \textbf{28} rules. Across all of \texttt{cata/*.tex} there are \textbf{40} rules in \textbf{14} files.
+\item \textbf{21} of the 118 release globals have any generated rule; those files hold \textbf{72} rules. Across all of \texttt{cata/*.tex} there are \textbf{84} rules in \textbf{24} files.
 \item \textbf{3} entries carry a \emph{published} explanation as well, sourced into \texttt{catalog/\_literature/}: \texttt{alldifferent}, \texttt{cumulative}, \texttt{gcc}, holding \textbf{14} rule sections between them. A published rule is someone else's result, summarised under citation; it is not this project's output, and this document keeps the two kinds visibly apart. \emph{Three sourced constraints is not a survey of the literature} --- see \S\ref{sec:legend}.
 \item \texttt{make validate} checked \textbf{34} rules in \textbf{11} entries: \textbf{13} \texttt{SOUND and MINIMAL} (in 6 entries), \textbf{21} flagged. A further \textbf{4} rules in \textbf{5} entries are out of scope for the validator.
 \item \emph{Sound and minimal is a floor, not strength.} Minimality is premise-droppability. \texttt{all\_different}'s one rule is sound and minimal and only ever fires at $n=2$.
 \end{itemize}
 \vspace{0.6em}
 {\bfseries Entries blocked, by the code their Status row names first:}\par
-\texttt{G1}~5, \texttt{G2}~3, \texttt{G3}~24, \texttt{G4}~2, \texttt{G6}~1, \texttt{G7}~6, \texttt{G8}~8, \texttt{G10}~3, \texttt{G11}~5, \texttt{G12}~1, \texttt{G14}~3, \texttt{G15}~2, \texttt{G17}~2, \texttt{G18}~3, \texttt{E1}~1, \texttt{E2}~2, \texttt{E5}~8, \texttt{E6}~13, \texttt{E7}~3.
+\texttt{G1}~5, \texttt{G2}~3, \texttt{G3}~22, \texttt{G4}~2, \texttt{G6}~1, \texttt{G7}~6, \texttt{G8}~8, \texttt{G10}~3, \texttt{G11}~5, \texttt{G12}~1, \texttt{G14}~3, \texttt{G15}~2, \texttt{G17}~2, \texttt{G18}~3, \texttt{E1}~1, \texttt{E2}~2, \texttt{E5}~8, \texttt{E6}~13, \texttt{E7}~3.
 \end{titlepage}
 \tableofcontents
 \clearpage
@@ -853,8 +853,8 @@ That is a negative result worth recording rather than a gap to close.
 
 \par\smallskip
 \end{calblock}
-\subsection*{Generated rules only \ \normalsize(8)}
-\addcontentsline{toc}{subsection}{Generated rules only (8)}
+\subsection*{Generated rules only \ \normalsize(18)}
+\addcontentsline{toc}{subsection}{Generated rules only (18)}
 \subsubsection*{\texttt{all\_\allowbreak{}different\_\allowbreak{}except}}
 \label{entry:all-different-except}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
@@ -914,6 +914,76 @@ That is a negative result worth recording rather than a gap to close.
 \diag{Validator, out of scope: index set D\_4 is never defined by the printer (W1-T2), AND among's count variable appears in no atom, so the rules constrain X alone while \texttt{among} restricts X only jointly with that count}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (G-1, 2026-09-22). These two rules exist again only because G8 landed:\\ the value set s used to be `D 4`, which W1-T2 refused, so this file shipped with\\ no rule. G8 made the set printable; it did NOT make the rules right. BOTH RULES\\ ARE UNSOUND, measured by exhaustive check over all n,m <= 4 and all s: rule 1 has\\ 3374 firing cases and fails in all 3374; rule 2 fires 16832 times and fails in 4462.\\ The cause is G5, not G8: ctr 3 uses the single-Decomp\_devent rule7 shape, so among's\\ count variable n is channelled nowhere, no rule concludes anything about it, and a\\ rule over X alone is sound only if it is a tautology -- among restricts X only\\ JOINTLY with its count. Fixing it means giving among nvalues' N-channel\\ (docs/DECOMP\_FORMAT\_NOTES.md G5), which is a decomposition repair, not a gap.}
+\subsubsection*{\texttt{arg\_\allowbreak{}max}}
+\label{entry:arg-max}
+\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank} (section \texttt{9.\allowbreak{} Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} for the \textbf{int/bool} variant --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{7} rules \textbf{SOUND} and \textbf{MINIMAL} at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}, under \textbf{both} tie-breaking readings. \textbf{The \texttt{float} variant is untouched and stays E7.} Was \texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on E2 /\allowbreak{} E7} until 2026-09-22; \textbf{the E2 half of that is retracted}}
+\entryfield{Generated}{\textbf{7} rules in \texttt{cata/arg\_max.tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{argmax}. The decomposition is \textbf{authored here}: there is no \texttt{decomps/arg\_max.md}}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{arg\_max} entry, in scope or out: \texttt{validator.ml}'s lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:197} cites none. (Was \texttt{out of reach}, which is the wrong verdict twice over: it needs a \emph{published premise} to be out of reach of, and the ``0 rules generated'' reason it gave no longer holds)}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}arg\_\allowbreak{}max.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep under two tie-breaking readings, with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{\texttt{E2}}
+\entryfield{Entry}{\texttt{catalog/arg\_max.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/arg\_max.tex} (7, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{} \geq t}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{} \geq t~~~~I=i}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 3 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{}<t}{X_{i}<t}}
+
+{\small\textbf{Generated rule 4 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}}
+
+{\small\textbf{Generated rule 5 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{}<t}}
+
+{\small\textbf{Generated rule 6 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~i \in \llbracket1,n\rrbracket~~~~I=i,~i \in \llbracket1,n\rrbracket}{O_{}<t}}
+
+{\small\textbf{Generated rule 7 of 7} --- \texttt{cata/arg\_max.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~t \in \llbracket1,m\rrbracket~~~~O_{} \geq t,~t \in \llbracket1,m\rrbracket}{I \neq i}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\}<t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ I=i : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for I=i: 1 candidate(s), all blocked **\\ I \textbackslash{}neq i : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry, and the decomposition is AUTHORED HERE: there\\ is no decomps/arg\_max.md, and catalog/arg\_max.md said `nothing generated -- blocked\\ on E2 (int/bool variant) / E7 (float variant)`. The int/bool variant needs no E2:\\ it is `maxi` plus element's three-literal clause I = i /\textbackslash{} O >= t -> X\_i >= t, and\\ every atom in it is a variable against a threshold. The FLOAT variant is untouched\\ and its E7 routing stands.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured by\\ exhaustive enumeration of every X in [[1,m]]\textasciicircum{}n with O = max\_i X\_i and I an index\\ achieving it, for every n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED -- and SEPARATELY under\\ MiniZinc's first-index tie-break, because this decomposition says only that I is A\\ maximal index. It is therefore a relaxation, and soundness on the relaxation implies\\ soundness on the constraint; both were swept rather than argued.\\ ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample anywhere. Firings in\\ file order, any-maximal-index reading, at n,m <= 4: 359 / 2438 / 1225 / 2438 / 349 /\\ 349 / 2262; at n,m <= 5: 4173 / 37329 / 19226 / 37329 / 4158 / 4158 / 53196. Under\\ the first-index reading at n,m <= 5: 4173 / 23903 / 10488 / 23903 / 2296 / 2296 /\\ 37950. ALL SEVEN MINIMAL over the range.\\ AT n = 1 firings are 35 / 35 / 20 / 35 / 20 / 20 / 0 and no rule fails. Rule 7 fires\\ 0 times there for a reason, not by accident: with one variable X\_1 IS the maximum,\\ so its premise X\_i < t <= O cannot hold. Rules 1, 2 and 6 have a premise that goes\\ droppable at n = 1 alone, so their minimality is a claim about the range swept.\\ RULE 5 IS NOT `NO RULE FOR I = i`. The positive index event gets no rule at all --\\ 1 candidate, dropped F -- exactly as cata/element.tex's I = i does, and for the same\\ reason: nothing in the decomposition can conclude that the argmax IS a given index.\\ Rule 7 is the negative direction and it is the useful one.\\ THE OPS IN CONSTRAINT 7 ARE pointt/pointi, NOT element's forallt/foralli, and that\\ is the difference between this file and a vacuous one. Measured: the first draft of\\ this value used element's ops and emitted `\{forall i: I = i\}` and `\{forall t:\\ X\_i < t\}` premises, which fire 0 times. cata/element.tex's rules 3-6 carry exactly\\ those binders and make validate scores all four VACUOUS -- 4 of the 21 flagged rules\\ in the catalog. The same one-word repair applies to `elem`; it is REPORTED, not\\ made, because it would move a shipped golden.}
+\subsubsection*{\texttt{arg\_\allowbreak{}min}}
+\label{entry:arg-min}
+\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank} (section \texttt{9.\allowbreak{} Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} for the \textbf{int/bool} variant --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{7} rules \textbf{SOUND} and \textbf{MINIMAL} at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}, under \textbf{both} tie-breaking readings. \textbf{The \texttt{float} variant is untouched and stays E7.} Was \texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on E2 /\allowbreak{} E7} until 2026-09-22; \textbf{the E2 half of that is retracted}}
+\entryfield{Generated}{\textbf{7} rules in \texttt{cata/arg\_min.tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{argmin}. The decomposition is \textbf{authored here}: there is no \texttt{decomps/arg\_min.md}}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{arg\_min} entry, in scope or out: \texttt{validator.ml}'s lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:197} cites none. (Was \texttt{out of reach}, which is the wrong verdict twice over: it needs a \emph{published premise} to be out of reach of, and the ``0 rules generated'' reason it gave no longer holds)}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}arg\_\allowbreak{}min.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep under two tie-breaking readings, with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{\texttt{E2}}
+\entryfield{Entry}{\texttt{catalog/arg\_min.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/arg\_min.tex} (7, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{} \geq t}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \geq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{}<t}{X_{i}<t}}
+
+{\small\textbf{Generated rule 3 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{}<t~~~~I=i}{X_{i}<t}}
+
+{\small\textbf{Generated rule 4 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}}
+
+{\small\textbf{Generated rule 5 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~i \in \llbracket1,n\rrbracket~~~~I=i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}}
+
+{\small\textbf{Generated rule 6 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{}<t}}
+
+{\small\textbf{Generated rule 7 of 7} --- \texttt{cata/arg\_min.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~t \in \llbracket1,m\rrbracket~~~~O_{}<t,~t \in \llbracket1,m\rrbracket}{I \neq i}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\} \textbackslash{}geq t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ I=i : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for I=i: 1 candidate(s), all blocked **\\ I \textbackslash{}neq i : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry, the dual of cata/arg\_max.tex: `minim` plus the\\ same three-literal clause, with the O literal entering positively because the\\ conjunctive channel runs the other way. catalog/arg\_min.md said `nothing generated --\\ blocked on E2 / E7`; the int/bool variant needs no E2 and the float variant is\\ untouched. Read the caveat on cata/arg\_max.tex for the pointt/pointi finding and the\\ element.tex consequence -- it is not repeated here.\\ NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every X\\ in [[1,m]]\textasciicircum{}n with O = min\_i X\_i and I an index achieving it, for every n,m in\\ \{1,2,3,4,5\}, n = 1 INCLUDED, under BOTH the any-minimal-index reading (which is what\\ this decomposition states) and MiniZinc's first-index tie-break.\\ ALL SEVEN RULES SOUND UNDER BOTH READINGS, no counterexample. Firings in file order,\\ any-index reading, at n,m <= 4: 4101 / 349 / 1654 / 1133 / 1133 / 1654 / 2262; at\\ n,m <= 5: 62487 / 4158 / 28200 / 13287 / 13287 / 28200 / 53196. Under the first-index\\ reading at n,m <= 5: 37329 / 4158 / 18204 / 7995 / 7995 / 18204 / 37950. ALL SEVEN\\ MINIMAL over the range.\\ AT n = 1 firings are 35 / 20 / 20 / 35 / 35 / 20 / 0, no failures; rule 7 fires 0\\ times because with one variable X\_1 IS the minimum. Rules 2, 3 and 5 have a premise\\ that goes droppable at n = 1 alone.\\ As in arg\_max, the positive event I = i gets NO rule (1 candidate, dropped F): the\\ decomposition cannot conclude that the argmin IS a given index, only that it is not.}
 \subsubsection*{\texttt{at\_\allowbreak{}most}}
 \label{entry:at-most}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
@@ -931,6 +1001,32 @@ That is a negative result worth recording rather than a gap to close.
 \rulebox{\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in S,~S \subseteq \llbracket1,n\rrbracket,~|S|=c+1,~i \in S,~S \subseteq \llbracket1,n\rrbracket,~|S|=c+1,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{X_{i} \neq t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for X\_\{i\}=t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket: 1 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (G-1, 2026-09-22). New entry, the G1 demonstrator: the premise states the\\ threshold (|S|=c+1) that at\_most's rules could not previously mention.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded. Measured instead by\\ exhaustive check over all n,m <= 4, all v and all c: SOUND, 4706 firing cases, no\\ counterexample. NOT minimal: dropping `i in S` leaves it sound (same 4706 cases),\\ because a premise with i outside S is unsatisfiable under at\_most(c). That conjunct\\ is appended by apprim, not written by the decomposition.}
+\subsubsection*{\texttt{count}}
+\label{entry:count}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{4} shipped rules \textbf{SOUND} and \textbf{MINIMAL} at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}. Was \texttt{encodable today, not encoded} until session A-1 encoded it, 2026-09-22}
+\entryfield{Generated}{\textbf{4} rules in \texttt{cata/count.tex} --- \textbf{new 2026-09-22} (session A-1), and \textbf{no decomposition value was added}: the file is \texttt{gccn} with both seeds pinned to the counted value}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{count} entry, in scope or out: \texttt{validator.ml}'s lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}count.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and two exhaustive assignment sweeps --- one of the shipped rules, one of the S3 authoring this entry specced. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/count.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/count.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 4} --- \texttt{cata/count.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket~~~~O_{t} \geq p,~p \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{X_{i}=t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
+
+{\small\textbf{Generated rule 2 of 4} --- \texttt{cata/count.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket~~~~O_{t}<p,~p \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{X_{i} \neq t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
+
+{\small\textbf{Generated rule 3 of 4} --- \texttt{cata/count.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}=t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{O_{t} \geq p,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
+
+{\small\textbf{Generated rule 4 of 4} --- \texttt{cata/count.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{O_{t}<p,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{t\} \textbackslash{}geq p,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\} \textbackslash{}geq p,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ O\_\{t\}<p,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\}<p,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ CAVEAT (A-1, 2026-09-22). New entry, and it added NO decomposition value:\\ `count(x,v,c)` is `gcc` at one value, so this file is `gccn` (the shipped gcc\\ decomposition, unchanged) with both seed events pinned to the parameter v.\\ catalog/count.md said `encodable today, not encoded` and specced shape S3 --\\ rule1 + rule7 (Boolean sum =) + a count channel. THAT AUTHORING WAS WRITTEN AND\\ SWEPT TOO, and it is mostly vacuous: 5 rules, 2 VACUOUS (0 firings), 2 UNSOUND\\ (225/225 and 75/225 failures), 1 SOUND. The cause is rule7, which reaches the\\ summed family through apforall/napforall where rule5 and rule6 use apprim, so its\\ premise quantifies over ALL of [[1,n]] INCLUDING the index the conclusion is about\\ and contradicts it. That is W1-T9 defect 3 in a different schema; repairing it is a\\ rule-engine change, recorded in the source comment above `ncvbc`, not patched here.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured by\\ exhaustive enumeration of every X in [[1,m]]\textasciicircum{}n, every v in [[1,m]] and every\\ n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED.\\ ALL FOUR SHIPPED RULES SOUND, no counterexample. Firings at n,m <= 4:\\ 736 / 200 / 100 / 2018 in file order; at n,m <= 5, 10571 / 600 / 225 / 39228;\\ at n = 1 alone 15 / 40 / 15 / 40 firings and 0 failures. ALL FOUR MINIMAL over the\\ range. Restricted to n = 1 alone, rules 1 and 2 have a vacuous universal premise\\ that is then droppable, so their minimality is a claim about the range swept.\\ RULES 3 AND 4 BIND i TWICE and the diagnostics footer says so (D-0009). Both\\ bindings are the same `forall i in [[1,n]]` over the same set, so the two readings\\ coincide and the sweep is unaffected -- but the LaTeX is still redundant, and this\\ is inherited from gcc verbatim, not introduced here.\\ G2 COST, paid twice: c prints as O (var\_name has no letter for a count), and the\\ literal carries the value index, so it reads `O\_\{t\} >= p, t in \{v\}` -- gcc's\\ notation, not count's `c >= p`. N cannot be used instead: printvartex's N case\\ prints only the FIRST index, so a two-index count prints as `N = t` and silently\\ drops p. Measured by running it, not read off the code.}
 \subsubsection*{\texttt{decreasing}}
 \label{entry:decreasing}
 \entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, ecodes \texttt{E0})}
@@ -983,6 +1079,35 @@ That is a negative result worth recording rather than a gap to close.
 \rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket~~~~I=i,~\forall i,~i \in \llbracket1,n\rrbracket}{V \neq t}}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ I=i : 2 candidate(s) -> 0 rule(s); dropped F 2, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for I=i: 2 candidate(s), all blocked **\\ I \textbackslash{}neq i : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ V=t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ V \textbackslash{}neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed}}
+\label{entry:global-cardinality-closed}
+\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-\allowbreak{}decomposes}) --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
+\entryfield{Status}{\textbf{\texttt{partly validated}} \emph{by a second instrument} --- \textbf{4 of 5} rules \textbf{SOUND and MINIMAL} at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}; the fifth is \textbf{SOUND but NOT MINIMAL}. \texttt{make validate} cannot see this file (\textbf{W1-T18}), so this is not a validator verdict. Was \texttt{encodable today, not encoded} until session A-1 encoded it, 2026-09-22}
+\entryfield{Generated}{\textbf{5} rules in \texttt{cata/\allowbreak{}global\_\allowbreak{}cardinality\_\allowbreak{}closed.\allowbreak{}tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{gccc}: \texttt{gcc}'s four plus the one that \emph{is} closedness}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed} entry, in scope or out: \texttt{validator.ml}'s lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{out of reach} --- inherited from \texttt{gcc.md} and \emph{reinforced} here: there is also no generated premise on this side to compare}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}global\_\allowbreak{}cardinality\_\allowbreak{}closed.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive sweep over every cover subset with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/global\_cardinality\_closed.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/global\_cardinality\_closed.tex} (5, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 5} --- \texttt{cata/global\_cardinality\_closed.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t} \geq p,~p \in \llbracket1,n\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Generated rule 2 of 5} --- \texttt{cata/global\_cardinality\_closed.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \neq t',~\forall t',~t' \neq t,~t' \in cover,~cover \subseteq \llbracket1,m\rrbracket,~t \in cover,~cover \subseteq \llbracket1,m\rrbracket}{X_{i}=t}}
+
+{\small\textbf{Generated rule 3 of 5} --- \texttt{cata/global\_cardinality\_closed.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}=t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{t}<p,~p \in \llbracket1,n\rrbracket}{X_{i} \neq t}}
+
+{\small\textbf{Generated rule 4 of 5} --- \texttt{cata/global\_cardinality\_closed.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}=t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t} \geq p}}
+
+{\small\textbf{Generated rule 5 of 5} --- \texttt{cata/global\_cardinality\_closed.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{t}<p}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ O\_\{t\} \textbackslash{}geq p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\} \textbackslash{}geq p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ O\_\{t\}<p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for O\_\{t\}<p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ CAVEAT (A-1, 2026-09-22). New entry. catalog/global\_cardinality\_closed.md said\\ `encodable today, not encoded` and prescribed gccn plus one rule4 clause over the\\ B1 family. THE PRESCRIPTION AS WRITTEN DOES NOT TERMINATE: with B1 in three\\ constraints, ctrs 2 and 4 alternate through apprim/napprim, priming a different\\ index family each time, so every event on the path is structurally new and the\\ cycle detector -- which compares whole events -- never sees a repeat. Killed after\\ 150s with a 0-byte .tex. The repair is one line and is not a language change: give\\ the closedness clause its own reification B5 of the same literal, as elem gives\\ B1/B2/B3 to three different globals. See the source comment above `gccc`.\\ FIVE rules: gcc's four, byte-for-byte the same derivations, plus ONE new rule --\\ rule 2 -- which is the whole content of `closed`: if X\_i differs from every OTHER\\ value in the cover, it must take this one.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured by\\ exhaustive enumeration of every non-empty cover subset of [[1,m]] and every\\ X in cover\textasciicircum{}n, for every n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED.\\ ALL FIVE RULES SOUND, no counterexample. Firings in file order at n,m <= 4:\\ 1513 / 4462 / 682 / 490 / 6748; at n,m <= 5: 27513 / 86787 / 3552 / 1935 / 166908;\\ at n = 1 alone 129 / 129 / 444 / 129 / 444 firings and 0 failures.\\ FOUR MINIMAL, ONE NOT, and the flag is on the new rule. Rule 2's second premise\\ `t in cover` is DROPPABLE: with the first premise and closedness, X\_i lies in the\\ cover and differs from every other member, so t in cover follows and the rule stays\\ sound with the same 86787 firings. This is the same redundancy cata/at\_most.tex\\ carries for `i in S` -- a containment conjunct appended by the index machinery, not\\ asserted by the decomposition -- and it is reported, not hidden.\\ Rules 4 and 5 bind i twice (D-0009); inherited from cata/gcc.tex verbatim, where the\\ same two rules carry the same flag. Both bindings are the same forall over the same\\ set, so the readings coincide and the sweep is unaffected.}
 \subsubsection*{\texttt{increasing}}
 \label{entry:increasing}
 \entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, ecodes \texttt{E0})}
@@ -1003,6 +1128,75 @@ That is a negative result worth recording rather than a gap to close.
 \rulebox{\frac{X_{i'}<t,~i'=i+1}{X_{i}<t}}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0}
+\subsubsection*{\texttt{maximum}}
+\label{entry:maximum}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-\allowbreak{}literature + solver-\allowbreak{}native}, ecodes \texttt{['E2']} (shared row with \texttt{minimum})}
+\entryfield{Status}{\texttt{generated, unvalidated} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{4} rules \textbf{SOUND} and \textbf{MINIMAL} over every assignment at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}. See Validator}
+\entryfield{Generated}{\textbf{4} rules in \texttt{cata/maximum.tex} --- \textbf{new 2026-09-22}, the artifact that refuted \texttt{G3} for this family}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{maximum} entry, in scope or out: \texttt{validator.ml}'s entry lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
+\entryfield{Last measured}{2026-09-22, \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}maximum.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, an exhaustive assignment sweep and a domain-store sweep written for this entry. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/maximum.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/maximum.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 4} --- \texttt{cata/maximum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{} \geq t}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 4} --- \texttt{cata/maximum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{}<t}{X_{i}<t}}
+
+{\small\textbf{Generated rule 3 of 4} --- \texttt{cata/maximum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}}
+
+{\small\textbf{Generated rule 4 of 4} --- \texttt{cata/maximum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (X-max, 2026-09-22). New entry, the G3 counter-example: maximum written\\ with NO variable-vs-variable atom, by using the order encoding the BC events\\ already are -- m >= t <=> \textbackslash{}/\_i (x\_i >= t). decomps/maximum.md's claim that no\\ decomposition is authorable in this language was WRONG; it held only for the\\ direct reading (forall i: m >= x\_i, exists i: m = x\_i).\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured\\ instead by exhaustive check over ALL assignments for every n,m in \{1,2,3,4,5\} --\\ n = 1 INCLUDED, which is where the shipped alldifferent rule fails (W1-T19).\\ ALL FOUR RULES SOUND, no counterexample: firing counts at n,m <= 4 are\\ 359 / 652 / 1592 / 192 in file order; at n,m <= 5, 4173 / 10488 / 23903 / 2296;\\ at n = 1 alone 20 / 10 / 20 / 10 firings and 0 failures. ALL FOUR MINIMAL: every\\ premise, dropped, produces a counterexample. Cross-checked by a store sweep over\\ all domain stores for n,m in \{1,2,3\} (277 / 1908 / 4379 / 196 firing stores, 0\\ counterexamples); the two instruments agree. No rule here binds an index twice,\\ so there is no quantifier-ambiguity reading to resolve (D-0009).\\ G2 COST, stated: m is printed as O -- var\_name has no constructor for a\\ constraint's own scalar bound, so gcc's occurrence letter is borrowed -- and it\\ prints as `O\_\{\} >= t` because m has no array position and printglobal\_eventtex\\ emits the subscript unconditionally. Both are legibility, not soundness.}
+\subsubsection*{\texttt{member}}
+\label{entry:member}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecodes \texttt{['E0']}}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} for the fragment this repo decomposes (\texttt{y} a parameter) --- encoded 2026-09-22 by session A-1, and \texttt{make validate} cannot see it (\textbf{W1-T18}); measured sound and minimal by a second instrument at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}. Still \textbf{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3}} for MiniZinc's var-target signature. \textbf{Two fragments, two statuses --- read the fragment statement below before quoting either.}}
+\entryfield{Generated}{\textbf{1} rule in \texttt{cata/member.tex} --- \textbf{new 2026-09-22}, from generator value \texttt{member}. One event answered, one refused; see Scope}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{member} entry, in scope or out: \texttt{validator.ml}'s entry lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:195} records the literature column as \texttt{none}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}member.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/member.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/member.tex} (1, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 1} --- \texttt{cata/member.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \neq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}{X_{i}=t,~t \in \{v\},~\{v\} \subseteq \llbracket1,m\rrbracket}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket : 1 candidate(s) -> 0 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t,\textasciitilde{}t \textbackslash{}in \textbackslash{}\{v\textbackslash{}\},\textasciitilde{}\textbackslash{}\{v\textbackslash{}\} \textbackslash{}subseteq \textbackslash{}llbracket1,m\textbackslash{}rrbracket: 1 candidate(s), all blocked **\\ CAVEAT (A-1, 2026-09-22). New entry. catalog/member.md said `encodable today,\\ not encoded` for the fragment this repo decomposes -- y a PARAMETER -- and priced\\ it a `three-line instance, no new derivation needed`. The price was right: this is\\ alldifferent's own decomposition with rule4 where alldiff has rule5, at\_most's own\\ seed xacv, and nothing else added. The var-y signature is still G3 and untouched.\\ ONE rule, not two, and the missing one is not a defect: `member` gives no reason\\ for a variable NOT to take v, so the negative event's only candidate branch is F\\ and the footer counts it (dropped F 1), exactly as alldifferent's does.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured\\ by exhaustive enumeration of every X in [[1,m]]\textasciicircum{}n containing v, for every v in\\ [[1,m]] and every n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED.\\ SOUND, no counterexample anywhere: 736 firing cases at n,m <= 4, 10571 at n,m <= 5,\\ 15 of them at n = 1. MINIMAL over the range: dropping the premise fails 57648 times.\\ THE n = 1 CASE IS THE INTERESTING ONE, and it is the exact mirror of the shipped\\ alldifferent hole. Both rules have a universal premise over i' <> i that is VACUOUS\\ at n = 1, and both then conclude from nothing. alldifferent's conclusion (X\_i <> t)\\ is NOT entailed at n = 1, so it fails there -- 30 counterexamples, W1-T19. member's\\ conclusion (X\_i = v) IS entailed at n = 1, because member(X,v) with one variable\\ forces it. So a vacuous premise is not by itself the bug; concluding something the\\ constraint does not force is. Restricted to n = 1 alone the premise is droppable\\ here (15 firings either way), so minimality is a statement about the range swept.}
+\subsubsection*{\texttt{minimum}}
+\label{entry:minimum}
+\entryfield{Tier}{\textbf{B} --- \texttt{B no-\allowbreak{}literature + solver-\allowbreak{}native}, ecodes \texttt{['E2']} (shared row with \texttt{maximum})}
+\entryfield{Status}{\texttt{generated, unvalidated} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{4} rules \textbf{SOUND} over every assignment at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}, and all \textbf{4} \textbf{MINIMAL} over that range. See Validator. Was \texttt{encodable today, not encoded} until this session encoded it}
+\entryfield{Generated}{\textbf{4} rules in \texttt{cata/minimum.tex} --- \textbf{new 2026-09-22} (session A-1), the artifact X-max ran in scratch and could not commit}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{minimum} entry, in scope or out: \texttt{validator.ml}'s entry lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}minimum.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/minimum.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/minimum.tex} (4, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 4} --- \texttt{cata/minimum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{} \geq t}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 4} --- \texttt{cata/minimum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \geq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~O_{}<t}{X_{i}<t}}
+
+{\small\textbf{Generated rule 3 of 4} --- \texttt{cata/minimum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~\forall i,~i \in \llbracket1,n\rrbracket}{O_{} \geq t}}
+
+{\small\textbf{Generated rule 4 of 4} --- \texttt{cata/minimum.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{O_{}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry. catalog/minimum.md said `encodable today,\\ not encoded`: session X-max ran this decomposition in a scratch copy and discarded\\ it. Encoded here, and re-measured by this session rather than quoted.\\ The decomposition is `maxi` with rule3 (conjunction) in rule4's seat and NOTHING\\ else changed: m >= t <=> /\textbackslash{}\_i (x\_i >= t). The symbol-for-symbol dual\\ m <= t <=> /\textbackslash{}\_i (x\_i <= t) is FALSE -- min\_i x\_i <= t holds as soon as SOME x\_i\\ does -- so the connective flips and the relation does not.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured\\ instead by exhaustive enumeration of every assignment with O = min\_i X\_i and\\ X\_i in [[1,m]], for every n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED, which is where the\\ shipped alldifferent rule fails (W1-T19).\\ ALL FOUR RULES SOUND, no counterexample anywhere. Firing counts at n,m <= 4 are\\ 2438 / 349 / 686 / 1098 in file order; at n,m <= 5, 37329 / 4158 / 7995 / 18204;\\ at n = 1 alone 35 / 20 / 35 / 20 firings and 0 failures. ALL FOUR MINIMAL over the\\ sweep range: every premise, dropped, produces a counterexample (drop counts at\\ n,m <= 5: 48438 / 37950 and 37329 / 86388 / 7995).\\ ONE HONEST QUALIFICATION, which maximum's dual does not have: restricted to n = 1\\ ALONE, rule 2's first premise (forall i' <> i: X\_i' >= t) is vacuous and droppable,\\ so minimality of rule 2 is a statement about the range swept, not about n = 1.\\ Soundness is unaffected -- rule 2's other premise O < t carries the content.\\ Firing counts are per (assignment, free index) pair, and an index the rule itself\\ quantifies is NOT free: rules 3 and 4 range over t only, rules 1 and 2 over (i,t).\\ G2 COST, inherited from maximum verbatim: m is printed as O -- var\_name has no\\ constructor for a constraint's own scalar bound -- and as `O\_\{\} >= t`, because m\\ has no array position and printglobal\_eventtex emits the subscript unconditionally.}
 \subsubsection*{\texttt{nvalue}}
 \label{entry:nvalues}
 \entryfield{Tier}{\textbf{A} --- no literature + solver decomposes (\texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, ecodes \texttt{E0})}
@@ -1033,6 +1227,84 @@ That is a negative result worth recording rather than a gap to close.
 \rulebox{\frac{X_{i} \neq t,~\forall i,~i \in \llbracket1,n\rrbracket,~\forall t,~t \in \llbracket1,m\rrbracket,~\forall i,~i \in \llbracket1,n\rrbracket}{N \neq p}}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\} \textbackslash{}neq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ N=p : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 1 emitted rule(s) for N=p bind an index name twice; the LaTeX is ambiguous (D-0009) **\\ N \textbackslash{}neq p : 2 candidate(s) -> 2 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\   ** DEFECT: 2 emitted rule(s) for N \textbackslash{}neq p bind an index name twice; the LaTeX is ambiguous (D-0009) **}
+\subsubsection*{\texttt{span}}
+\label{entry:span}
+\entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: all \textbf{8} rules \textbf{SOUND} and \textbf{MINIMAL} at every \texttt{n,m $\in$ \{1,2,3,4,5\}}, \textbf{\texttt{n = 1} included}. Was \texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3} until 2026-09-22; \textbf{that verdict is retracted} and the retraction is the entry}
+\entryfield{Generated}{\textbf{8} rules in \texttt{cata/span.tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{spn}}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{span} entry, in scope or out: \texttt{validator.ml}'s lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:152} records \texttt{none}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}span.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep with per-premise droppability. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{\texttt{G3}}
+\entryfield{Entry}{\texttt{catalog/span.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/span.tex} (8, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{N \geq t}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \geq t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~N<t}{X_{i}<t}}
+
+{\small\textbf{Generated rule 3 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{i'}<t,~\forall i',~i' \neq i,~i' \in \llbracket1,n\rrbracket,~i \in \llbracket1,n\rrbracket~~~~V \geq t}{O_{i} \geq t}}
+
+{\small\textbf{Generated rule 4 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{V<t}{O_{i}<t}}
+
+{\small\textbf{Generated rule 5 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i} \geq t,~\forall i,~i \in \llbracket1,n\rrbracket}{N \geq t}}
+
+{\small\textbf{Generated rule 6 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i}<t,~\exists i,~i \in \llbracket1,n\rrbracket}{N<t}}
+
+{\small\textbf{Generated rule 7 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{i} \geq t,~\exists i,~i \in \llbracket1,n\rrbracket}{V \geq t}}
+
+{\small\textbf{Generated rule 8 of 8} --- \texttt{cata/span.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{O_{i}<t,~\forall i,~i \in \llbracket1,n\rrbracket}{V<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{i\} \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ O\_\{i\}<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ N \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ N<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ V \textbackslash{}geq t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ V<t : 1 candidate(s) -> 1 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry, on the strength of docs/G3-AUDIT.md, which\\ calls span the cheapest entry in its audit: span's halves ARE minimum and maximum.\\ decomps/span.md still opens with `span has no shape and is listed among the\\ G3-blocked constraints`. THAT CLAIM IS WRONG and it is wrong by inheritance -- it\\ cites decomps/maximum.md's `missing primitive`, which X-max retracted on 2026-09-22.\\ S = min\_i start\_i is `minim` verbatim and E = max\_i end\_i is `maxi` verbatim; the\\ six atomic constraints share no variable, so they sit side by side and `ctrs`\\ separates them by name. No constructor, schema, printer case or index operator was\\ added -- only two seed events for the second array and the two scalar bounds.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured by\\ exhaustive enumeration, for every n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED -- of every\\ start array with S = min and, separately, every end array with E = max. Sweeping the\\ halves separately is sound BECAUSE no rule mentions a variable of the other half;\\ the .tex above is the evidence for that, rule by rule.\\ ALL EIGHT RULES SOUND, no counterexample. Firings in file order at n,m <= 4:\\ 2438 / 349 / 359 / 652 / 686 / 1098 / 1592 / 192; at n,m <= 5: 37329 / 4158 / 4173 /\\ 10488 / 7995 / 18204 / 23903 / 2296; at n = 1 alone 35 / 20 / 35 / 20 / 35 / 20 /\\ 35 / 20 firings and 0 failures. ALL EIGHT MINIMAL over the range.\\ CROSS-CHECK: the four end-array counts reproduce session X-max's cata/maximum.tex\\ figures EXACTLY (4173 / 10488 / 23903 / 2296 at n,m <= 5) and the four start-array\\ counts reproduce this session's cata/minimum.tex figures exactly. Two entries, one\\ instrument, numbers that had to agree and do.\\ Restricted to n = 1 alone, rules 2 and 3 have a vacuous universal premise that is\\ then droppable, so their minimality is a claim about the range swept, not n = 1.\\ G2, AND HERE IT STOPS BEING COSMETIC. Four letters are spent: X the start array, O\\ the end array, N the span's own S, V its own E. var\_name has seven names and exactly\\ TWO of them (X and O) route through printglobal\_eventtex, the only printer that can\\ carry an (array position, value) pair. A constraint over two user arrays spends both;\\ a third array would have nowhere to go. That is a COUNT, not a legibility complaint,\\ and it is the first entry in the catalog to hit it.\\ One consolation: because S and E really are scalars, the one-index scalar printer is\\ used within its contract and they print as `N >= t` and `V >= t` -- cleaner than\\ cata/maximum.tex's `O\_\{\} >= t`, which borrows an array letter for a scalar.}
+\subsubsection*{\texttt{strictly\_\allowbreak{}decreasing}}
+\label{entry:strictly-decreasing}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_increasing})}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: both rules \textbf{SOUND} over every strictly decreasing assignment at every \texttt{n,m $\in$ \{1,2,3,4,5\}} and both \textbf{MINIMAL}. Was \texttt{encodable today, not encoded} until this session (A-1) encoded it. See Status}
+\entryfield{Generated}{\textbf{2} rules in \texttt{cata/\allowbreak{}strictly\_\allowbreak{}decreasing.\allowbreak{}tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{sdecr}}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{strictly\_decreasing} entry, in scope or out: \texttt{validator.ml}'s entry lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}strictly\_\allowbreak{}decreasing.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep with per-premise droppability and three controls. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/strictly\_decreasing.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/strictly\_decreasing.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 2} --- \texttt{cata/strictly\_decreasing.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \geq t',~i'=i+1,~t'=t-1}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 2} --- \texttt{cata/strictly\_decreasing.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}<t',~i'=i-1,~t'=t+1}{X_{i}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry, and the asymmetric half of the strict pair.\\ catalog/strictly\_decreasing.md said `encodable today, not encoded`.\\ THE OPERATORS ARE NOT THE MIRROR OF strictly\_increasing'S, and the difference was\\ checked rather than reasoned: `decr` puts the POSITIVE literal at the base index,\\ so re-indexing X\_\{i+1\} >= t -> X\_i >= t+1 to keep that layout gives\\ B1\_\{i,t\} \textbackslash{}/ \textasciitilde{}B1\_\{i+1,t-1\} -- the value index moves DOWN while the position index\\ moves up. Ascending `imap [iplus 1; tmoin 1]`, descending `imap [imoin 1; tplus 1]`.\\ The naive mirror `imap [iplus 1; tplus 1]` was swept too: it is SOUND for\\ strictly\_decreasing (78 firings, 0 counterexamples at n,m <= 5) and ALSO sound for\\ plain non-strict decreasing (1907 firings, 0 counterexamples), i.e. it states\\ nothing strict at all. That is how a plausible-looking wrong composition passes a\\ soundness check, and why the control was run (D-0006's first item).\\ NOT covered by validator.ml (W1-T18). Measured by exhaustive enumeration of every\\ strictly decreasing X in [[1,m]]\textasciicircum{}n for every n,m in \{1,2,3,4,5\}, n = 1 INCLUDED,\\ off-the-end indices FALSE per validator.ml l.69-74.\\ BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:\\ 222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.\\ AT n = 1 BOTH RULES FIRE 0 TIMES, for the same reason as strictly\_increasing.\\ Against NON-strictly decreasing sequences both FAIL (103 and 155 counterexamples\\ at n,m <= 4), which is the check that they encode strictness.}
+\subsubsection*{\texttt{strictly\_\allowbreak{}increasing}}
+\label{entry:strictly-increasing}
+\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_decreasing})}
+\entryfield{Status}{\textbf{\texttt{generated, unvalidated}} \emph{by this catalog's instrument} --- \texttt{make validate} cannot see this file (\textbf{W1-T18}). Measured by a second instrument: both rules \textbf{SOUND} over every strictly increasing assignment at every \texttt{n,m $\in$ \{1,2,3,4,5\}} and both \textbf{MINIMAL}. Was \texttt{encodable today, not encoded} until this session (A-1) encoded it. See Status}
+\entryfield{Generated}{\textbf{2} rules in \texttt{cata/\allowbreak{}strictly\_\allowbreak{}increasing.\allowbreak{}tex} --- \textbf{new 2026-09-22} (session A-1), from generator value \texttt{sincr}}
+\entryfield{Validator}{\textbf{not covered --- the validator cannot see this file.} \texttt{make validate} (run 2026-09-22) names no \texttt{strictly\_increasing} entry, in scope or out: \texttt{validator.ml}'s entry lists are hardcoded and it never scans \texttt{cata/}. That is \textbf{W1-T18}}
+\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
+\entryfield{Last measured}{2026-09-22 (session A-1), \texttt{make check}, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}strictly\_\allowbreak{}increasing.\allowbreak{}tex \textbackslash{}| wc -\allowbreak{}l}, and this session's own exhaustive assignment sweep with per-premise droppability and two controls. The Tier row is the 2026-09-21 \texttt{mzn\_coverage.py} run, unre-run}
+\entryfield{Blocking gap}{none stated in the Status row}
+\entryfield{Entry}{\texttt{catalog/strictly\_increasing.md}}
+
+\textbf{Generated rules} --- this project's output, copied verbatim from \texttt{cata/strictly\_increasing.tex} (2, counted as occurrences of \texttt{\textbackslash{}frac}).\par
+
+{\small\textbf{Generated rule 1 of 2} --- \texttt{cata/strictly\_increasing.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'} \geq t',~i'=i-1,~t'=t-1}{X_{i} \geq t}}
+
+{\small\textbf{Generated rule 2 of 2} --- \texttt{cata/strictly\_increasing.tex}, this project's generator. \textsc{no verdict} --- this entry does not appear in the \texttt{make validate} run\par}
+\rulebox{\frac{X_{i'}<t',~i'=i+1,~t'=t+1}{X_{i}<t}}
+
+\diag{generator diagnostics (W1-T3)\\ X\_\{i\} \textbackslash{}geq t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ X\_\{i\}<t : 2 candidate(s) -> 1 rule(s); dropped F 1, cycle 0, duplicate 0, undefined index set 0\\ CAVEAT (A-1, 2026-09-22). New entry. catalog/strictly\_increasing.md said\\ `encodable today, not encoded` and NAMED the operators this file now uses:\\ `imap [imoin 1; tmoin 1]` descending, `imap [iplus 1; tplus 1]` ascending. The\\ prediction held -- no new constructor, schema or printer case was needed. tplus\\ and tmoin existed but had never been used by any decomposition; this is the first.\\ NOT covered by validator.ml, whose in\_scope list is hardcoded (W1-T18). Measured\\ by exhaustive enumeration of every strictly increasing X in [[1,m]]\textasciicircum{}n for every\\ n,m in \{1,2,3,4,5\} -- n = 1 INCLUDED. Off-the-end indices follow validator.ml's\\ own convention (l.69-74): a premise naming a non-existent variable is FALSE.\\ BOTH RULES SOUND, no counterexample. Firings at n,m <= 4: 62 / 39; at n,m <= 5:\\ 222 / 150. BOTH MINIMAL: the single premise, dropped, fails 222 / 351 times.\\ AT n = 1 BOTH RULES FIRE 0 TIMES and there is nothing to be unsound about: every\\ premise names X\_\{i-1\} or X\_\{i+1\}, which does not exist. Stated rather than let\\ pass as `0 counterexamples`, which would be true and misleading.\\ THE SHIFT IS NOT COSMETIC, measured two ways. (a) Run against NON-strictly\\ increasing sequences the same two rules FAIL -- 103 and 155 counterexamples at\\ n,m <= 4 -- so they really do encode strictness rather than relabel `increasing`.\\ (b) On the strict model they fire MORE than increasing's own rules do: 222 / 150\\ against 150 / 78 over the same assignments, and the firing sets are supersets\\ (X\_\{i-1\} >= t implies X\_\{i-1\} >= t-1). Stronger, not merely different.}
 \subsection*{Generated rules, no matching release global \ \normalsize(3)}
 \addcontentsline{toc}{subsection}{Generated rules, no matching release global (3)}
 \subsubsection*{\texttt{atleastnvalues}}
@@ -1142,16 +1414,16 @@ Tier is \texttt{tools/mzn\_coverage.py}'s priority ranking. ``Entries'' counts \
 \hline
 tier & globals & entries & with rules & rules & sound+min \\
 \hline\endhead
-A & 43 & 43 & 8 & 21 & 8 \\
-B & 8 & 8 & 0 & 0 & 0 \\
-C & 9 & 9 & 1 & 4 & 4 \\
+A & 43 & 43 & 13 & 38 & 8 \\
+B & 8 & 8 & 2 & 8 & 0 \\
+C & 9 & 9 & 2 & 9 & 4 \\
 D & 19 & 19 & 2 & 3 & 1 \\
 unclassified & 11 & 11 & 0 & 0 & 0 \\
-out of scope & 28 & 28 & 0 & 0 & 0 \\
+out of scope & 28 & 28 & 2 & 14 & 0 \\
 \hline
 no release global & --- & 3 & 3 & 12 & 0 \\
 \hline
-\textbf{total} & 118 & 121 & 14 & 40 & 13 \\
+\textbf{total} & 118 & 121 & 24 & 84 & 13 \\
 \hline
 \end{longtable}
 \section{Summary by entry}
@@ -1167,8 +1439,8 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{alternative} & A & nothing generated --- blocked on G3, conditional on a sig... & --- & 0 & \texttt{G3} \\
 \texttt{among} & A & flagged --- 2 rules, both UNSOUND. See the warning immedi... & 2 & 0 & --- \\
 \texttt{among\_\allowbreak{}fn} & unclassified & resolves to among.md, whose Status row reads flagged ---... & --- & 0 & \texttt{G8} \\
-\texttt{arg\_\allowbreak{}max} & out of scope & nothing generated --- blocked on E2 (int/bool variant) /... & --- & 0 & \texttt{E2} \\
-\texttt{arg\_\allowbreak{}min} & out of scope & nothing generated --- blocked on E2 (int/bool variant) /... & --- & 0 & \texttt{E2} \\
+\texttt{arg\_\allowbreak{}max} & out of scope & generated, unvalidated by this catalog's instrument for... & 7 & 0 & \texttt{E2} \\
+\texttt{arg\_\allowbreak{}min} & out of scope & generated, unvalidated by this catalog's instrument for... & 7 & 0 & \texttt{E2} \\
 \texttt{arg\_\allowbreak{}sort} & A & nothing generated --- blocked on G10 --- twice over; see St... & --- & 0 & \texttt{G10} \\
 \texttt{arg\_\allowbreak{}val} & A & nothing generated --- blocked on E1 --- and on G3 under the... & --- & 0 & \texttt{E1} \\
 \texttt{at\_\allowbreak{}least} & A & nothing generated --- blocked on G1 --- still, after G1's p... & --- & 0 & \texttt{G1} \\
@@ -1184,7 +1456,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{connected} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{cost\_\allowbreak{}mdd} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
 \texttt{cost\_\allowbreak{}regular} & C & nothing generated --- blocked on G15 --- and on everything... & --- & 0 & \texttt{G15} \\
-\texttt{count} & A & encodable today, not encoded --- G8 closed on 2026-09-22... & --- & 0 & --- \\
+\texttt{count} & A & generated, unvalidated by this catalog's instrument --- m... & 4 & 0 & --- \\
 \texttt{count\_\allowbreak{}fn} & unclassified & resolves to count.md, whose Status row reads encodable... & --- & 0 & \texttt{G8} \\
 \texttt{cumulative} & D & not validatable & 2 & 0 & --- \\
 \texttt{cumulative\_\allowbreak{}opt} & C & nothing generated --- blocked on G2 --- and on everything t... & --- & 0 & \texttt{G2} \\
@@ -1207,7 +1479,7 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{exactly} & A & nothing generated --- blocked on G1 --- still, after G1's p... & --- & 0 & \texttt{G1} \\
 \texttt{geost} & out of scope & nothing generated --- blocked on E6/E7/E2 (unresolved, se... & --- & 0 & \texttt{E6} \\
 \texttt{global\_\allowbreak{}cardinality} & C & validated: sound and minimal at n,m $\in$ \{2,3,4\} & 4 & 4 & --- \\
-\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed} & C & encodable today, not encoded --- G8 closed on 2026-09-22,... & --- & 0 & --- \\
+\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed} & C & partly validated by a second instrument --- 4 of 5 rules... & 5 & 0 & --- \\
 \texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed\_\allowbreak{}fn} & unclassified & resolves to global\_cardinality\_closed.md, whose Status... & --- & 0 & \texttt{G8} \\
 \texttt{global\_\allowbreak{}cardinality\_\allowbreak{}fn} & unclassified & resolves to gcc.md, whose Status row reads validated: s... & --- & 0 & --- \\
 \texttt{global\_\allowbreak{}cardinality\_\allowbreak{}low\_\allowbreak{}up} & C & nothing generated --- blocked on G1 --- still, after G1's p... & --- & 0 & \texttt{G1} \\
@@ -1232,11 +1504,11 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{lex\_\allowbreak{}less} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
 \texttt{lex\_\allowbreak{}lesseq} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
 \texttt{link\_\allowbreak{}set\_\allowbreak{}to\_\allowbreak{}booleans} & out of scope & nothing generated --- blocked on E5 & --- & 0 & \texttt{E5} \\
-\texttt{maximum} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{maximum} & B & generated, unvalidated by this catalog's instrument --- m... & 4 & 0 & --- \\
 \texttt{mdd} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
 \texttt{mdd\_\allowbreak{}nondet} & D & nothing generated --- blocked on G7 & --- & 0 & \texttt{G7} \\
-\texttt{member} & A & encodable today, not encoded for the fragment this repo... & --- & 0 & \texttt{G3} \\
-\texttt{minimum} & B & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{member} & A & generated, unvalidated for the fragment this repo decom... & 1 & 0 & \texttt{G3} \\
+\texttt{minimum} & B & generated, unvalidated by this catalog's instrument --- m... & 4 & 0 & --- \\
 \texttt{network\_\allowbreak{}flow} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{neural\_\allowbreak{}net} & out of scope & nothing generated --- blocked on E7 & --- & 0 & \texttt{E7} \\
 \texttt{nvalue} & A & flagged & 5 & 0 & --- \\
@@ -1257,11 +1529,11 @@ constraint & tier & status & rules & s+m & block \\
 \texttt{sliding\_\allowbreak{}sum} & A & nothing generated --- blocked on G12 --- and on G13, which... & --- & 0 & \texttt{G12} \\
 \texttt{sort} & A & nothing generated --- blocked on G10 --- and on G9 and G3;... & --- & 0 & \texttt{G10} \\
 \texttt{sort\_\allowbreak{}fn} & unclassified & resolves to sort.md, whose Status row reads encodable t... & --- & 0 & --- \\
-\texttt{span} & A & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
+\texttt{span} & A & generated, unvalidated by this catalog's instrument --- m... & 8 & 0 & \texttt{G3} \\
 \texttt{steiner} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{strict\_\allowbreak{}lex2} & D & nothing generated --- blocked on G3 & --- & 0 & \texttt{G3} \\
-\texttt{strictly\_\allowbreak{}decreasing} & A & encodable today, not encoded --- the format can already e... & --- & 0 & --- \\
-\texttt{strictly\_\allowbreak{}increasing} & A & encodable today, not encoded --- the format can already e... & --- & 0 & --- \\
+\texttt{strictly\_\allowbreak{}decreasing} & A & generated, unvalidated by this catalog's instrument --- m... & 2 & 0 & --- \\
+\texttt{strictly\_\allowbreak{}increasing} & A & generated, unvalidated by this catalog's instrument --- m... & 2 & 0 & --- \\
 \texttt{subcircuit} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{subgraph} & out of scope & nothing generated --- blocked on E6 & --- & 0 & \texttt{E6} \\
 \texttt{sum\_\allowbreak{}pred} & A & encodable today, not encoded under reading (a) --- measur... & --- & 0 & \texttt{G14} \\
@@ -1285,6 +1557,8 @@ constraint & tier & status & rules & s+m & block \\
 \section{Disagreements between computed and written numbers}
 Each line is a number this run computed from an artifact next to a number written into a file. Neither side is preferred here; the disagreement is reported so it can be settled by whoever owns the file.
 \begin{itemize}\setlength{\itemsep}{0pt}
+\item count\_fn: quotes count.md's Status as ``encodable today, not encoded''; that row now reads ``generated, unvalidated by this catalog's instrument --- make validate...''
+\item global\_cardinality\_closed\_fn: quotes global\_cardinality\_closed.md's Status as ``encodable today, not encoded''; that row now reads ``partly validated by a second instrument --- 4 of 5 rules SOUND and MI...''
 \item inverse\_fn: quotes inverse.md's Status as ``encodable today, not encoded''; that row now reads ``encodable today, not encoded --- no gap blocks this decomposition; no...''
 \item sort\_fn: quotes sort.md's Status as ``encodable today, not encoded''; that row now reads ``nothing generated --- blocked on G10 --- and on G9 and G3; see Status....''
 \end{itemize}
@@ -1377,8 +1651,8 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{ls decomps/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}}
 \entryfield{Blocking gap}{\texttt{G2}}
 \entryfield{Entry}{\texttt{catalog/disjunctive\_strict\_opt.md}}
-\subsection*{\texttt{G3} \ \normalsize(24)}
-\addcontentsline{toc}{subsection}{\texttt{G3} (24)}
+\subsection*{\texttt{G3} \ \normalsize(20)}
+\addcontentsline{toc}{subsection}{\texttt{G3} (20)}
 \subsubsection*{\texttt{alternative}}
 \label{entry:alternative}
 \entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
@@ -1549,46 +1823,6 @@ Grouped by the code the entry's own Status row names first. A \texttt{G}-number 
 \entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}}
 \entryfield{Blocking gap}{\texttt{G3}}
 \entryfield{Entry}{\texttt{catalog/lex\_lesseq.md}}
-\subsubsection*{\texttt{maximum}}
-\label{entry:maximum}
-\entryfield{Tier}{\textbf{B} --- \texttt{B no-\allowbreak{}literature + solver-\allowbreak{}native}, ecodes \texttt{['E2']} (shared row with \texttt{minimum})}
-\entryfield{Status}{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3}}
-\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/maximum.tex} and no generator value for it}
-\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
-\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
-\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}}
-\entryfield{Blocking gap}{\texttt{G3}}
-\entryfield{Entry}{\texttt{catalog/maximum.md}}
-\subsubsection*{\texttt{member}}
-\label{entry:member}
-\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecodes \texttt{['E0']}}
-\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} for the fragment this repo decomposes (\texttt{y} a parameter); \textbf{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3}} for MiniZinc's var-target signature. \textbf{Two fragments, two statuses --- read the fragment statement below before quoting either.}}
-\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/member.tex} and no generator value for it}
-\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
-\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:195} records the literature column as \texttt{none}}
-\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}}
-\entryfield{Blocking gap}{\texttt{G3}}
-\entryfield{Entry}{\texttt{catalog/member.md}}
-\subsubsection*{\texttt{minimum}}
-\label{entry:minimum}
-\entryfield{Tier}{\textbf{B} --- \texttt{B no-\allowbreak{}literature + solver-\allowbreak{}native}, ecodes \texttt{['E2']} (shared row with \texttt{maximum})}
-\entryfield{Status}{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3}}
-\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/minimum.tex} and no generator value for it}
-\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
-\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:196} records the literature column as \texttt{none found}}
-\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}}
-\entryfield{Blocking gap}{\texttt{G3}}
-\entryfield{Entry}{\texttt{catalog/minimum.md}}
-\subsubsection*{\texttt{span}}
-\label{entry:span}
-\entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
-\entryfield{Status}{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on G3}}
-\entryfield{Generated}{no generator entry --- there is no \texttt{cata/span.tex}}
-\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{span} entry}
-\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:152} records \texttt{none}}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, \texttt{make validate}, \texttt{explenation generator.ml} read}
-\entryfield{Blocking gap}{\texttt{G3}}
-\entryfield{Entry}{\texttt{catalog/span.md}}
 \subsubsection*{\texttt{strict\_\allowbreak{}lex2}}
 \label{entry:strict-lex2}
 \entryfield{Tier}{\textbf{D} --- \texttt{D literature + solver-\allowbreak{}native}, ecode \texttt{E0} (shared row with \texttt{lex\_less}, \texttt{lex\_lesseq}, \texttt{lex2}, \texttt{lex2\_strict})}
@@ -2016,26 +2250,6 @@ The current input format can already express the decomposition and no gap blocks
 \entryfield{Last measured}{2026-09-22, \texttt{make check}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{explenation generator.ml} and \texttt{cata/\allowbreak{}alldifferent\_\allowbreak{}except.\allowbreak{}tex}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/all\_different\_except\_0.md}}
-\subsubsection*{\texttt{count}}
-\label{entry:count}
-\entryfield{Tier}{\textbf{A} (\texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}), ecode \texttt{E0} --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, run 2026-09-21}
-\entryfield{Status}{\texttt{encodable today, not encoded} --- \textbf{G8 closed on 2026-09-22 and it was this entry's only wall.} Re-decided by U2, 2026-09-22. See Status}
-\entryfield{Generated}{no generator entry --- there is no \texttt{cata/count.tex}}
-\entryfield{Validator}{out of scope: no artifact. My \texttt{make validate} run (2026-09-21) names no \texttt{count} entry}
-\entryfield{Calibration}{\textbf{no published rule exists} --- \texttt{CHRISTMAS\_LIST.md:128} records \texttt{none specific}}
-\entryfield{Last measured}{2026-09-21 for the tier, validator and scratch runs (below). \textbf{Status re-decided 2026-09-22 (U2)} against \texttt{explenation generator.ml} after commits \texttt{4547daf}/\texttt{1e747ee}; no new run}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/count.md}}
-\subsubsection*{\texttt{global\_\allowbreak{}cardinality\_\allowbreak{}closed}}
-\label{entry:global-cardinality-closed}
-\entryfield{Tier}{\textbf{C} (\texttt{C literature + solver-\allowbreak{}decomposes}) --- \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, 2026-09-21. Ecodes \texttt{E0}, \texttt{E3}, \texttt{E4}, \texttt{E9}; the row is shared with \texttt{global\_cardinality} at \texttt{CHRISTMAS\_LIST.md:127}}
-\entryfield{Status}{\texttt{encodable today, not encoded} --- \textbf{G8 closed on 2026-09-22, and this entry's own text said it was the whole of the difficulty.} Re-decided by U2, 2026-09-22. See Status}
-\entryfield{Generated}{\textbf{0} --- there is no \texttt{cata/\allowbreak{}global\_\allowbreak{}cardinality\_\allowbreak{}closed.\allowbreak{}tex}. \texttt{ls cata/} (2026-09-21) lists 16 files and none is this one}
-\entryfield{Validator}{out of scope: no artifact. \texttt{make validate} reads \texttt{cata/*.tex}; this name appears nowhere in the 2026-09-21 run, neither in the 11 in-scope entries nor in the 5 out-of-scope ones}
-\entryfield{Calibration}{\textbf{out of reach} --- inherited from \texttt{gcc.md} and \emph{reinforced} here: there is also no generated premise on this side to compare}
-\entryfield{Last measured}{2026-09-21 for the tier, validator and calibration. \textbf{Status re-decided 2026-09-22 (U2)} against \texttt{explenation generator.ml} after commits \texttt{4547daf}/\texttt{1e747ee}; no new run}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/global\_cardinality\_closed.md}}
 \subsubsection*{\texttt{inverse}}
 \label{entry:inverse}
 \entryfield{Tier}{\textbf{B} --- \texttt{B no-\allowbreak{}literature + solver-\allowbreak{}native}, ecodes \texttt{['E0', 'E2']} (shared row with \texttt{inverse\_in\_range})}
@@ -2076,26 +2290,6 @@ The current input format can already express the decomposition and no gap blocks
 \entryfield{Last measured}{2026-09-21, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank -\allowbreak{}-\allowbreak{}json}, \texttt{make validate}, \texttt{ls cata/}, and reads of \texttt{CHRISTMAS\_LIST.md:217}, \texttt{CHRISTMAS\_LIST.md:198} and \texttt{catalog/sort.md}}
 \entryfield{Blocking gap}{none stated in the Status row}
 \entryfield{Entry}{\texttt{catalog/sort\_fn.md}}
-\subsubsection*{\texttt{strictly\_\allowbreak{}decreasing}}
-\label{entry:strictly-decreasing}
-\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_increasing})}
-\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} --- the format can already express it and no gap blocks it; nothing in the generator does it. (This entry read ``no status-legend value fits'' until 2026-09-21, when that observation caused the value to be added to \texttt{catalog/README.md}'s legend.) See Status}
-\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/\allowbreak{}strictly\_\allowbreak{}decreasing.\allowbreak{}tex} and no generator value for it}
-\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
-\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
-\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}*.\allowbreak{}tex}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/strictly\_decreasing.md}}
-\subsubsection*{\texttt{strictly\_\allowbreak{}increasing}}
-\label{entry:strictly-increasing}
-\entryfield{Tier}{\textbf{A} --- \texttt{A no-\allowbreak{}literature + solver-\allowbreak{}decomposes}, ecode \texttt{E0} (shared row with \texttt{increasing}, \texttt{decreasing} and \texttt{strictly\_decreasing})}
-\entryfield{Status}{\textbf{\texttt{encodable today, not encoded}} --- the format can already express it and no gap blocks it; nothing in the generator does it. (This entry read ``no status-legend value fits'' until 2026-09-21, when that observation caused the value to be added to \texttt{catalog/README.md}'s legend.) See Status}
-\entryfield{Generated}{\textbf{0} rules --- there is no \texttt{cata/\allowbreak{}strictly\_\allowbreak{}increasing.\allowbreak{}tex} and no generator value for it}
-\entryfield{Validator}{out of scope: nothing to validate. \texttt{make validate} reads \texttt{cata/*.tex} and this constraint has no artifact there}
-\entryfield{Calibration}{\textbf{no published rule} --- \texttt{CHRISTMAS\_LIST.md:193} literature cell reads \texttt{none specific}}
-\entryfield{Last measured}{2026-09-21, \texttt{make validate}, \texttt{grep -\allowbreak{}o '\textbackslash{}frac' cata/\allowbreak{}*.\allowbreak{}tex}, \texttt{ls cata/}, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}}
-\entryfield{Blocking gap}{none stated in the Status row}
-\entryfield{Entry}{\texttt{catalog/strictly\_increasing.md}}
 \clearpage
 \section{Out of scope}
 Tier \texttt{out of scope} in \texttt{tools/mzn\_coverage.py}'s ranking --- set variables, floats, graph and packing constraints this method does not address. Each still names the code that blocks it, and the subsections below are that code.
@@ -2133,28 +2327,6 @@ Tier \texttt{out of scope} in \texttt{tools/mzn\_coverage.py}'s ranking --- set 
 \diag{Validator, out of scope: index sets D\_5, D\_6 are never defined by the printer (W1-T2); the set variables S and T appear in no atom}
 
 \diag{generator diagnostics (W1-T3)\\ X\_\{i\}=t : 2 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 2\\   ** REFUSED for X\_\{i\}=t: 2 branch(es) reference undefined index set(s) D6, D5; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\}=t: 2 candidate(s), all blocked **\\ X\_\{i\} \textbackslash{}neq t : 2 candidate(s) -> 0 rule(s); dropped F 0, cycle 0, duplicate 0, undefined index set 2\\   ** REFUSED for X\_\{i\} \textbackslash{}neq t: 2 branch(es) reference undefined index set(s) D6, D5; emitting them would state a rule over a set the artifact never defines (W1-T2) **\\   ** NO RULE EMITTED for X\_\{i\} \textbackslash{}neq t: 2 candidate(s), all blocked **}
-\subsection*{\texttt{E2} \ \normalsize(2)}
-\addcontentsline{toc}{subsection}{\texttt{E2} (2)}
-\subsubsection*{\texttt{arg\_\allowbreak{}max}}
-\label{entry:arg-max}
-\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank} (section \texttt{9.\allowbreak{} Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
-\entryfield{Status}{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on E2 (int/\allowbreak{}bool variant) /\allowbreak{} E7 (float variant)}}
-\entryfield{Generated}{no generator entry --- there is no \texttt{cata/arg\_max.tex}}
-\entryfield{Validator}{out of scope --- no \texttt{cata/arg\_max.tex} exists}
-\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, \texttt{CHRISTMAS\_LIST.md:197} read}
-\entryfield{Blocking gap}{\texttt{E2}}
-\entryfield{Entry}{\texttt{catalog/arg\_max.md}}
-\subsubsection*{\texttt{arg\_\allowbreak{}min}}
-\label{entry:arg-min}
-\entryfield{Tier}{\texttt{- out of scope} per \texttt{tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank} (section \texttt{9.\allowbreak{} Ordering, sorting, channelling}), ecode \texttt{E2+E7}. \textbf{Checked against D-0014 (2026-09-21) and left here deliberately} --- see ``Is that classification right?'' below}
-\entryfield{Status}{\texttt{nothing generated -\allowbreak{}-\allowbreak{}-\allowbreak{} blocked on E2 (int/\allowbreak{}bool variant) /\allowbreak{} E7 (float variant)}}
-\entryfield{Generated}{no generator entry --- there is no \texttt{cata/arg\_min.tex}}
-\entryfield{Validator}{out of scope --- no \texttt{cata/arg\_min.tex} exists}
-\entryfield{Calibration}{\texttt{out of reach} --- 0 rules generated}
-\entryfield{Last measured}{2026-09-21, \texttt{python3 tools/\allowbreak{}mzn\_\allowbreak{}coverage.\allowbreak{}py -\allowbreak{}-\allowbreak{}rank}, \texttt{CHRISTMAS\_LIST.md:197} read}
-\entryfield{Blocking gap}{\texttt{E2}}
-\entryfield{Entry}{\texttt{catalog/arg\_min.md}}
 \subsection*{\texttt{E5} \ \normalsize(8)}
 \addcontentsline{toc}{subsection}{\texttt{E5} (8)}
 \subsubsection*{\texttt{all\_\allowbreak{}disjoint}}

@@ -1734,3 +1734,59 @@ byte-identical. `make validate` unmoved with *and without* the new file, `grep -
 entries out of scope"; today's run says **4**, with or without the new entry. `CHRISTMAS_LIST.md`
 routed max/min through E2 where the evidence says E0. Warning census 35 → 36, 60 → 61, one new
 ambiguous `O`.
+
+### 2026-09-23 — A-1 (author what is authorable) and A-2 (re-audit G3) — CLOSED
+
+**The catalog went from 8 globals with generated rules to 21, in one wave, with no language
+extension.** `make check` green at every commit; **no golden moved**; all 27 pre-existing
+entries byte-identical throughout.
+
+| shipped | rules | measured (A-1's own sweep, `n,m ∈ {1..5}`, **n=1 included**) |
+|---|---|---|
+| `minimum` | 4 | all sound, all minimal |
+| `strictly_increasing`, `strictly_decreasing` | 2 each | all sound, all minimal; **0 firings at n=1** (premises name `X_{i±1}`) |
+| `member` | 1 | sound, minimal |
+| `count` | 4 | all sound, all minimal |
+| `span` | 8 | all sound, all minimal |
+| `global_cardinality_closed` | 5 | all sound; **4 minimal, 1 not** (`t ∈ cover` droppable) |
+| `arg_max`, `arg_min` | 7 each | all sound, all minimal, **under both tie-break readings** |
+
+**Every one of these had an entry or a spec saying it was blocked**, and several had written the
+answer down before filing it as impossible: `member`'s and the strict pair's entries *sketched
+the exact operators*, character for character. `span` was `nothing generated — blocked on G3`
+and is `minim` + `maxi` side by side. `arg_max`/`arg_min` were `blocked on E2`; the int/bool
+variant is E0.
+
+**Two constraints genuinely need a new constructor, and A-1 recorded rather than added them.**
+`all_different_except_0` needs a value range containing 0 (`D 2` is `[[1,m]]`, so `DExc(D 2,[EInt 0])`
+types and prints but says nothing). `inverse`/`inverse_in_range` need an index-family
+transposition, and the measurement is the good part: **of 113 single `ind_op`s applied to `[i;t]`,
+none yields `[t;i]`; of 12769 two-op compositions, 24 give the shape and all by discarding and
+creating a fresh index.** Nothing copies a value between families — **sharper than G7**, and
+closing G7 would not close it.
+
+**A-1 corrected my W1-T21 diagnosis by instrumenting what A-2 and I had reasoned about.**
+`printind_name_list` fires **47 times per run across 17 entries and is correct in all but one**:
+the tail entries are carrier nodes whose modifiers `printiopl_listtex` prints separately. The one
+real case is `table`'s `(i,r)`, and `table` emits 0 rules. The conclusion survives; the
+"pervasive, silently truncating" framing does not, and it was mine. Corrected in `CLAUDE.md` and
+the row. **Two readings lost to one measurement** — worth remembering the next time a static
+argument feels conclusive.
+
+**Four engine findings, none patched, all now rows:** `rule7` uses `apforall` where `rule5`/`6`
+use `apprim`, so its premise quantifies over the conclusion's own index — **the source itself
+says `(*incohérent?*)`** (W1-T22); `find` **does not terminate** when an auxiliary sits in three
+constraints, measured at 150 s to a 0-byte file (W1-T23); **`element` ships `OpForall` where
+`OpPoint` is meant — one word, and it costs 4 of the catalog's 21 flagged rules** (W1-T24,
+superseding the earlier reading that `element` was blocked on W1-T1); and `printvartex`'s `N`
+case drops an index (W1-T25).
+
+**A-2's audit (`docs/G3-AUDIT.md`)**: of G3's 25 claimants, **24 FACTOR, 0 do not, 1 uncertain**.
+The lex proof predates the `maximum` result — `incr` already ships `X_i ≤ X_{i+1}`, validated
+2/2. The 15 lex entries' real blocker is the `tied_i` accumulated state, **never instantiated in
+the generator**; `diffn`'s is G15. **G3 blocks none of its own claimants.**
+
+**State: 118/118 entries, 21 of 118 globals with generated rules (was 8), `catalog/catalog.tex`
+compiles.** The validator still measures only its 11 hardcoded entries (W1-T18), so *none* of
+this wave's rules appears in the 13/34 figure — the honest headline is that the catalog's own
+gate has not seen most of its contents.

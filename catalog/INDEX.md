@@ -1,7 +1,7 @@
 <!--
   catalog/INDEX.md -- GENERATED. Do not hand-edit.
   Regenerate with: python3 tools/catalog_index.py
-  Generated: 2026-09-22
+  Generated: 2026-09-23
   Source: tools/catalog_index.py (reads tools/mzn_coverage.py --json,
   catalog/*.md, cata/*.tex, and `make validate`'s output; see that
   script's ALIAS table for the cata/catalog basename <-> MiniZinc
@@ -22,17 +22,17 @@ every regeneration, never hand-typed -- see the header comment for how.
   A **reviewed** entry is one a person wrote against `catalog/TEMPLATE.md`.
   **The entry count is never printed without this split** -- 118 / 118 with
   0 of them stubs is a claim about filenames, not about work done.
-- have any generated rule (`cata/*.tex`, `\frac` count > 0): **11 / 118**
+- have any generated rule (`cata/*.tex`, `\frac` count > 0): **21 / 118**
 - have any validated (SOUND and MINIMAL) rule: **6 / 118**
 
 | tier | globals | entries | reviewed | stubs | generated rules | validated |
 |---|---:|---:|---:|---:|---:|---:|
-| A | 43 | 43 | 43 | 0 | 8 | 4 |
-| B | 8 | 8 | 8 | 0 | 0 | 0 |
-| C | 9 | 9 | 9 | 0 | 1 | 1 |
+| A | 43 | 43 | 43 | 0 | 13 | 4 |
+| B | 8 | 8 | 8 | 0 | 2 | 0 |
+| C | 9 | 9 | 9 | 0 | 2 | 1 |
 | D | 19 | 19 | 19 | 0 | 2 | 1 |
 | unclassified | 11 | 11 | 11 | 0 | 0 | 0 |
-| out of scope | 28 | 28 | 28 | 0 | 0 | 0 |
+| out of scope | 28 | 28 | 28 | 0 | 2 | 0 |
 
 ## Warnings from this run
 
@@ -57,7 +57,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `bin_packing` | A | [bin_packing](bin_packing.md) | reviewed | — | — | G11 |
 | `bin_packing_capa` | A | [bin_packing_capa](bin_packing_capa.md) | reviewed | — | — | G11 |
 | `bin_packing_load` | A | [bin_packing_load](bin_packing_load.md) | reviewed | — | — | G11 |
-| `count` | A | [count](count.md) | reviewed | — | — | G8 |
+| `count` | A | [count](count.md) | reviewed | 4 | — | G8 |
 | `decreasing` | A | [decreasing](decreasing.md) | reviewed | 2 | 2 | — |
 | `diffn` | A | [diffn](diffn.md) | reviewed | — | — | G3 |
 | `diffn_k` | A | [diffn_k](diffn_k.md) | reviewed | — | — | G3 |
@@ -74,15 +74,15 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `lex_chain_less` | A | [lex_chain_less](lex_chain_less.md) | reviewed | — | — | G3 |
 | `lex_chain_lesseq` | A | [lex_chain_lesseq](lex_chain_lesseq.md) | reviewed | — | — | G3 |
 | `lex_chain_lesseq_orbitope` | A | [lex_chain_lesseq_orbitope](lex_chain_lesseq_orbitope.md) | reviewed | — | — | G3 |
-| `member` | A | [member](member.md) | reviewed | — | — | G3 |
+| `member` | A | [member](member.md) | reviewed | 1 | — | G3 |
 | `nvalue` | A | [nvalues](nvalues.md) | reviewed | 5 | 0 | — |
 | `seq_precede_chain` | A | [seq_precede_chain](seq_precede_chain.md) | reviewed | — | — | G17 |
 | `sliding_among` | A | [sliding_among](sliding_among.md) | reviewed | — | — | G8 |
 | `sliding_sum` | A | [sliding_sum](sliding_sum.md) | reviewed | — | — | G12 |
 | `sort` | A | [sort](sort.md) | reviewed | — | — | G10 |
-| `span` | A | [span](span.md) | reviewed | — | — | G3 |
-| `strictly_decreasing` | A | [strictly_decreasing](strictly_decreasing.md) | reviewed | — | — | — |
-| `strictly_increasing` | A | [strictly_increasing](strictly_increasing.md) | reviewed | — | — | — |
+| `span` | A | [span](span.md) | reviewed | 8 | — | G3 |
+| `strictly_decreasing` | A | [strictly_decreasing](strictly_decreasing.md) | reviewed | 2 | — | — |
+| `strictly_increasing` | A | [strictly_increasing](strictly_increasing.md) | reviewed | 2 | — | — |
 | `sum_pred` | A | [sum_pred](sum_pred.md) | reviewed | — | — | G14 |
 | `symmetric_all_different` | A | [symmetric_all_different](symmetric_all_different.md) | reviewed | — | — | G10 |
 | `write` | A | [write](write.md) | reviewed | — | — | G18 |
@@ -92,8 +92,8 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `inverse_in_range` | B | [inverse_in_range](inverse_in_range.md) | reviewed | — | — | — |
 | `lex_greater` | B | [lex_greater](lex_greater.md) | reviewed | — | — | G3 |
 | `lex_greatereq` | B | [lex_greatereq](lex_greatereq.md) | reviewed | — | — | G3 |
-| `maximum` | B | [maximum](maximum.md) | reviewed | — | — | G3 |
-| `minimum` | B | [minimum](minimum.md) | reviewed | — | — | G3 |
+| `maximum` | B | [maximum](maximum.md) | reviewed | 4 | — | G3 |
+| `minimum` | B | [minimum](minimum.md) | reviewed | 4 | — | G3 |
 | `value_precede` | B | [value_precede](value_precede.md) | reviewed | — | — | G17 |
 | `value_precede_chain` | B | [value_precede_chain](value_precede_chain.md) | reviewed | — | — | G7 |
 | `cost_mdd` | C | [cost_mdd](cost_mdd.md) | reviewed | — | — | G15 |
@@ -102,7 +102,7 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `cumulatives` | C | [cumulatives](cumulatives.md) | reviewed | — | — | G14 |
 | `cumulatives_opt` | C | [cumulatives_opt](cumulatives_opt.md) | reviewed | — | — | G14 |
 | `global_cardinality` | C | [gcc](gcc.md) | reviewed | 4 | 4 | — |
-| `global_cardinality_closed` | C | [global_cardinality_closed](global_cardinality_closed.md) | reviewed | — | — | G8 |
+| `global_cardinality_closed` | C | [global_cardinality_closed](global_cardinality_closed.md) | reviewed | 5 | — | G8 |
 | `global_cardinality_low_up` | C | [global_cardinality_low_up](global_cardinality_low_up.md) | reviewed | — | — | G1 |
 | `global_cardinality_low_up_closed` | C | [global_cardinality_low_up_closed](global_cardinality_low_up_closed.md) | reviewed | — | — | G1 |
 | `all_different` | D | [alldifferent](alldifferent.md) | reviewed | 1 | 1 | — |
@@ -136,8 +136,8 @@ every regeneration, never hand-typed -- see the header comment for how.
 | `roots_fn` | unclassified | [roots_fn](roots_fn.md) | reviewed | — | — | G8 |
 | `sort_fn` | unclassified | [sort_fn](sort_fn.md) | reviewed | — | — | — |
 | `all_disjoint` | out of scope | [all_disjoint](all_disjoint.md) | reviewed | — | — | — |
-| `arg_max` | out of scope | [arg_max](arg_max.md) | reviewed | — | — | — |
-| `arg_min` | out of scope | [arg_min](arg_min.md) | reviewed | — | — | — |
+| `arg_max` | out of scope | [arg_max](arg_max.md) | reviewed | 7 | — | — |
+| `arg_min` | out of scope | [arg_min](arg_min.md) | reviewed | 7 | — | — |
 | `at_most1` | out of scope | [at_most1](at_most1.md) | reviewed | — | — | — |
 | `bounded_path` | out of scope | [bounded_path](bounded_path.md) | reviewed | — | — | — |
 | `circuit` | out of scope | [circuit](circuit.md) | reviewed | — | — | — |
