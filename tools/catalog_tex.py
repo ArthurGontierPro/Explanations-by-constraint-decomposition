@@ -1231,7 +1231,11 @@ def render_entry(r, L):
 
     if r["diag"]:
         w("")
-        w("\\diag{%s}" % "\\\\ ".join(
+        # "\\ " followed by a line that begins with "[" is read by LaTeX as
+        # \\[length] -- an optional vertical skip -- and dies with "Missing
+        # number". A caveat footer did exactly that on 2026-09-23. The "{}"
+        # after the break closes the optional argument off.
+        w("\\diag{%s}" % "\\\\{} ".join(
             tex_escape(d).replace("\\textbackslash{}", "\\textbackslash{}")
             for d in r["diag"]))
 

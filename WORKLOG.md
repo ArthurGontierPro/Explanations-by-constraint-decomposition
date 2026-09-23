@@ -1790,3 +1790,21 @@ the generator**; `diffn`'s is G15. **G3 blocks none of its own claimants.**
 compiles.** The validator still measures only its 11 hardcoded entries (W1-T18), so *none* of
 this wave's rules appears in the 13/34 figure — the honest headline is that the catalog's own
 gate has not seen most of its contents.
+
+### 2026-09-23 — orchestrator error: I pushed a `catalog.tex` that does not compile
+
+Regenerating the document after A-1's nine constraints produced `\\ [`, a line break followed
+by a bracket, which LaTeX reads as `\\[length]` and kills with "Missing number, treated as
+zero". It came from `member`'s `%% CAVEAT` footer, which is new — the mechanism G-1 added on
+2026-09-22 so measured-unsound rules cannot ship silently.
+
+**Two mistakes, both mine.** I chained the `pdflatex` check with `;` rather than `&&`, so the
+push ran regardless; and I read the push output instead of the exit code, so I reported success
+from a command that had already failed. `55d5322` therefore carries a document that does not
+build. Fixed in `tools/catalog_tex.py` (the line join now emits `\\{} `, which closes the
+optional argument off) rather than in the generated file, and the document is **83 pages**,
+`pdflatex` exit 0 twice.
+
+The rule this earns, alongside "no `--amend` with live sessions" and "stage explicit paths":
+**a generated artifact is not done until the thing that consumes it has run and exited 0**, and
+the check belongs in the same `&&` chain as the commit.
