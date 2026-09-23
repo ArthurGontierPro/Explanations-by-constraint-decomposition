@@ -50,6 +50,47 @@ type ind_set = D of int | D2 of ind_name list
              | DExc  of ind_set*ind_elt list                  (*parent \ {..}*)
              | DPar  of string*ind_set                        (*named parameter subset*)
              | DCard of string*ind_set*ind_symbols*ind_bound  (*named subset of given cardinality*)
+(*==========================================================================
+  A-1, 2026-09-22 -- TWO CONSTRAINTS THIS SESSION COULD NOT AUTHOR, and the
+  exact constructor each one needs. Recorded here because this is the type that
+  would have to change, and because a negative result nobody wrote down gets
+  rediscovered.
+
+  (1) all_different_except_0 NEEDS A VALUE RANGE CONTAINING 0.
+  The exclusion itself is writable -- DExc (D 2, [EInt 0]) is well-typed and
+  prints. It says nothing, because the parent range is D 2 and
+  printind_set_int renders D 2 as [[1,m]] (l.526), which does not contain 0.
+  A hole punched in a range that has no such element excludes nothing, and the
+  emitted rule would be alldifferent's wearing a misleading side condition.
+  The honest encoding needs the universe [[0,m]], and it cannot be named:
+  ind_set's only literal range former is DSub of ind_set*int*int, whose
+  endpoints are OCaml ints, so "[[0,m]]" -- one literal endpoint and one
+  symbolic -- has no term. WHAT IS NEEDED: DSub with ind_bound endpoints (the
+  type that already exists, and already carries BPar for exactly this reason in
+  DCard), or a fourth predefined range. Either is a new constructor, so this
+  session stopped. all_different_except (the parameter variant) is unaffected
+  and ships.
+
+  (2) inverse AND inverse_in_range NEED AN INDEX-FAMILY TRANSPOSITION.
+  inverse is X_i = j <=> Y_j = i: the second literal's POSITION index is the
+  first literal's VALUE index and vice versa. No ind_op does that. MEASURED, not
+  read off: every ind_op constructor was enumerated at every family and every
+  defined set -- 113 single ops -- and applied to [i;t]; 0 produce [t;i]. Of the
+  12769 two-op compositions, 24 produce that SHAPE, and every one of them does
+  it by DISCARDING (OpOn replaces the list, OpOut drops, OpForall/OpPoint
+  prepend a FRESH index). None carries the old i's value into the t slot,
+  because no constructor copies a value between families: apply_op either keeps
+  a family's indices, drops them, primes them, shifts them within the family, or
+  makes new ones. WHAT IS NEEDED: an op that renames an index across families
+  (OpSwap of ind_fam*ind_fam, or OpAs of ind_fam*ind_fam), plus a printer for
+  it. That is a new constructor, so this session stopped.
+  NOTE this is a SHARPER statement than decomps/inverse.md's G7 ("no schema for
+  Global_devent <=> Global_devent"): even with element's two-boolean detour,
+  which is what G7 says to use, the transposition has no term. G7 is about the
+  SCHEMA; this is about the INDEX ALGEBRA, and closing G7 would not close it.
+  inverse_in_range additionally wants a subrange, but that is not its blocker --
+  D 1 and D 3 both print [[1,n]] already.
+  ========================================================================*)
 type ind_modifs = | Set of ind_name*ind_symbols*ind_set (*I∈D*) 
                   | Rel of ind_name*ind_symbols*ind_name (*I≠I2*) 
                   | Addint of ind_name*ind_name*ind_symbols*int (*I2=I+1*) 
@@ -550,6 +591,47 @@ let printi i = printind_name (ind_name i)^" "^printiopl (ind_modifs_list i)
 let printcons v = match cons v with AC -> if sign v then "=" else "≠" | BC -> if sign v then "≥" else "<" 
 let rec isppp il = match il with [] -> [] | i::tl -> match i with Ind (P _,_) -> [i] | _ -> isppp tl
 let rec isttt il = match il with [] -> [] | i::tl -> match i with Ind (T _,_) -> [i] | _ -> isttt tl
+(*==========================================================================
+  W1-T21, MEASURED by A-1 2026-09-22, and the premise of the task is wrong.
+
+  `printind_name_list` binds `tl` and never uses it, so it prints only the FIRST
+  index; printglobal_eventtex (l.587) calls it. The task said it "has never
+  fired because table is the only shipped two-position-index decomposition and
+  has had 0 rules since W1-T2".
+
+  IT FIRES 47 TIMES PER RUN, in 17 of the 24 entries, and it is CORRECT in all
+  but one of them. Measured by instrumenting this function in a scratch copy and
+  counting per output file:
+
+    (i',i)   30 firings, 13 entries  alldifferent, alldifferent_except, arg_max,
+                                     arg_min, at_most, atleastnvalues,
+                                     atmostnvalues, count, cumulative, gcc,
+                                     global_cardinality_closed, maximum, member,
+                                     minimum, nvalues, span
+    (i,i)    10 firings               among, count, gcc,
+                                      global_cardinality_closed, nvalues
+    (i,t)     2 firings               among, global_cardinality_closed
+    (i,i,i) / (i,i,t)  4 firings      atleastnvalues, atmostnvalues
+    (i,r)     2 firings               table
+
+  In every case but the last, the tail indices are NOT array positions: they are
+  the carrier nodes that `apprim`/`apforall` append to hold binder and range
+  modifiers, and those modifiers ARE printed, by `printiopl_listtex`, which does
+  recurse. `X_{i'}` beside `i \in [[1,n]]` is what is meant; `X_{i',i}` would be
+  nonsense. So dropping the NAME is right and dropping the MODIFIERS would not
+  be -- and the tex path already keeps the modifiers.
+
+  The one real case is table's (i,r), where both are genuine positions and
+  `X_{i}` is printed where `X_{i,r}` is meant. table emits 0 rules (its only
+  branches are refused on the undefined D_4, W1-T2), so nothing wrong reaches a
+  \frac today.
+
+  NOT FIXED HERE. No A-1 entry has a two-position index -- every seed this
+  session added carries at most (position, value) -- so a fix would change
+  nothing this session ships, and making it recurse would alter nothing in any
+  current golden either. The finding is that the DIAGNOSIS was wrong, not the
+  conclusion: leave it, but do not leave it believing it is dormant.
+  ========================================================================*)
 let rec printind_name_list il = match il with []->""|i::tl->printind_name (ind_name i) 
 let rec printiopl_list il = match il with []->""|i::tl->printiopl (ind_modifs_list i)
 let printglobal_event e = 
