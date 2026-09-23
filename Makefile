@@ -136,7 +136,7 @@ check-warnings:
 	    n=$$(grep -c 'Warning [0-9]' out.txt || true); \
 	    printf "  %-14s %3d warnings\n" "$${w:-(default)}" "$$n"; \
 	  done
-	@echo "  -- expected after G-1 (2026-09-22): default 0, +27+39 6, +40+41+42 36, +a 61"
+	@echo "  -- expected after G-1 (2026-09-22): default 0, +27+39 6, +40+41+42 43, +a 68"
 	@echo "  -- these move whenever the generator changes; re-measure, do not quote"
 
 # ---------------------------------------------------------------------------
